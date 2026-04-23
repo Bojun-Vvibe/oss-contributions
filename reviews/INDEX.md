@@ -1,9 +1,9 @@
 # Review Index
 
-72 PR reviews across 8 OSS AI-coding-agent projects, 9 per repo
-(three batches of 3). Each review contains: context, problem,
-design analysis with quoted snippets where useful, risks,
-suggestions, verdict, and a "what I learned" section.
+76 PR reviews across 8 OSS AI-coding-agent projects. Each review
+contains: context, problem, design analysis with quoted snippets
+where useful, risks, suggestions, verdict, and a "what I learned"
+section.
 
 - **Round 1** (W7): the original 24, focused on feature additions
   and integration work.
@@ -14,6 +14,9 @@ suggestions, verdict, and a "what I learned" section.
   diagnostic-first debugging, fail-open vs fail-loud policy
   decisions, and "wrong abstraction was added → roll it back"
   refactors.
+- **W17 drip (2026-04-24)**: 4 extras — small-surface fixes in
+  compaction, LSP cancel paths, error-class idempotence, and
+  deadline plumbing.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -58,6 +61,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#23771](https://github.com/anomalyco/opencode/pull/23771) | fix(opencode): drain async iterator on Anthropic stream interruption | [PR-23771.md](anomalyco-opencode/PR-23771.md) |
 | [#23808](https://github.com/anomalyco/opencode/pull/23808) | fix: race condition in tool-call ID generation under parallel sub-agent runs | [PR-23808.md](anomalyco-opencode/PR-23808.md) |
 | [#24001](https://github.com/anomalyco/opencode/pull/24001) | feat: send-many-streams concurrency primitive for sub-agent fan-out | [PR-24001.md](anomalyco-opencode/PR-24001.md) |
+| [#24087](https://github.com/anomalyco/opencode/pull/24087) | fix(session): drop zero-length assistant turns before compaction | [PR-24087.md](anomalyco-opencode/PR-24087.md) |
 
 ## BerriAI/litellm
 
@@ -72,6 +76,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26264](https://github.com/BerriAI/litellm/pull/26264) | fix(z.coerce): silent type-coercion bug in OpenAPI param validation | [PR-26264.md](BerriAI-litellm/PR-26264.md) |
 | [#26270](https://github.com/BerriAI/litellm/pull/26270) | fix: unify diagnostic surfacing across push/pull pipelines | [PR-26270.md](BerriAI-litellm/PR-26270.md) |
 | [#26287](https://github.com/BerriAI/litellm/pull/26287) | fix: model deprecation pruning + downstream test fixups | [PR-26287.md](BerriAI-litellm/PR-26287.md) |
+| [#26312](https://github.com/BerriAI/litellm/pull/26312) | fix(router): don't re-wrap structured errors from upstream providers | [PR-26312.md](BerriAI-litellm/PR-26312.md) |
 
 ## charmbracelet/crush
 
@@ -86,6 +91,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2597](https://github.com/charmbracelet/crush/pull/2597) | fix(agent): prevent session corruption due to malformed image data | [PR-2597.md](charmbracelet-crush/PR-2597.md) |
 | [#2607](https://github.com/charmbracelet/crush/pull/2607) | feat: generally render output that looks like a diff as a diff | [PR-2607.md](charmbracelet-crush/PR-2607.md) |
 | [#2611](https://github.com/charmbracelet/crush/pull/2611) | fix(events): prevent early events from being dropped before init | [PR-2611.md](charmbracelet-crush/PR-2611.md) |
+| [#2691](https://github.com/charmbracelet/crush/pull/2691) | fix(lsp): cancel in-flight diagnostics request on buffer close | [PR-2691.md](charmbracelet-crush/PR-2691.md) |
 
 ## cline/cline
 
@@ -128,6 +134,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19033](https://github.com/openai/codex/pull/19033) | Fix MCP permission policy sync | [PR-19033.md](openai-codex/PR-19033.md) |
 | [#19038](https://github.com/openai/codex/pull/19038) | feat: warn and continue on unknown feature requirements | [PR-19038.md](openai-codex/PR-19038.md) |
 | [#19129](https://github.com/openai/codex/pull/19129) | Reject agents.max_threads with multi_agent_v2 | [PR-19129.md](openai-codex/PR-19129.md) |
+| [#19204](https://github.com/openai/codex/pull/19204) | fix(exec-server): honor request timeout across tool loop iterations | [PR-19204.md](openai-codex/PR-19204.md) |
 
 ---
 
