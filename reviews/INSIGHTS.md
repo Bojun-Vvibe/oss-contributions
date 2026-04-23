@@ -221,3 +221,169 @@ attribute, a JSDoc tag, or a linter rule), not in a sudden
 "stop populating the old field." codex #19086 is the example —
 both `read`/`write` and `entries` are emitted; the description
 text marks the legacy fields for removal in a future version.
+
+---
+
+# W13 batch — 5 more patterns
+
+The W13 reviews surfaced five additional cross-cutting patterns
+that didn't show up in W7 / W9. Most are about *policy choices*
+(fail-open vs fail-loud, mocked vs integration tests, defensive
+default-on vs opt-in) rather than mechanism — which is what you
+get when the codebase has matured past the "missing feature"
+phase and into the "what's the right contract" phase.
+
+## 11. Fail-open with warning > fail-closed for forward-compat surfaces
+
+Configuration / requirements / feature-flag systems consumed by
+many clients across many versions need to treat unknown input as
+*forward-compatible degradation*, not as malformed input. The
+right policy is **warn and ignore unknown keys, hard-fail
+malformed structure**.
+
+- **codex #19038** (warn on unknown feature requirements) makes
+  the requirements path symmetric with the existing config path:
+  unknown keys → warn + drop. Removes a forward-incompatibility
+  footgun where older clients rejected configs containing
+  newer-version flags.
+- **MCP servers #3515** (raise_exceptions=False default) flips
+  the FastMCP default so unknown / malformed JSON-RPC frames no
+  longer crash the server process. Same shape: surface the
+  problem visibly, but don't take down the consumer.
+
+The bias: **unknown** = warn, **malformed** = reject. Conflating
+the two is how forward-compat gets destroyed in one cleanup PR.
+
+## 12. Stale snapshot vs live state — the canonical session bug
+
+Long-lived session/connection objects cache policies that can
+change mid-session. Multiple re-sync paths exist. *Some* re-sync
+paths read from a startup snapshot; *some* read from live state.
+The user changes policy mid-session, the snapshot-reading paths
+silently apply stale data, and the cached policy on the long-
+lived object becomes inconsistent with what the user just
+configured.
+
+- **codex #19033** (MCP permission policy sync) — two near-
+  identical lines, one reading `turn_context.config.permissions.*`
+  (the snapshot), one should have read live policy. Result:
+  switch to Full Access mid-session, MCP elicitations still
+  rejected against the old restrictive policy.
+- **OpenHands #14051** (org settings payload contract) — same
+  shape one tier up: two write models drifting because one
+  reads/writes against a snapshot store and the other against
+  the live store.
+
+The architectural fix is to expose a *single* re-sync entry
+point on the long-lived object that takes a typed `LivePolicies`
+view, and make the snapshot type unable to construct that view.
+Compile-time prevention beats audit-time prevention.
+
+## 13. Three-layer diagnostic capture: enable + monitor + breadcrumb
+
+Long-running processes that occasionally die need three
+*independent* layers of diagnostic capture: enable the dump
+mechanism in advance (V8 flag, core dump ulimit, etc.), monitor
+the resource trajectory continuously (logs at intervals), and
+log the breadcrumb-to-the-artifact on the way out so an
+operator reading the log knows where to look.
+
+- **cline #10343** (memory observability for cline-core) — V8
+  `--heapsnapshot-near-heap-limit=1` (Layer 1) + periodic
+  memory logger (Layer 2) + exit-handler scan-for-snapshots
+  (Layer 3). Each layer answers a different question; they
+  compose without redundancy.
+
+The reusable rule: **log the expected location of the artifact
+at startup, not just at failure**. Operators configuring log
+shipping read the startup log; the failure log is too late.
+
+## 14. Mocked unit tests are scaffolding; integration tests are the load-bearing wall
+
+The first wave of tests added to a previously-untested module
+heavy-mocks the external boundaries (HTTP, DB, MCP). That's
+correct as a *first* step — it pins internal logic and makes
+refactors safer. But heavy mocking creates a particular shape
+of brittleness: tests pass on every internal refactor *and* on
+every refactor that quietly breaks the actual external behaviour
+the mocks abstracted away.
+
+- **MCP servers #3262** (fetch unit tests) — 20 tests, all
+  mock at `httpx.AsyncClient`. Excellent regression coverage
+  for internal logic; zero coverage of the actual HTTP
+  lifecycle. A single integration test using
+  `httpx.MockTransport` would catch the class of bug where
+  httpx's protocol shape changes.
+- **opencode #23771** (drain async iterator on stream
+  interruption) — the bug only manifests against the *real*
+  Anthropic SDK iterator semantics; pure mocked tests would
+  miss it.
+
+The discipline: when adding the first wave of tests to a
+module, schedule the integration counterpart as a follow-up
+ticket *immediately*, before the heavy-mock pattern hardens
+into team norm.
+
+## 15. Net-negative refactor PRs: collapse-the-wrong-abstraction
+
+When a feature attempt grew its own parallel infrastructure
+(separate write model, separate service, separate store) that
+duplicates an existing surface, the right fix is often to
+*delete the parallel infrastructure* and route everything
+through the original surface as a thin wrapper. The PR diff is
+heavily net-negative; the refactor *removes* code rather than
+adding it.
+
+- **OpenHands #14051** (org settings payload contract) — net
+  -1108 lines across 45 files. Removes `OrgLLM*` service /
+  store / 813-line test file, keeps the deprecated endpoints
+  as thin compat wrappers around the original `OrgUpdate`.
+- **crush #2607** (diff auto-rendering) — three per-tool
+  rendering paths (87 lines combined) collapse to one shared
+  detector + renderer (6 lines per call site).
+
+The signal that this is the right move: when the "fix" PR
+contains a deletion of a recently-added file, the recently-
+added file was probably the bug. Triple-check before reverting,
+but if the abstraction has been adding bugs faster than it
+adds capability, deletion is the correct refactor.
+
+---
+
+## Honourable mention: scope discipline on "release prep" PRs
+
+Every "support new model X" PR has a temptation to bundle
+"make X the default + ship the launch banner + update onboarding
+copy". Resist. Ship the support work as one PR (potentially
+weeks before launch), the positioning work as a separate tiny
+PR on launch day. If the launch slips, the positioning PR is
+trivial to hold; if support and positioning are entangled, a
+launch slip means reverting both.
+
+- **cline #10286** (Claude Opus 4.7 prep) is the textbook
+  example: 25 files of provider wiring, zero defaults / banners
+  / promo copy. The launch-day follow-up will be tiny.
+
+## Honourable mention: deletion is a valid fix
+
+When a test asserts on a moving target (model name, deprecated
+API, removed field) and the target's modern equivalent doesn't
+preserve the original assertion's meaning, *deleting* the
+assertion is honest. Replacing it with an arbitrary modern
+alternative adds maintenance burden without adding signal.
+
+- **aider #4935** (replace two deprecated models, delete one)
+  — the `gpt-4-32k max_input_tokens` test gets *deleted*
+  because no modern model has the same property in a way worth
+  pinning. Two other models get straightforward replacements.
+
+## Honourable mention: pin + cache + retry triad
+
+Any CI dependency that comes from the network needs all three:
+**pin** (version drift), **cache** (transient outage), **retry**
+(momentary failure). Each addresses a different failure mode and
+they compose. Skipping any one leaves a class of flake
+uncovered.
+
+- **cline #10291** (Windows CI flake fixes) applies the triad
+  to the VS Code runtime download in the test workflow.
