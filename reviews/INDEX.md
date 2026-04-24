@@ -1,6 +1,6 @@
 # Review Index
 
-157 + W17 drips (through drip-18) PR reviews across 8 OSS AI-coding-agent projects. Each review
+157 + W17 drips (through drip-19) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -392,6 +392,38 @@ section.
   removal that quietly tightens trust semantics for
   `Managed` profiles whose write paths don't include
   `cwd`.
+- **W17 drip-19 (2026-04-25)**: 8 more — codex's continuation
+  of the `SandboxPolicy → PermissionProfile` core sweep
+  (`ExecApprovalRequest` rewrite, `render_decision_for_unmatched_command`
+  swap, Windows-managed-readonly helper extraction); a
+  one-line phase-2 memories model bump that lacks any
+  consolidation-quality eval and skips the matching
+  fixture refresh other model bumps in this repo carry;
+  `task(background=true)` + new `task_status` polling
+  tool in opencode (TaskPromptOps gains `loop`/`fork`,
+  but the synchronous "started" output uses the same
+  `<task_result>` envelope as the async "completed"
+  message, denying the model a state disambiguator);
+  a 5-line opencode question-dock textarea height clamp
+  fixing a footer-pushed-out-of-viewport regression in
+  web/serve mode (`Math.min(scrollHeight, 120)` + matching
+  `max-height`/`overflow-y` CSS); the new `crush skills
+  list` command with `--flat`/`--json`/positional-search
+  and source-grouped tree output, plus an `ClassifySource`
+  primitive other commands can reuse; the litellm
+  consolidation of four stalled community PRs that
+  together fix the `output_config` drop on Vertex Claude
+  + Anthropic adapter via a leaf `output_params_utils`
+  module (Vertex-unsupported keys filtered, supported
+  bits forwarded); ollama Qwen-family renderer tool-payload
+  XML escaping (idempotent entity-aware `escapeQwenXMLText`)
+  paired with a Qwen 3.5 truncation atomicity fix that
+  treats assistant-tool-call + contiguous tool messages
+  as one drop unit; and an ollama Metal-tensor-API runtime
+  retry path (`ShouldRetryWithMetalTensorDisabled` +
+  `RunnerEnvOverrides` persistence) bundled with a
+  GPU-discovery dummy-load serialization fix and a
+  `StatusWriter` race repair via shared `cmd.Stdout`/`cmd.Stderr`.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -473,6 +505,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24193](https://github.com/sst/opencode/pull/24193) | docs: clarify bedrock inference profile setup | [sst-opencode-pr-24193.md](2026-W17/drip-17/sst-opencode-pr-24193.md) |
 | [#24136](https://github.com/sst/opencode/pull/24136) | feat(desktop): add support for Open in Windows Terminal in the header menu | [sst-opencode-pr-24136.md](2026-W17/drip-17/sst-opencode-pr-24136.md) |
 | [#24128](https://github.com/sst/opencode/pull/24128) | feat: optimize media attachments on paste in TUI | [sst-opencode-pr-24128.md](2026-W17/drip-17/sst-opencode-pr-24128.md) |
+| [#24174](https://github.com/sst/opencode/pull/24174) | feat(core): add background subagent support | [sst-opencode-pr-24174.md](2026-W17/drip-19/sst-opencode-pr-24174.md) |
+| [#24107](https://github.com/sst/opencode/pull/24107) | fix: prevent question custom input from hiding submit button | [sst-opencode-pr-24107.md](2026-W17/drip-19/sst-opencode-pr-24107.md) |
 
 ## BerriAI/litellm
 
@@ -512,6 +546,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26441](https://github.com/BerriAI/litellm/pull/26441) | fix(redis): cache GCP IAM token to prevent async event loop blocking | [BerriAI-litellm-pr-26441.md](2026-W17/drip-17/BerriAI-litellm-pr-26441.md) |
 | [#26410](https://github.com/BerriAI/litellm/pull/26410) | fix: add vertex sonnet 4.6 1h cache pricing | [BerriAI-litellm-pr-26410.md](2026-W17/drip-17/BerriAI-litellm-pr-26410.md) |
 | [#26442](https://github.com/BerriAI/litellm/pull/26442) | feat: restrict org admins from creating keys, teams, models via UI settings | [BerriAI-litellm-pr-26442.md](2026-W17/drip-17/BerriAI-litellm-pr-26442.md) |
+| [#26439](https://github.com/BerriAI/litellm/pull/26439) | fix(adapters,vertex): pass output_config through to backends that accept it | [BerriAI-litellm-pr-26439.md](2026-W17/drip-19/BerriAI-litellm-pr-26439.md) |
 
 ## charmbracelet/crush
 
@@ -552,6 +587,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2584](https://github.com/charmbracelet/crush/pull/2584) | feat(agent): allow user to configure agent model size | [charmbracelet-crush-pr-2584.md](2026-W17/drip-17/charmbracelet-crush-pr-2584.md) |
 | [#2598](https://github.com/charmbracelet/crush/pull/2598) | feat: PreToolUse hook | [charmbracelet-crush-pr-2598.md](2026-W17/drip-17/charmbracelet-crush-pr-2598.md) |
 | [#2606](https://github.com/charmbracelet/crush/pull/2606) | feat: split-pane tree, tab manager, and cross-platform PTY | [charmbracelet-crush-pr-2606.md](2026-W17/drip-17/charmbracelet-crush-pr-2606.md) |
+| [#2620](https://github.com/charmbracelet/crush/pull/2620) | feat(cmd): add `crush skills list` command with group-by-source support | [charmbracelet-crush-pr-2620.md](2026-W17/drip-19/charmbracelet-crush-pr-2620.md) |
 
 ## cline/cline
 
@@ -633,6 +669,15 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19234](https://github.com/openai/codex/pull/19234) | Carve out log DB interfaces for new sinks | [openai-codex-pr-19234.md](2026-W17/drip-17/openai-codex-pr-19234.md) |
 | [#19410](https://github.com/openai/codex/pull/19410) | Remove js_repl feature | [openai-codex-pr-19410.md](2026-W17/drip-17/openai-codex-pr-19410.md) |
 | [#19395](https://github.com/openai/codex/pull/19395) | permissions: finish profile-backed app surfaces | [openai-codex-pr-19395.md](2026-W17/drip-17/openai-codex-pr-19395.md) |
+| [#19394](https://github.com/openai/codex/pull/19394) | permissions: remove core legacy policy round trips | [openai-codex-pr-19394.md](2026-W17/drip-19/openai-codex-pr-19394.md) |
+| [#19224](https://github.com/openai/codex/pull/19224) | Bump phase-two default model to gpt-5.5 | [openai-codex-pr-19224.md](2026-W17/drip-19/openai-codex-pr-19224.md) |
+
+## ollama/ollama
+
+| PR | Title | File |
+|---|---|---|
+| [#15774](https://github.com/ollama/ollama/pull/15774) | Harden Qwen-family tool payload rendering and fix Qwen 3.5 tool-block truncation integrity | [ollama-ollama-pr-15774.md](2026-W17/drip-19/ollama-ollama-pr-15774.md) |
+| [#15755](https://github.com/ollama/ollama/pull/15755) | metal: harden for ggml initialization failures | [ollama-ollama-pr-15755.md](2026-W17/drip-19/ollama-ollama-pr-15755.md) |
 
 ---
 
