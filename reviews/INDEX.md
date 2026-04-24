@@ -1,6 +1,6 @@
 # Review Index
 
-116 PR reviews across 8 OSS AI-coding-agent projects. Each review
+124 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -131,6 +131,41 @@ section.
   non-matching roles from INPUT validation (case-
   sensitive role compare, silent-bypass on
   empty-after-filter that should log).
+- **W17 drip-10 (2026-04-24)**: 8 more — empty-string
+  `reasoning_content` survival through the
+  openai-compatible transform for DeepSeek V4 thinking
+  mode (truthy-guard removal, fragile coupling to AI-SDK
+  outbound metadata spread); `tui thread` config-aware
+  network-options resolver restoration (two-symbol revert
+  of an undocumented regression in `675a46e23e` that
+  silently bypassed `opencode.json` hostname/port);
+  LSP-tool permission metadata enrichment bundled with a
+  silent `Effect.orDie` error-policy flip; OAuth login
+  callback ephemeral-port fallback when `127.0.0.1:1455`
+  is held by Cursor (load-bearing assumption: OAuth
+  client must be registered with `http://localhost`
+  without a fixed port, otherwise fallback succeeds at
+  bind but fails at `redirect_uri_mismatch`); dynamic
+  tool-handler `pre/post_tool_use_payload` impls that
+  silently drop the hook event on `parse_arguments`
+  failure (audit hooks miss the malformed-call case
+  they were designed to observe); stateful
+  `StreamingPatchParser` refactor that trades typed
+  `ParseError` returns for an `invalid: bool + return
+  None forever` failure mode (+619/-433 churn,
+  removes public `parse_patch_streaming` /
+  `ParseMode::Streaming`); crush command-palette
+  three-fer (`exit` alias as duplicate row not true
+  alias, `\p{L}\p{N}` Unicode placeholder regex, empty
+  tool-call input `""→"{}"` normalization duplicated
+  across `agent` and `message` packages); and Azure
+  container file-endpoint deployment-credential
+  resolution by decoded `model_id` with an
+  unconditional `api_base`/`api_key`/`api_version`
+  override that breaks BYOK proxies (should be
+  fill-defaults, not overwrite) plus a silent
+  `model_group_name` fallback that can re-route to a
+  different deployment.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -193,6 +228,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24110](https://github.com/sst/opencode/pull/24110) | fix(opencode): enforce read-only bash permissions in plan mode | [PR-24110-plan-mode-readonly-bash.md](anomalyco-opencode/PR-24110-plan-mode-readonly-bash.md) |
 | [#24053](https://github.com/sst/opencode/pull/24053) | fix(tui): unsubscribe event listeners on component disposal | [PR-24053-tui-unsubscribe-listeners.md](anomalyco-opencode/PR-24053-tui-unsubscribe-listeners.md) |
 | [#24100](https://github.com/sst/opencode/pull/24100) | feat(httpapi): bridge mcp status endpoint | [PR-24100-httpapi-mcp-status.md](anomalyco-opencode/PR-24100-httpapi-mcp-status.md) |
+| [#24146](https://github.com/sst/opencode/pull/24146) | fix: preserve empty reasoning_content for DeepSeek V4 thinking mode | [PR-24146-deepseek-empty-reasoning.md](anomalyco-opencode/PR-24146-deepseek-empty-reasoning.md) |
+| [#24140](https://github.com/sst/opencode/pull/24140) | cli/tui: honor configured network defaults in thread mode | [PR-24140-thread-network-defaults.md](anomalyco-opencode/PR-24140-thread-network-defaults.md) |
+| [#24139](https://github.com/sst/opencode/pull/24139) | tool/lsp: include request details in permission metadata | [PR-24139-lsp-permission-metadata.md](anomalyco-opencode/PR-24139-lsp-permission-metadata.md) |
 
 ## BerriAI/litellm
 
@@ -214,6 +252,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26340](https://github.com/BerriAI/litellm/pull/26340) | fix(key_management): enforce upperbound_key_generate_params on /key/regenerate | [PR-26340-key-regenerate-upperbound.md](BerriAI-litellm/PR-26340-key-regenerate-upperbound.md) |
 | [#26383](https://github.com/BerriAI/litellm/pull/26383) | fix: prevent Azure output_config leakage | [PR-26383-azure-output-config-leak.md](BerriAI-litellm/PR-26383-azure-output-config-leak.md) |
 | [#26393](https://github.com/BerriAI/litellm/pull/26393) | feat: bedrock guardrail input roles filter | [PR-26393-bedrock-guardrail-input-roles.md](BerriAI-litellm/PR-26393-bedrock-guardrail-input-roles.md) |
+| [#26402](https://github.com/BerriAI/litellm/pull/26402) | fix(proxy): route azure container file requests by decoded deployment | [PR-26402-azure-container-file-routing.md](BerriAI-litellm/PR-26402-azure-container-file-routing.md) |
 
 ## charmbracelet/crush
 
@@ -236,6 +275,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2681](https://github.com/charmbracelet/crush/pull/2681) | fix(agent): retry title generation with large model on empty output | [PR-2681-title-empty-retry.md](charmbracelet-crush/PR-2681-title-empty-retry.md) |
 | [#2699](https://github.com/charmbracelet/crush/pull/2699) | fix(lsp): enforce workspace boundary for workspace edits | [PR-2699-lsp-workspace-boundary.md](charmbracelet-crush/PR-2699-lsp-workspace-boundary.md) |
 | [#2700](https://github.com/charmbracelet/crush/pull/2700) | fix(agent): implement OnRetry logging with structured retry fields | [PR-2700-onretry-structured-logging.md](charmbracelet-crush/PR-2700-onretry-structured-logging.md) |
+| [#2675](https://github.com/charmbracelet/crush/pull/2675) | Fix command aliases/args parsing and empty tool-call input normalization | [PR-2675-cmd-aliases-empty-toolcall-input.md](charmbracelet-crush/PR-2675-cmd-aliases-empty-toolcall-input.md) |
 
 ## cline/cline
 
@@ -290,6 +330,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19287](https://github.com/openai/codex/pull/19287) | Restore persisted model provider on thread resume | [PR-19287-resume-model-provider.md](openai-codex/PR-19287-resume-model-provider.md) |
 | [#19184](https://github.com/openai/codex/pull/19184) | fix: handle deferred network proxy denials | [PR-19184-deferred-proxy-denials.md](openai-codex/PR-19184-deferred-proxy-denials.md) |
 | [#19163](https://github.com/openai/codex/pull/19163) | Harden package-manager install policy | [PR-19163-package-manager-hardening.md](openai-codex/PR-19163-package-manager-hardening.md) |
+| [#19334](https://github.com/openai/codex/pull/19334) | Fallback login callback port when default is busy | [PR-19334-login-port-fallback.md](openai-codex/PR-19334-login-port-fallback.md) |
+| [#19282](https://github.com/openai/codex/pull/19282) | feat(hooks): add dynamic tool hook payloads | [PR-19282-dynamic-tool-hook-payloads.md](openai-codex/PR-19282-dynamic-tool-hook-payloads.md) |
+| [#19160](https://github.com/openai/codex/pull/19160) | Make apply_patch streaming parser stateful | [PR-19160-apply-patch-stateful-streaming.md](openai-codex/PR-19160-apply-patch-stateful-streaming.md) |
 
 ---
 
