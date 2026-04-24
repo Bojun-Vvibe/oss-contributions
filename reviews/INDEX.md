@@ -1,6 +1,6 @@
 # Review Index
 
-157 + W17 drips (through drip-20) PR reviews across 9 OSS AI-coding-agent projects. Each review
+157 + W17 drips (through drip-21) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -456,6 +456,37 @@ section.
   while keeping behavior identical except for malformed-JSON
   todo-output now landing in the `Result.isFailure` log branch
   instead of crashing the message-decoder loop.
+- **W17 drip-21 (2026-04-25)**: 8 more — codex's `app-server`
+  JSON-schema cleanup that strips sandbox-access defaults so
+  generated TypeScript clients stop pinning stale fallbacks
+  (merge-after-nits: needs an explicit `#[serde(default)]`
+  audit on the consumer side); the third PR in the
+  `PermissionProfile` migration arc, which finally derives the
+  legacy `SandboxPolicy`/`AskForApproval` compat shims from
+  profile data instead of duplicating the table (good direction,
+  flagged a missing round-trip test for the
+  `Disabled`/`External` distinction); a fresh `agent-graph-store`
+  crate skeleton with `GraphStore` trait + in-memory impl that
+  reads cleanly but lacks any concurrency story or persistence
+  shim — merge-after-nits with a request to document the
+  intended consumer; a crush SQLite fix that caps
+  `MaxOpenConns(1)` to dodge `NOTADB` corruption under WAL
+  contention, flagged as `needs-discussion` because it directly
+  competes with already-reviewed #2690 (busy-timeout +
+  `_journal_mode=WAL` PRAGMA approach) and the two cannot both
+  land; a crush "session export" PR whose title promises a new
+  subcommand but the diff actually adds `--markdown`/`-o` flags
+  to existing `session show`/`session last` — request-changes
+  for the title/scope mismatch and missing tests; a litellm
+  SSO-callback fix that surfaces OAuth `error`/`error_description`
+  query params back to the user instead of swallowing them into
+  a generic 500 (merge-after-nits: PR title literally "Fix: add
+  fix to auth error" needs a rewrite, and the error string isn't
+  HTML-escaped before being rendered); and an ollama download
+  stall watchdog fix where the goroutine that resets the
+  `lastProgress` timestamp was never being scheduled when zero
+  bytes arrived in the first interval — clean one-line fix,
+  merge-as-is.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -540,6 +571,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24128](https://github.com/sst/opencode/pull/24128) | feat: optimize media attachments on paste in TUI | [sst-opencode-pr-24128.md](2026-W17/drip-17/sst-opencode-pr-24128.md) |
 | [#24174](https://github.com/sst/opencode/pull/24174) | feat(core): add background subagent support | [sst-opencode-pr-24174.md](2026-W17/drip-19/sst-opencode-pr-24174.md) |
 | [#24107](https://github.com/sst/opencode/pull/24107) | fix: prevent question custom input from hiding submit button | [sst-opencode-pr-24107.md](2026-W17/drip-19/sst-opencode-pr-24107.md) |
+| [#24047](https://github.com/sst/opencode/pull/24047) | docs: add agent architecture audit guide | [sst-opencode-pr-24047.md](2026-W17/drip-21/sst-opencode-pr-24047.md) |
 
 ## BerriAI/litellm
 
@@ -580,6 +612,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26410](https://github.com/BerriAI/litellm/pull/26410) | fix: add vertex sonnet 4.6 1h cache pricing | [BerriAI-litellm-pr-26410.md](2026-W17/drip-17/BerriAI-litellm-pr-26410.md) |
 | [#26442](https://github.com/BerriAI/litellm/pull/26442) | feat: restrict org admins from creating keys, teams, models via UI settings | [BerriAI-litellm-pr-26442.md](2026-W17/drip-17/BerriAI-litellm-pr-26442.md) |
 | [#26439](https://github.com/BerriAI/litellm/pull/26439) | fix(adapters,vertex): pass output_config through to backends that accept it | [BerriAI-litellm-pr-26439.md](2026-W17/drip-19/BerriAI-litellm-pr-26439.md) |
+| [#26405](https://github.com/BerriAI/litellm/pull/26405) | Fix: add fix to auth error (SSO callback OAuth-error surfacing) | [BerriAI-litellm-pr-26405.md](2026-W17/drip-21/BerriAI-litellm-pr-26405.md) |
 
 ## charmbracelet/crush
 
@@ -623,6 +656,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2620](https://github.com/charmbracelet/crush/pull/2620) | feat(cmd): add `crush skills list` command with group-by-source support | [charmbracelet-crush-pr-2620.md](2026-W17/drip-19/charmbracelet-crush-pr-2620.md) |
 | [#2646](https://github.com/charmbracelet/crush/pull/2646) | feat(ui): add CamelHumps editing for ctrl word shortcuts | [charmbracelet-crush-pr-2646.md](2026-W17/drip-20/charmbracelet-crush-pr-2646.md) |
 | [#2612](https://github.com/charmbracelet/crush/pull/2612) | feat(hooks): implement JSON-based compatibility layer and lifecycle hooks | [charmbracelet-crush-pr-2612.md](2026-W17/drip-20/charmbracelet-crush-pr-2612.md) |
+| [#2691](https://github.com/charmbracelet/crush/pull/2691) | fix(db): cap SQLite pool to one writer to prevent NOTADB corruption | [charmbracelet-crush-pr-2691.md](2026-W17/drip-21/charmbracelet-crush-pr-2691.md) |
+| [#2609](https://github.com/charmbracelet/crush/pull/2609) | feat(session): add `session export` command for markdown/JSON export | [charmbracelet-crush-pr-2609.md](2026-W17/drip-21/charmbracelet-crush-pr-2609.md) |
 
 ## cline/cline
 
@@ -711,6 +746,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19280](https://github.com/openai/codex/pull/19280) | [codex] Migrate thread turns list to thread store | [openai-codex-pr-19280.md](2026-W17/drip-20/openai-codex-pr-19280.md) |
 | [#19209](https://github.com/openai/codex/pull/19209) | [codex] Emit usage-limit prompt analytics from TUI | [openai-codex-pr-19209.md](2026-W17/drip-20/openai-codex-pr-19209.md) |
 | [#19169](https://github.com/openai/codex/pull/19169) | Stabilize plugin MCP tool listing test | [openai-codex-pr-19169.md](2026-W17/drip-20/openai-codex-pr-19169.md) |
+| [#19424](https://github.com/openai/codex/pull/19424) | Strip sandbox access defaults from app-server JSON schema | [openai-codex-pr-19424.md](2026-W17/drip-21/openai-codex-pr-19424.md) |
+| [#19392](https://github.com/openai/codex/pull/19392) | permissions: derive compatibility policies from profiles | [openai-codex-pr-19392.md](2026-W17/drip-21/openai-codex-pr-19392.md) |
+| [#19229](https://github.com/openai/codex/pull/19229) | Add agent graph store interface | [openai-codex-pr-19229.md](2026-W17/drip-21/openai-codex-pr-19229.md) |
 
 ## ollama/ollama
 
@@ -718,6 +756,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 |---|---|---|
 | [#15774](https://github.com/ollama/ollama/pull/15774) | Harden Qwen-family tool payload rendering and fix Qwen 3.5 tool-block truncation integrity | [ollama-ollama-pr-15774.md](2026-W17/drip-19/ollama-ollama-pr-15774.md) |
 | [#15755](https://github.com/ollama/ollama/pull/15755) | metal: harden for ggml initialization failures | [ollama-ollama-pr-15755.md](2026-W17/drip-19/ollama-ollama-pr-15755.md) |
+| [#15716](https://github.com/ollama/ollama/pull/15716) | server: fix download stall watchdog not firing when no bytes arrive | [ollama-ollama-pr-15716.md](2026-W17/drip-21/ollama-ollama-pr-15716.md) |
 
 ---
 
