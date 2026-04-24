@@ -1,6 +1,6 @@
 # Review Index
 
-165 + W17 drips (through drip-24) PR reviews across 9 OSS AI-coding-agent projects. Each review
+165 + W17 drips (through drip-25) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -540,8 +540,24 @@ section.
   `guardrail_information` symmetrically with the non-streaming
   branch, `/api/tags` enrichment with parameter-size for
   safetensors models to close a `/api/show` parity gap, and
-  `ollama stop`/`ollama show` printing usage instead of erroring
-  when called with no model argument.
+   `ollama stop`/`ollama show` printing usage instead of erroring
+   when called with no model argument.
+- **W17 drip-25 (2026-04-25)**: 8 more — codex retiring legacy
+   read-only access modes from the permissions surface, codex CI
+   publishing `codex-app-server` release artifacts alongside the
+   main CLI binary, opencode session preserving the shell `cwd`
+   across startup so the first prompt lands in the directory the
+   user launched from, opencode adding a `/context` slash command
+   that prints token-budget breakdown by category, litellm
+   honoring `reasoning_effort=minimal` on gpt-5.5 (was being
+   silently dropped by the parameter mapper), litellm CircleCI
+   rerun awk preprocessor fixed for jobs whose names contain
+   colons, ollama bumping mlx to 0.31.2 for the Metal kernel
+   regression fix, ollama desktop sidebar no longer animating
+   open on initial app load, and an ollama launch flow that
+   generates `~/.codex/model.json` ahead of spawning Codex so
+   per-model context-window/modality/reasoning metadata flows
+   through instead of falling back to generic defaults.
 - **W17 drip-23 (2026-04-25)**: 8 more — tool-description prompt
   diet (~66% char cut across 17 `*.txt` files in opencode, with
   open questions on bash policy relocation and per-provider cache
@@ -658,6 +674,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24202](https://github.com/sst/opencode/pull/24202) | perf(tool): condense tool descriptions ~66% to cut system-prompt tokens | [sst-opencode-pr-24202.md](2026-W17/drip-23/sst-opencode-pr-24202.md) |
 | [#24196](https://github.com/sst/opencode/pull/24196) | feat(console): improve Polish translations | [sst-opencode-pr-24196.md](2026-W17/drip-23/sst-opencode-pr-24196.md) |
 | [#24205](https://github.com/anomalyco/opencode/pull/24205) | fix(cli): authenticate run in-process server requests | [anomalyco-opencode-pr-24205.md](2026-W17/drip-24/anomalyco-opencode-pr-24205.md) |
+| [#24215](https://github.com/anomalyco/opencode/pull/24215) | fix(session): preserve shell cwd after startup | [anomalyco-opencode-pr-24215.md](2026-W17/drip-25/anomalyco-opencode-pr-24215.md) |
+| [#24210](https://github.com/anomalyco/opencode/pull/24210) | feat(opencode): add /context command | [anomalyco-opencode-pr-24210.md](2026-W17/drip-25/anomalyco-opencode-pr-24210.md) |
 
 ## BerriAI/litellm
 
@@ -706,6 +724,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26394](https://github.com/BerriAI/litellm/pull/26394) | docs(guardrails): add during_call mode to Model Armor guardrail docs | [BerriAI-litellm-pr-26394.md](2026-W17/drip-23/BerriAI-litellm-pr-26394.md) |
 | [#26448](https://github.com/BerriAI/litellm/pull/26448) | fix(content_filter): log guardrail_information on streaming post-call | [BerriAI-litellm-pr-26448.md](2026-W17/drip-24/BerriAI-litellm-pr-26448.md) |
 | [#26453](https://github.com/BerriAI/litellm/pull/26453) | Fix qdrant semantic cache | [BerriAI-litellm-pr-26453.md](2026-W17/drip-24/BerriAI-litellm-pr-26453.md) |
+| [#26456](https://github.com/BerriAI/litellm/pull/26456) | fix: gpt-5.5 reasoning_effort=minimal silently dropped | [BerriAI-litellm-pr-26456.md](2026-W17/drip-25/BerriAI-litellm-pr-26456.md) |
+| [#26452](https://github.com/BerriAI/litellm/pull/26452) | fix(ci): CircleCI rerun awk preprocessor | [BerriAI-litellm-pr-26452.md](2026-W17/drip-25/BerriAI-litellm-pr-26452.md) |
 
 ## charmbracelet/crush
 
@@ -851,6 +871,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19431](https://github.com/openai/codex/pull/19431) | Route opted-in MCP elicitations through Guardian | [openai-codex-pr-19431.md](2026-W17/drip-24/openai-codex-pr-19431.md) |
 | [#19432](https://github.com/openai/codex/pull/19432) | Add token usage to turn tracing spans | [openai-codex-pr-19432.md](2026-W17/drip-24/openai-codex-pr-19432.md) |
 | [#19435](https://github.com/openai/codex/pull/19435) | Allow manual unified_exec opt-in on Windows | [openai-codex-pr-19435.md](2026-W17/drip-24/openai-codex-pr-19435.md) |
+| [#19449](https://github.com/openai/codex/pull/19449) | permissions: remove legacy read-only access modes | [openai-codex-pr-19449.md](2026-W17/drip-25/openai-codex-pr-19449.md) |
+| [#19447](https://github.com/openai/codex/pull/19447) | ci: publish codex-app-server release artifacts | [openai-codex-pr-19447.md](2026-W17/drip-25/openai-codex-pr-19447.md) |
 
 ## ollama/ollama
 
@@ -863,6 +885,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15768](https://github.com/ollama/ollama/pull/15768) | feat(runner): expose prompt cache hit count in completion response | [ollama-ollama-pr-15768.md](2026-W17/drip-23/ollama-ollama-pr-15768.md) |
 | [#15766](https://github.com/ollama/ollama/pull/15766) | server: populate parameter_size in /api/tags for safetensors models | [ollama-ollama-pr-15766.md](2026-W17/drip-24/ollama-ollama-pr-15766.md) |
 | [#15773](https://github.com/ollama/ollama/pull/15773) | cmd: show help when stop and show are called without a model argument | [ollama-ollama-pr-15773.md](2026-W17/drip-24/ollama-ollama-pr-15773.md) |
+| [#15793](https://github.com/ollama/ollama/pull/15793) | mlx: update to 0.31.2 | [ollama-ollama-pr-15793.md](2026-W17/drip-25/ollama-ollama-pr-15793.md) |
+| [#15756](https://github.com/ollama/ollama/pull/15756) | app/ui: fix sidebar animating on initial load | [ollama-ollama-pr-15756.md](2026-W17/drip-25/ollama-ollama-pr-15756.md) |
+| [#15795](https://github.com/ollama/ollama/pull/15795) | launch: add codex model metadata catalog | [ollama-ollama-pr-15795.md](2026-W17/drip-25/ollama-ollama-pr-15795.md) |
 
 ---
 
