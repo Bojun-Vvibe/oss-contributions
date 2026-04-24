@@ -1,6 +1,6 @@
 # Review Index
 
-100 PR reviews across 8 OSS AI-coding-agent projects. Each review
+108 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -69,6 +69,31 @@ section.
   `MAX_SIZE_PER_ITEM_IN_MEMORY_CACHE_IN_KB` constant
   removal that silently doubles the in-memory cache item
   ceiling from 512 KB to 1024 KB across deployments.
+- **W17 drip-8 (2026-04-24)**: 8 more — default-flip from
+  opt-in to opt-out for `compaction.prune` (one operator
+  flip, paired test split with shared fixture); LAN-host
+  proxy carve-out (`ensureNoProxyForBaseURL` mutates
+  `process.env.NO_PROXY` for RFC1918/loopback/link-local/
+  ULA hostnames when `HTTP_PROXY` is set); `model_provider`
+  restore on thread resume in `merge_persisted_resume_
+  metadata` (one missing field assignment, four-branch test
+  expansion); enabled-row renumbering and digit-shortcut
+  reindex in `ListSelectionView` so disabled rows no longer
+  steal default focus or shortcut keys; reasoning-model
+  empty-title symptom-detection retry path
+  (`isUsableTitleResponse` swap of small→large model when
+  `finish_reason=stop` lands with empty content); ctx
+  cancellation threaded through every layer of the
+  pure-Go grep fallback (`searchFilesWithRegex` →
+  `fileContainsPattern` → per-line scanner) with deadline +
+  cancellation regression tests; `output_config` adapter-
+  internal key added to the exclusion set so adaptive
+  thinking translates to `reasoning_effort` without leaking
+  to non-Anthropic backends; and the
+  `_enforce_upperbound_key_params(data, fill_defaults=False)`
+  call added to `_execute_virtual_key_regeneration` to
+  close the budget/duration privilege-escalation primitive
+  on `/key/regenerate`.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -125,6 +150,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24026](https://github.com/anomalyco/opencode/pull/24026) | fix(provider): coerce numeric tool call IDs for OpenAI-compatible providers | [PR-24026.md](anomalyco-opencode/PR-24026.md) |
 | [#24033](https://github.com/anomalyco/opencode/pull/24033) | tweak: simplify retry logic | [PR-24033.md](anomalyco-opencode/PR-24033.md) |
 | [#24116](https://github.com/anomalyco/opencode/pull/24116) | fix(snapshot): avoid E2BIG during batched revert checkout | [PR-24116.md](anomalyco-opencode/PR-24116.md) |
+| [#24117](https://github.com/sst/opencode/pull/24117) | fix(provider): allow remote local-network hosts when proxy env vars are set | [PR-24117-noproxy-private-hosts.md](anomalyco-opencode/PR-24117-noproxy-private-hosts.md) |
+| [#24127](https://github.com/sst/opencode/pull/24127) | fix: enable compaction prune by default | [PR-24127-compaction-prune-default.md](anomalyco-opencode/PR-24127-compaction-prune-default.md) |
 
 ## BerriAI/litellm
 
@@ -143,6 +170,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24457](https://github.com/BerriAI/litellm/pull/24457) | fix(anthropic): handle tool_choice type 'none' in messages API | [PR-24457.md](BerriAI-litellm/PR-24457.md) |
 | [#26346](https://github.com/BerriAI/litellm/pull/26346) | fix: reset_budget_windows around Prisma Json? null-filter limitation via query_raw IS NOT NULL | [PR-26346.md](BerriAI-litellm/PR-26346.md) |
 | [#26385](https://github.com/BerriAI/litellm/pull/26385) | fix: remove duplicate MAX_SIZE_PER_ITEM_IN_MEMORY_CACHE_IN_KB definition | [PR-26385.md](BerriAI-litellm/PR-26385.md) |
+| [#26340](https://github.com/BerriAI/litellm/pull/26340) | fix(key_management): enforce upperbound_key_generate_params on /key/regenerate | [PR-26340-key-regenerate-upperbound.md](BerriAI-litellm/PR-26340-key-regenerate-upperbound.md) |
+| [#26383](https://github.com/BerriAI/litellm/pull/26383) | fix: prevent Azure output_config leakage | [PR-26383-azure-output-config-leak.md](BerriAI-litellm/PR-26383-azure-output-config-leak.md) |
 
 ## charmbracelet/crush
 
@@ -161,6 +190,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2690](https://github.com/charmbracelet/crush/pull/2690) | fix(db): prevent SQLITE_NOTADB corruption under concurrent sub-agents | [PR-2690.md](charmbracelet-crush/PR-2690.md) |
 | [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [PR-2693.md](charmbracelet-crush/PR-2693.md) |
 | [#2694](https://github.com/charmbracelet/crush/pull/2694) | fix(skills): deduplicate skills discovered via symlinked directories | [PR-2694.md](charmbracelet-crush/PR-2694.md) |
+| [#2652](https://github.com/charmbracelet/crush/pull/2652) | fix(grep): stop regex fallback after cancellation | [PR-2652-grep-cancel-fallback.md](charmbracelet-crush/PR-2652-grep-cancel-fallback.md) |
+| [#2681](https://github.com/charmbracelet/crush/pull/2681) | fix(agent): retry title generation with large model on empty output | [PR-2681-title-empty-retry.md](charmbracelet-crush/PR-2681-title-empty-retry.md) |
 
 ## cline/cline
 
@@ -211,6 +242,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19261](https://github.com/openai/codex/pull/19261) | Resolve relative agent role config paths from layers | [PR-19261.md](openai-codex/PR-19261.md) |
 | [#19244](https://github.com/openai/codex/pull/19244) | Update unix socket transport to use WebSocket upgrade | [PR-19244.md](openai-codex/PR-19244.md) |
 | [#19283](https://github.com/openai/codex/pull/19283) | check PID of named pipe consumer | [PR-19283.md](openai-codex/PR-19283.md) |
+| [#19170](https://github.com/openai/codex/pull/19170) | Skip disabled rows in selection menu numbering and default focus | [PR-19170-skip-disabled-rows-numbering.md](openai-codex/PR-19170-skip-disabled-rows-numbering.md) |
+| [#19287](https://github.com/openai/codex/pull/19287) | Restore persisted model provider on thread resume | [PR-19287-resume-model-provider.md](openai-codex/PR-19287-resume-model-provider.md) |
 
 ---
 
