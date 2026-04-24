@@ -1,6 +1,6 @@
 # Review Index
 
-165 + W17 drips (through drip-25) PR reviews across 9 OSS AI-coding-agent projects. Each review
+165 + W17 drips (through drip-26) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -558,6 +558,44 @@ section.
    generates `~/.codex/model.json` ahead of spawning Codex so
    per-model context-window/modality/reasoning metadata flows
    through instead of falling back to generic defaults.
+- **W17 drip-26 (2026-04-25)**: 8 more — codex CI stabilisation
+  pair (extracted shared `wait_for_sample_mcp_ready` helper for
+  plugin MCP fixture flakes, plus split of the monolithic
+  `approval_matrix_covers_all_modes` test into five focused
+  per-scenario-group tests with `with_context` for failure
+  diagnostics); opencode auto-enabling
+  `interleaved={field:"reasoning_content"}` when a model has
+  `reasoning:true` and no explicit interleaved capability set
+  (one-line provider.ts fix; closes a silent reasoning-content
+  drop on message replay); opencode reverting the recent
+  "wildcard rules sort first" canonicalisation in
+  `Permission.fromConfig` and replacing `StructWithRest` with a
+  hand-rolled `InfoZod` parser via `ZodOverride` annotation, so
+  permission precedence now follows literal user key order
+  (semantic flip flagged as needs-discussion — existing configs
+  with `bash:"allow"` after `*:"deny"` change behaviour); litellm
+  reseeding spend enforcement from authoritative DB on
+  Redis+memory counter miss (closes a multi-pod budget bypass
+  where caller's stale in-process `team_membership.spend` was
+  letting requests through; `db_spend > 0` gate semantics
+  flagged); litellm Azure Sentinel always-on gzip + 950 KB batch
+  splitting plus opt-in `AZURE_SENTINEL_TRUNCATE_CONTENT`
+  column-level truncation with tail preservation and
+  `litellm_content_truncated` metadata (request-changes:
+  `len(str(...))` measures Python repr not JSON serialisation,
+  no tests, doc duplication); ollama refcounted `caffeinate`/
+  `systemd-inhibit` power lock around Generate/ChatHandler to
+  prevent idle sleep during inference (request-changes:
+  `sh -c "...&"` orphans the PID forcing `pkill -f` which kills
+  user-owned inhibitors, Windows silently unsupported, dead
+  `isActive` flag); and ollama F8_E4M3 safetensors import with
+  block-scale companion pairing, hard-fail on missing
+  block-size or scale tensor, and source-precision metadata
+  propagated to the quant pipeline so default Q8_0 / mixed
+  Q4_K decisions can be made FP8-aware (needs-discussion: the
+  actual `decodeFP8E4M3` math + E4M3FN/FNUZ convention +
+  scale-vs-scale_inv interpretation is not visible in the
+  reviewable diff window).
 - **W17 drip-23 (2026-04-25)**: 8 more — tool-description prompt
   diet (~66% char cut across 17 `*.txt` files in opencode, with
   open questions on bash policy relocation and per-provider cache
@@ -676,6 +714,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24205](https://github.com/anomalyco/opencode/pull/24205) | fix(cli): authenticate run in-process server requests | [anomalyco-opencode-pr-24205.md](2026-W17/drip-24/anomalyco-opencode-pr-24205.md) |
 | [#24215](https://github.com/anomalyco/opencode/pull/24215) | fix(session): preserve shell cwd after startup | [anomalyco-opencode-pr-24215.md](2026-W17/drip-25/anomalyco-opencode-pr-24215.md) |
 | [#24210](https://github.com/anomalyco/opencode/pull/24210) | feat(opencode): add /context command | [anomalyco-opencode-pr-24210.md](2026-W17/drip-25/anomalyco-opencode-pr-24210.md) |
+| [#24218](https://github.com/anomalyco/opencode/pull/24218) | fix(provider): auto-enable interleaved for reasoning models | [anomalyco-opencode-pr-24218.md](2026-W17/drip-26/anomalyco-opencode-pr-24218.md) |
+| [#24222](https://github.com/anomalyco/opencode/pull/24222) | fix permission config order | [anomalyco-opencode-pr-24222.md](2026-W17/drip-26/anomalyco-opencode-pr-24222.md) |
 
 ## BerriAI/litellm
 
@@ -726,6 +766,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26453](https://github.com/BerriAI/litellm/pull/26453) | Fix qdrant semantic cache | [BerriAI-litellm-pr-26453.md](2026-W17/drip-24/BerriAI-litellm-pr-26453.md) |
 | [#26456](https://github.com/BerriAI/litellm/pull/26456) | fix: gpt-5.5 reasoning_effort=minimal silently dropped | [BerriAI-litellm-pr-26456.md](2026-W17/drip-25/BerriAI-litellm-pr-26456.md) |
 | [#26452](https://github.com/BerriAI/litellm/pull/26452) | fix(ci): CircleCI rerun awk preprocessor | [BerriAI-litellm-pr-26452.md](2026-W17/drip-25/BerriAI-litellm-pr-26452.md) |
+| [#26459](https://github.com/BerriAI/litellm/pull/26459) | [Fix] Reseed enforcement read path from DB on counter miss | [BerriAI-litellm-pr-26459.md](2026-W17/drip-26/BerriAI-litellm-pr-26459.md) |
+| [#26451](https://github.com/BerriAI/litellm/pull/26451) | Azure Sentinel truncation + gzip + batch splitting | [BerriAI-litellm-pr-26451.md](2026-W17/drip-26/BerriAI-litellm-pr-26451.md) |
 
 ## charmbracelet/crush
 
@@ -873,6 +915,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19435](https://github.com/openai/codex/pull/19435) | Allow manual unified_exec opt-in on Windows | [openai-codex-pr-19435.md](2026-W17/drip-24/openai-codex-pr-19435.md) |
 | [#19449](https://github.com/openai/codex/pull/19449) | permissions: remove legacy read-only access modes | [openai-codex-pr-19449.md](2026-W17/drip-25/openai-codex-pr-19449.md) |
 | [#19447](https://github.com/openai/codex/pull/19447) | ci: publish codex-app-server release artifacts | [openai-codex-pr-19447.md](2026-W17/drip-25/openai-codex-pr-19447.md) |
+| [#19452](https://github.com/openai/codex/pull/19452) | Stabilize plugin MCP fixture tests | [openai-codex-pr-19452.md](2026-W17/drip-26/openai-codex-pr-19452.md) |
+| [#19454](https://github.com/openai/codex/pull/19454) | Split approval matrix test groups | [openai-codex-pr-19454.md](2026-W17/drip-26/openai-codex-pr-19454.md) |
 
 ## ollama/ollama
 
@@ -888,6 +932,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15793](https://github.com/ollama/ollama/pull/15793) | mlx: update to 0.31.2 | [ollama-ollama-pr-15793.md](2026-W17/drip-25/ollama-ollama-pr-15793.md) |
 | [#15756](https://github.com/ollama/ollama/pull/15756) | app/ui: fix sidebar animating on initial load | [ollama-ollama-pr-15756.md](2026-W17/drip-25/ollama-ollama-pr-15756.md) |
 | [#15795](https://github.com/ollama/ollama/pull/15795) | launch: add codex model metadata catalog | [ollama-ollama-pr-15795.md](2026-W17/drip-25/ollama-ollama-pr-15795.md) |
+| [#15763](https://github.com/ollama/ollama/pull/15763) | Prevent system sleep during inference (fixes #4072) | [ollama-ollama-pr-15763.md](2026-W17/drip-26/ollama-ollama-pr-15763.md) |
+| [#15724](https://github.com/ollama/ollama/pull/15724) | convert: support fp8 safetensors import | [ollama-ollama-pr-15724.md](2026-W17/drip-26/ollama-ollama-pr-15724.md) |
 
 ---
 
