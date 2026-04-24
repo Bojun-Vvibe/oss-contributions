@@ -1,6 +1,6 @@
 # Review Index
 
-140 PR reviews across 8 OSS AI-coding-agent projects. Each review
+149 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -219,6 +219,43 @@ section.
   Bedrock `modelId` to LiteLLM `model_group` so that
   `/bedrock/.../invoke` and friends can no longer bypass
   `key.models` / `user.models` restrictions.
+- **W17 drip-12 (2026-04-24)**: 8 more — auth/identity
+  surface gaps and observability noise plus a reasoning-
+  content contract drift across vendor surfaces. DeepSeek
+  thinking-mode `reasoning_content` injection broadened
+  beyond interleaved-only models so legacy/string-content
+  assistant replays stop hitting "must be passed back"
+  errors; a built-in `scout` subagent that adds
+  `repo_clone`/`repo_overview` tools (raises lifetime/
+  egress questions about the shared on-disk repo cache);
+  a three-call-site Apps-MCP gate flip from "must be
+  ChatGPT token" to `uses_codex_backend` so AgentIdentity
+  JWT auth finally sees connector lists; a Windows
+  process-management follow-up that bounds elevated-
+  runner pipe-connect, kills orphaned `codex-command-
+  runner.exe` on handshake failure, and loops partial
+  `WriteFile` for stdin (with a tail-drain hang risk
+  that needs a child-process-signaled escape); URL-mode
+  MCP elicitation routing for Codex Apps auth failures
+  through the existing TUI app-link view (with a
+  forward-contract concern: the client now advertises
+  URL elicitation to *all* MCP servers); a TUI cache-
+  staleness fix that bypasses the width-keyed render
+  cache while a turn is streaming so reasoning tokens
+  actually appear, plus a previously-no-op "Hide/Show
+  Thinking" toggle wired up (with no persistence);
+  Moonshot / Moonshot China API-key resolution for
+  `MOONSHOT*_API_KEY` and `KIMI*_API_KEY` env vars
+  (delivery flagged: ships a `replace` to a personal-
+  account catwalk fork that should block the merge);
+  a 401/403 auth-denial logger downgrade from `ERROR`
+  + traceback to `WARNING` to stop expected ACL events
+  from drowning real outages (PR is bundled with ~8k
+  unrelated lines and needs a split); and a single-team
+  DB fallback in JWT auth that infers `team_id` when the
+  user belongs to exactly one team (operator-mutable
+  invariant — should be opt-in behind a flag, not
+  default-on).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -286,6 +323,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24139](https://github.com/sst/opencode/pull/24139) | tool/lsp: include request details in permission metadata | [PR-24139-lsp-permission-metadata.md](anomalyco-opencode/PR-24139-lsp-permission-metadata.md) |
 | [#24157](https://github.com/sst/opencode/pull/24157) | fix: deepseek variants — substring → allow-list | [PR-24157-deepseek-variant-narrowing.md](anomalyco-opencode/PR-24157-deepseek-variant-narrowing.md) |
 | [#24118](https://github.com/sst/opencode/pull/24118) | fix(config): avoid parseManagedPlist crash on non-object JSON | [PR-24118-managed-plist-non-object-guard.md](anomalyco-opencode/PR-24118-managed-plist-non-object-guard.md) |
+| [#24150](https://github.com/sst/opencode/pull/24150) | fix(transform): inject reasoning_content for ALL assistant msgs to fix DeepSeek thinking mode | [PR-24150-deepseek-reasoning-content-all-msgs.md](anomalyco-opencode/PR-24150-deepseek-reasoning-content-all-msgs.md) |
+| [#24149](https://github.com/sst/opencode/pull/24149) | feat(scout): add scout agent for repo research | [PR-24149-scout-agent-repo-research.md](anomalyco-opencode/PR-24149-scout-agent-repo-research.md) |
 
 ## BerriAI/litellm
 
@@ -313,6 +352,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26390](https://github.com/BerriAI/litellm/pull/26390) | [Fix] Guardrail param handling in list and submission endpoints | [PR-26390-guardrail-team-scoping-mask-recursion.md](BerriAI-litellm/PR-26390-guardrail-team-scoping-mask-recursion.md) |
 | [#26421](https://github.com/BerriAI/litellm/pull/26421) | fix(proxy): apply user.models restriction to GET /v1/models list | [PR-26421-user-models-list-filter.md](BerriAI-litellm/PR-26421-user-models-list-filter.md) |
 | [#26416](https://github.com/BerriAI/litellm/pull/26416) | fix(auth): enforce model ACL on Bedrock passthrough routes | [PR-26416-bedrock-passthrough-acl.md](BerriAI-litellm/PR-26416-bedrock-passthrough-acl.md) |
+| [#26425](https://github.com/BerriAI/litellm/pull/26425) | fix(proxy): downgrade 401/403 auth denials from ERROR to WARNING in auth_exception_handler | [PR-26425-auth-401-403-warning-downgrade.md](BerriAI-litellm/PR-26425-auth-401-403-warning-downgrade.md) |
+| [#26418](https://github.com/BerriAI/litellm/pull/26418) | fix(proxy): single-team DB fallback when JWT has no team_id | [PR-26418-jwt-single-team-db-fallback.md](BerriAI-litellm/PR-26418-jwt-single-team-db-fallback.md) |
 
 ## charmbracelet/crush
 
@@ -339,6 +380,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2688](https://github.com/charmbracelet/crush/pull/2688) | fix: remove minimax api key validate | [PR-2688-minimax-key-validation-removal.md](charmbracelet-crush/PR-2688-minimax-key-validation-removal.md) |
 | [#2698](https://github.com/charmbracelet/crush/pull/2698) | test(hyper): add provider env behavior coverage | [PR-2698-hyper-provider-env-tests.md](charmbracelet-crush/PR-2698-hyper-provider-env-tests.md) |
 | [#2647](https://github.com/charmbracelet/crush/pull/2647) | fix(ui): AtBottom() early exit not accounting for offsetLine | [PR-2647-atbottom-offsetline.md](charmbracelet-crush/PR-2647-atbottom-offsetline.md) |
+| [#2643](https://github.com/charmbracelet/crush/pull/2643) | fix: enable real-time reasoning display and implement missing toggle handler | [PR-2643-realtime-reasoning-display-toggle.md](charmbracelet-crush/PR-2643-realtime-reasoning-display-toggle.md) |
+| [#2686](https://github.com/charmbracelet/crush/pull/2686) | feat: support Moonshot and Moonshot China API keys in config | [PR-2686-moonshot-cn-api-keys.md](charmbracelet-crush/PR-2686-moonshot-cn-api-keys.md) |
 
 ## cline/cline
 
@@ -402,6 +445,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19233](https://github.com/openai/codex/pull/19233) | Make thread archive idempotent for archived threads | [PR-19233-thread-archive-idempotent.md](openai-codex/PR-19233-thread-archive-idempotent.md) |
 | [#19354](https://github.com/openai/codex/pull/19354) | chore: alias max_concurrent_threads_per_session | [PR-19354-max-threads-alias.md](openai-codex/PR-19354-max-threads-alias.md) |
 | [#19216](https://github.com/openai/codex/pull/19216) | Allow any granular approval requirement | [PR-19216-granular-approval-wildcard.md](openai-codex/PR-19216-granular-approval-wildcard.md) |
+| [#19240](https://github.com/openai/codex/pull/19240) | fix: allow AgentIdentity through Apps MCP gates | [PR-19240-agent-identity-apps-mcp-gates.md](openai-codex/PR-19240-agent-identity-apps-mcp-gates.md) |
+| [#19211](https://github.com/openai/codex/pull/19211) | [codex] Fix Windows process management edge cases | [PR-19211-windows-process-edge-cases.md](openai-codex/PR-19211-windows-process-edge-cases.md) |
+| [#19193](https://github.com/openai/codex/pull/19193) | Support Codex Apps auth elicitations | [PR-19193-codex-apps-auth-elicitations.md](openai-codex/PR-19193-codex-apps-auth-elicitations.md) |
 
 ---
 
