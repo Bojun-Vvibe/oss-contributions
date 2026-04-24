@@ -1,6 +1,6 @@
 # Review Index
 
-80 PR reviews across 8 OSS AI-coding-agent projects. Each review
+84 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -21,6 +21,12 @@ section.
   for multi-part user messages, exec-server EOF/exit ordering,
   cross-vendor `tool_choice="none"` translation, and processor
   registration parity across conversation creation paths.
+- **W17 drip-3 (2026-04-24)**: 4 more — feature-flagged HttpApi
+  workspace-read carve-out, retiring spawned-agent context
+  scaffolding in multi-agent v2, working around a Prisma `Json?`
+  null-filter limitation via `query_raw IS NOT NULL` in the
+  budget-window reset job, and V0→V1 dependency carve-off (memory
+  package external-reference cleanup).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -52,6 +58,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#14051](https://github.com/All-Hands-AI/OpenHands/pull/14051) | fix: restore org settings payload contract | [PR-14051.md](All-Hands-AI-OpenHands/PR-14051.md) |
 | [#14065](https://github.com/All-Hands-AI/OpenHands/pull/14065) | fix: migrate core SQLAlchemy models to SQLAlchemy 2.0 mapped_column | [PR-14065.md](All-Hands-AI-OpenHands/PR-14065.md) |
 | [#14102](https://github.com/All-Hands-AI/OpenHands/pull/14102) | Fix: Register SetTitleCallbackProcessor for webhook-created conversations | [PR-14102.md](All-Hands-AI-OpenHands/PR-14102.md) |
+| [#14106](https://github.com/All-Hands-AI/OpenHands/pull/14106) | refactor: remove external dependencies on V0 packages (controller, memory, microagent) | [PR-14106.md](All-Hands-AI-OpenHands/PR-14106.md) |
 
 ## anomalyco/opencode
 
@@ -68,6 +75,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24001](https://github.com/anomalyco/opencode/pull/24001) | feat: send-many-streams concurrency primitive for sub-agent fan-out | [PR-24001.md](anomalyco-opencode/PR-24001.md) |
 | [#24087](https://github.com/anomalyco/opencode/pull/24087) | fix(session): drop zero-length assistant turns before compaction | [PR-24087.md](anomalyco-opencode/PR-24087.md) |
 | [#24009](https://github.com/anomalyco/opencode/pull/24009) | fix(tui): render all non-synthetic text parts of a user message | [PR-24009.md](anomalyco-opencode/PR-24009.md) |
+| [#24062](https://github.com/anomalyco/opencode/pull/24062) | feat(httpapi): bridge workspace read endpoints | [PR-24062.md](anomalyco-opencode/PR-24062.md) |
 
 ## BerriAI/litellm
 
@@ -84,6 +92,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26287](https://github.com/BerriAI/litellm/pull/26287) | fix: model deprecation pruning + downstream test fixups | [PR-26287.md](BerriAI-litellm/PR-26287.md) |
 | [#26312](https://github.com/BerriAI/litellm/pull/26312) | fix(router): don't re-wrap structured errors from upstream providers | [PR-26312.md](BerriAI-litellm/PR-26312.md) |
 | [#24457](https://github.com/BerriAI/litellm/pull/24457) | fix(anthropic): handle tool_choice type 'none' in messages API | [PR-24457.md](BerriAI-litellm/PR-24457.md) |
+| [#26346](https://github.com/BerriAI/litellm/pull/26346) | fix: reset_budget_windows around Prisma Json? null-filter limitation via query_raw IS NOT NULL | [PR-26346.md](BerriAI-litellm/PR-26346.md) |
 
 ## charmbracelet/crush
 
@@ -143,6 +152,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19129](https://github.com/openai/codex/pull/19129) | Reject agents.max_threads with multi_agent_v2 | [PR-19129.md](openai-codex/PR-19129.md) |
 | [#19204](https://github.com/openai/codex/pull/19204) | fix(exec-server): honor request timeout across tool loop iterations | [PR-19204.md](openai-codex/PR-19204.md) |
 | [#19130](https://github.com/openai/codex/pull/19130) | exec-server: wait for close after observed exit | [PR-19130.md](openai-codex/PR-19130.md) |
+| [#19127](https://github.com/openai/codex/pull/19127) | feat: drop spawned-agent context instructions | [PR-19127.md](openai-codex/PR-19127.md) |
 
 ---
 
