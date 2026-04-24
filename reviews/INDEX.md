@@ -1,6 +1,6 @@
 # Review Index
 
-165 + W17 drips (through drip-23) PR reviews across 9 OSS AI-coding-agent projects. Each review
+165 + W17 drips (through drip-24) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -526,6 +526,22 @@ section.
   mcp-go-sdk `ClientSession` retaining the connect context past
   `Connect`, want explicit confirmation before the wrapper
   removal lands).
+- **W17 drip-24 (2026-04-25)**: 8 more — Guardian routing for
+  opted-in MCP elicitations (per-server allowlist + structured
+  request/response on stdin/stdout, blocked-by-default), OTel
+  `gen_ai.usage.input_tokens`/`output_tokens` attributes added to
+  the per-turn span (cardinality contained, sums-only), Windows
+  `unified_exec` opt-in via `experimental_use_unified_exec=true`
+  (rollback risk on the WinPTY → ConPTY path flagged),
+  in-process `opencode run` server picking up basic-auth header
+  parity with the daemon path, qdrant semantic cache JSON
+  serialization fix + multimodal `content` array passthrough,
+  streaming content-filter post-call now logs
+  `guardrail_information` symmetrically with the non-streaming
+  branch, `/api/tags` enrichment with parameter-size for
+  safetensors models to close a `/api/show` parity gap, and
+  `ollama stop`/`ollama show` printing usage instead of erroring
+  when called with no model argument.
 - **W17 drip-23 (2026-04-25)**: 8 more — tool-description prompt
   diet (~66% char cut across 17 `*.txt` files in opencode, with
   open questions on bash policy relocation and per-provider cache
@@ -641,6 +657,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24022](https://github.com/sst/opencode/pull/24022) | fix(app): prevent question dock overflow | [sst-opencode-pr-24022.md](2026-W17/drip-22/sst-opencode-pr-24022.md) |
 | [#24202](https://github.com/sst/opencode/pull/24202) | perf(tool): condense tool descriptions ~66% to cut system-prompt tokens | [sst-opencode-pr-24202.md](2026-W17/drip-23/sst-opencode-pr-24202.md) |
 | [#24196](https://github.com/sst/opencode/pull/24196) | feat(console): improve Polish translations | [sst-opencode-pr-24196.md](2026-W17/drip-23/sst-opencode-pr-24196.md) |
+| [#24205](https://github.com/anomalyco/opencode/pull/24205) | fix(cli): authenticate run in-process server requests | [anomalyco-opencode-pr-24205.md](2026-W17/drip-24/anomalyco-opencode-pr-24205.md) |
 
 ## BerriAI/litellm
 
@@ -687,6 +704,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26446](https://github.com/BerriAI/litellm/pull/26446) | fix(caching): handle list-based responses and message key variations in qdrant semantic cache | [BerriAI-litellm-pr-26446.md](2026-W17/drip-23/BerriAI-litellm-pr-26446.md) |
 | [#26388](https://github.com/BerriAI/litellm/pull/26388) | fix: bedrock guardrail sse streaming exception | [BerriAI-litellm-pr-26388.md](2026-W17/drip-23/BerriAI-litellm-pr-26388.md) |
 | [#26394](https://github.com/BerriAI/litellm/pull/26394) | docs(guardrails): add during_call mode to Model Armor guardrail docs | [BerriAI-litellm-pr-26394.md](2026-W17/drip-23/BerriAI-litellm-pr-26394.md) |
+| [#26448](https://github.com/BerriAI/litellm/pull/26448) | fix(content_filter): log guardrail_information on streaming post-call | [BerriAI-litellm-pr-26448.md](2026-W17/drip-24/BerriAI-litellm-pr-26448.md) |
+| [#26453](https://github.com/BerriAI/litellm/pull/26453) | Fix qdrant semantic cache | [BerriAI-litellm-pr-26453.md](2026-W17/drip-24/BerriAI-litellm-pr-26453.md) |
 
 ## charmbracelet/crush
 
@@ -829,6 +848,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19391](https://github.com/openai/codex/pull/19391) | permissions: runtime config profile-backed | [openai-codex-pr-19391.md](2026-W17/drip-22/openai-codex-pr-19391.md) |
 | [#19422](https://github.com/openai/codex/pull/19422) | Clarify bundled OpenAI Docs upgrade guide wording | [openai-codex-pr-19422.md](2026-W17/drip-22/openai-codex-pr-19422.md) |
 | [#19176](https://github.com/openai/codex/pull/19176) | Add network proxy prompt guidance | [openai-codex-pr-19176.md](2026-W17/drip-23/openai-codex-pr-19176.md) |
+| [#19431](https://github.com/openai/codex/pull/19431) | Route opted-in MCP elicitations through Guardian | [openai-codex-pr-19431.md](2026-W17/drip-24/openai-codex-pr-19431.md) |
+| [#19432](https://github.com/openai/codex/pull/19432) | Add token usage to turn tracing spans | [openai-codex-pr-19432.md](2026-W17/drip-24/openai-codex-pr-19432.md) |
+| [#19435](https://github.com/openai/codex/pull/19435) | Allow manual unified_exec opt-in on Windows | [openai-codex-pr-19435.md](2026-W17/drip-24/openai-codex-pr-19435.md) |
 
 ## ollama/ollama
 
@@ -839,6 +861,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15716](https://github.com/ollama/ollama/pull/15716) | server: fix download stall watchdog not firing when no bytes arrive | [ollama-ollama-pr-15716.md](2026-W17/drip-21/ollama-ollama-pr-15716.md) |
 | [#15784](https://github.com/ollama/ollama/pull/15784) | Go sampler: implement repeat/freq/presence penalties | [ollama-ollama-pr-15784.md](2026-W17/drip-22/ollama-ollama-pr-15784.md) |
 | [#15768](https://github.com/ollama/ollama/pull/15768) | feat(runner): expose prompt cache hit count in completion response | [ollama-ollama-pr-15768.md](2026-W17/drip-23/ollama-ollama-pr-15768.md) |
+| [#15766](https://github.com/ollama/ollama/pull/15766) | server: populate parameter_size in /api/tags for safetensors models | [ollama-ollama-pr-15766.md](2026-W17/drip-24/ollama-ollama-pr-15766.md) |
+| [#15773](https://github.com/ollama/ollama/pull/15773) | cmd: show help when stop and show are called without a model argument | [ollama-ollama-pr-15773.md](2026-W17/drip-24/ollama-ollama-pr-15773.md) |
 
 ---
 
