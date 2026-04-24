@@ -1,6 +1,6 @@
 # Review Index
 
-124 PR reviews across 8 OSS AI-coding-agent projects. Each review
+132 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -166,6 +166,32 @@ section.
   fill-defaults, not overwrite) plus a silent
   `model_group_name` fallback that can re-route to a
   different deployment.
+- **W17 drip-10 (2026-04-24)**: 8 more — surfacing
+  `reasoning_output_tokens` on the public `codex exec
+  --json` `Usage` payload (and the breaking-direction
+  asymmetry that creates for strict downstream consumers);
+  `#[schemars(skip)]` on `RawMcpServerConfig.bearer_token`
+  to stop the JSON schema from advertising a field the
+  runtime rejects (with the unfinished editor-UX migration
+  to a `deprecated + description` pattern); two-layer
+  (JS kernel + Rust host) MIME allowlist on
+  `codex.emitImage` so unsupported encodings stop tripping
+  the output sanitizer's `debug_assert!`; `include_archived:
+  true` symmetry fix for the `thread/archive` parent read
+  that turns a server-side ghost-failure into idempotent
+  success; MiniMax `sk-` prefix check removal so token-plan
+  keys are no longer rejected at config load; mode-gated
+  `max_tokens` injection in the litellm proxy health check
+  (denylist of `image_generation` only — worth inverting to
+  an allowlist of chat-only modes); `kwargs_for_followup`
+  vs `optional_params` dedup at request-patch construction
+  in the websearch interception agentic loop to stop
+  `TypeError: got multiple values for keyword argument`
+  follow-up crashes; and a three-in-one guardrail PR
+  combining recursive sensitive-key masking, masked
+  `litellm_params` in `/guardrails/submissions`, and
+  team-scoped non-admin filtering on `/v2/guardrails/list`
+  with an authorization-shape change to the route signature.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -253,6 +279,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26383](https://github.com/BerriAI/litellm/pull/26383) | fix: prevent Azure output_config leakage | [PR-26383-azure-output-config-leak.md](BerriAI-litellm/PR-26383-azure-output-config-leak.md) |
 | [#26393](https://github.com/BerriAI/litellm/pull/26393) | feat: bedrock guardrail input roles filter | [PR-26393-bedrock-guardrail-input-roles.md](BerriAI-litellm/PR-26393-bedrock-guardrail-input-roles.md) |
 | [#26402](https://github.com/BerriAI/litellm/pull/26402) | fix(proxy): route azure container file requests by decoded deployment | [PR-26402-azure-container-file-routing.md](BerriAI-litellm/PR-26402-azure-container-file-routing.md) |
+| [#26417](https://github.com/BerriAI/litellm/pull/26417) | fix(health_check): skip max_tokens for image_generation mode | [PR-26417-image-generation-skip-max-tokens.md](BerriAI-litellm/PR-26417-image-generation-skip-max-tokens.md) |
+| [#26400](https://github.com/BerriAI/litellm/pull/26400) | fix(websearch): deduplicate overlapping keys between kwargs and optional_params | [PR-26400-websearch-kwargs-optional-params-dedup.md](BerriAI-litellm/PR-26400-websearch-kwargs-optional-params-dedup.md) |
+| [#26390](https://github.com/BerriAI/litellm/pull/26390) | [Fix] Guardrail param handling in list and submission endpoints | [PR-26390-guardrail-team-scoping-mask-recursion.md](BerriAI-litellm/PR-26390-guardrail-team-scoping-mask-recursion.md) |
 
 ## charmbracelet/crush
 
@@ -276,6 +305,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2699](https://github.com/charmbracelet/crush/pull/2699) | fix(lsp): enforce workspace boundary for workspace edits | [PR-2699-lsp-workspace-boundary.md](charmbracelet-crush/PR-2699-lsp-workspace-boundary.md) |
 | [#2700](https://github.com/charmbracelet/crush/pull/2700) | fix(agent): implement OnRetry logging with structured retry fields | [PR-2700-onretry-structured-logging.md](charmbracelet-crush/PR-2700-onretry-structured-logging.md) |
 | [#2675](https://github.com/charmbracelet/crush/pull/2675) | Fix command aliases/args parsing and empty tool-call input normalization | [PR-2675-cmd-aliases-empty-toolcall-input.md](charmbracelet-crush/PR-2675-cmd-aliases-empty-toolcall-input.md) |
+| [#2688](https://github.com/charmbracelet/crush/pull/2688) | fix: remove minimax api key validate | [PR-2688-minimax-key-validation-removal.md](charmbracelet-crush/PR-2688-minimax-key-validation-removal.md) |
 
 ## cline/cline
 
@@ -333,6 +363,10 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19334](https://github.com/openai/codex/pull/19334) | Fallback login callback port when default is busy | [PR-19334-login-port-fallback.md](openai-codex/PR-19334-login-port-fallback.md) |
 | [#19282](https://github.com/openai/codex/pull/19282) | feat(hooks): add dynamic tool hook payloads | [PR-19282-dynamic-tool-hook-payloads.md](openai-codex/PR-19282-dynamic-tool-hook-payloads.md) |
 | [#19160](https://github.com/openai/codex/pull/19160) | Make apply_patch streaming parser stateful | [PR-19160-apply-patch-stateful-streaming.md](openai-codex/PR-19160-apply-patch-stateful-streaming.md) |
+| [#19308](https://github.com/openai/codex/pull/19308) | Surface reasoning tokens in exec JSON usage | [PR-19308-reasoning-tokens-exec-json.md](openai-codex/PR-19308-reasoning-tokens-exec-json.md) |
+| [#19294](https://github.com/openai/codex/pull/19294) | Hide unsupported MCP bearer_token from config schema | [PR-19294-mcp-bearer-token-schema-hide.md](openai-codex/PR-19294-mcp-bearer-token-schema-hide.md) |
+| [#19292](https://github.com/openai/codex/pull/19292) | Reject unsupported js_repl image MIME types | [PR-19292-js-repl-image-mime-allowlist.md](openai-codex/PR-19292-js-repl-image-mime-allowlist.md) |
+| [#19233](https://github.com/openai/codex/pull/19233) | Make thread archive idempotent for archived threads | [PR-19233-thread-archive-idempotent.md](openai-codex/PR-19233-thread-archive-idempotent.md) |
 
 ---
 
