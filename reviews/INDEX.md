@@ -289,7 +289,28 @@ section.
   parity in the `LITELLM_LOG=INFO` branch alongside the
   router/proxy loggers (volume blast radius for
   deployments that were unintentionally relying on
-  `verbose_logger` staying quiet).
+   `verbose_logger` staying quiet).
+- **W17 drip-15 (2026-04-24)**: 8 more — edge-case
+  error-handling gaps: a CI entitlements trim that
+  silently strips `keychain-access-groups` (post-build
+  keychain reads now miss with no test), thread-instruction
+  override flags that unconditionally clobber existing
+  params with `None` instead of merging, a re-auth flow
+  fix that only fires for 401 (403/transport errors still
+  swallowed), retry-log helper that emits `status_code: 0`
+  for transport failures and risks log-collision on
+  `"message"`, LSP unavailable-cache retry-window with a
+  read-then-mutate window and no integration test guarding
+  the call site, `python-dotenv` CVE bump with no .env
+  parser regression test, "super yollo" classifier that
+  is bypassable via `bash -c` / `eval` / wrappers and
+  loses block-functions on the unconditional Start path,
+  shared-health-check polling that closes the silent
+  fallback hole but introduces a small cache-vs-lock
+  reordering race; and a fixture-only `models.json` PR
+  that silently flips `default_reasoning_level` from
+  `medium` to `xhigh` (cost/latency contract change with
+  no release-note surface).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -395,6 +416,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26426](https://github.com/BerriAI/litellm/pull/26426) | fix(vertex_ai/anthropic): stop stripping output_config | [BerriAI-litellm-pr-26426.md](2026-W17/BerriAI-litellm-pr-26426.md) |
 | [#26427](https://github.com/BerriAI/litellm/pull/26427) | fix(model_management): refresh router after POST /model/update | [BerriAI-litellm-pr-26427.md](2026-W17/BerriAI-litellm-pr-26427.md) |
 | [#26429](https://github.com/BerriAI/litellm/pull/26429) | fix: set verbose_logger level when LITELLM_LOG=INFO | [BerriAI-litellm-pr-26429.md](2026-W17/BerriAI-litellm-pr-26429.md) |
+| [#26435](https://github.com/BerriAI/litellm/pull/26435) | fix: bump python-dotenv to 1.2.2 to fix CVE-2026-28684 | [PR-26435-python-dotenv-cve-bump.md](BerriAI-litellm/PR-26435-python-dotenv-cve-bump.md) |
+| [#26434](https://github.com/BerriAI/litellm/pull/26434) | Fix/shared health check polling | [PR-26434-shared-health-check-polling.md](BerriAI-litellm/PR-26434-shared-health-check-polling.md) |
 
 ## charmbracelet/crush
 
@@ -426,6 +449,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2674](https://github.com/charmbracelet/crush/pull/2674) | config: APIURL/APIKEY env overrides with CRUSH_PROVIDER targeting | [charmbracelet-crush-pr-2674.md](2026-W17/charmbracelet-crush-pr-2674.md) |
 | [#2679](https://github.com/charmbracelet/crush/pull/2679) | fix: reduce token usage, use short tool descriptions by default | [charmbracelet-crush-pr-2679.md](2026-W17/charmbracelet-crush-pr-2679.md) |
 | [#2634](https://github.com/charmbracelet/crush/pull/2634) | fix(logs): guard against unsafe type assertions in printLogLine | [charmbracelet-crush-pr-2634.md](2026-W17/charmbracelet-crush-pr-2634.md) |
+| [#2703](https://github.com/charmbracelet/crush/pull/2703) | fix(hyper): re-authorization flow not triggering on certain conditions | [PR-2703-reauth-flow-trigger.md](charmbracelet-crush/PR-2703-reauth-flow-trigger.md) |
+| [#2498](https://github.com/charmbracelet/crush/pull/2498) | fix(lsp): replace sticky unavailable cache with retry backoff | [PR-2498-lsp-unavailable-retry-backoff.md](charmbracelet-crush/PR-2498-lsp-unavailable-retry-backoff.md) |
+| [#2702](https://github.com/charmbracelet/crush/pull/2702) | feat: super yollo (dangerous-command warning in YOLO mode) | [PR-2702-super-yollo-dangerous-command-prompt.md](charmbracelet-crush/PR-2702-super-yollo-dangerous-command-prompt.md) |
 
 ## cline/cline
 
@@ -498,6 +524,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19360](https://github.com/openai/codex/pull/19360) | feat: surface multi-agent thread limit in spawn description | [openai-codex-pr-19360.md](2026-W17/openai-codex-pr-19360.md) |
 | [#19377](https://github.com/openai/codex/pull/19377) | feat: separate session_id and thread_id in Responses requests | [openai-codex-pr-19377.md](2026-W17/openai-codex-pr-19377.md) |
 | [#19207](https://github.com/openai/codex/pull/19207) | Forward Codex Apps tool call IDs to backend metadata | [openai-codex-pr-19207.md](2026-W17/openai-codex-pr-19207.md) |
+| [#19350](https://github.com/openai/codex/pull/19350) | fix alpha build (entitlements trim) | [PR-19350-fix-alpha-build-entitlements.md](openai-codex/PR-19350-fix-alpha-build-entitlements.md) |
+| [#19236](https://github.com/openai/codex/pull/19236) | Add instruction params to codex-app-server-test-client | [PR-19236-app-server-test-client-instructions.md](openai-codex/PR-19236-app-server-test-client-instructions.md) |
+| [#19323](https://github.com/openai/codex/pull/19323) | Update models.json and related fixtures (default_reasoning_level shift) | [PR-19323-models-json-fixtures-update.md](openai-codex/PR-19323-models-json-fixtures-update.md) |
 
 ---
 
