@@ -1,6 +1,6 @@
 # Review Index
 
-149 + W17 drips PR reviews across 8 OSS AI-coding-agent projects. Each review
+157 + W17 drips PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -311,6 +311,34 @@ section.
   that silently flips `default_reasoning_level` from
   `medium` to `xhigh` (cost/latency contract change with
   no release-note surface).
+- **W17 drip-16 (2026-04-24)**: 8 more — desktop sidecar
+  bounded-retry health check that drops the loopback gate
+  and unconditionally `no_proxy()`s every host (regresses
+  non-loopback callers); session-scoped permission bridge
+  via a `Symbol.for`-keyed `globalThis` Map for external
+  providers with `Effect.acquireRelease` cleanup; npm
+  update-prompt readiness gate that verifies the platform
+  `optionalDependencies` entry + tarball before announcing
+  a new version (with a `VersionSource`-tagged cache so
+  switching install methods invalidates correctly); typed
+  `ThreadStoreConfig` enum + debug-only in-memory store
+  + a regression test that asserts no rollout/sqlite
+  artifacts materialize when a non-local store is
+  configured; `crush` `additional_dirs` +
+  `restrict_to_project` deny-outright option that resolves
+  symlinks on the **leaf** path (silently breaks
+  Write/Edit for new files in allowlisted dirs) and only
+  gates `bash`'s working dir, not what the shell does;
+  1-second cross-process session-update polling for
+  `crush` TUI gated on `!isAgentBusy()` (with a fragile-
+  busy-stuck failure mode); JWT proxy_admin-acting-on-
+  behalf-of-a-team rate-limit fix via reordering
+  `get_team_id_from_header` above `check_admin_access`
+  plus a `bypass_allowed_check` for admin-scope tokens
+  whose JWTs don't list teams; and the trivially-correct
+  Z.AI / Zhipu AI dropdown entry that closes the
+  backend-complete / UI-incomplete gap from issue
+  #25482.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -384,6 +412,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24168](https://github.com/sst/opencode/pull/24168) | Refactor HttpApi auth middleware wiring | [anomalyco-opencode-pr-24168.md](2026-W17/anomalyco-opencode-pr-24168.md) |
 | [#24161](https://github.com/sst/opencode/pull/24161) | feat: add /uptime slash command | [anomalyco-opencode-pr-24161.md](2026-W17/anomalyco-opencode-pr-24161.md) |
 | [#24154](https://github.com/sst/opencode/pull/24154) | feat: add unarchive/restore for archived sessions | [anomalyco-opencode-pr-24154.md](2026-W17/anomalyco-opencode-pr-24154.md) |
+| [#24179](https://github.com/sst/opencode/pull/24179) | feat: expose a session-scoped permission bridge for external providers | [sst-opencode-pr-24179.md](2026-W17/sst-opencode-pr-24179.md) |
+| [#24162](https://github.com/sst/opencode/pull/24162) | fix(desktop): add retry logic with exponential backoff to health check system | [sst-opencode-pr-24162.md](2026-W17/sst-opencode-pr-24162.md) |
 
 ## BerriAI/litellm
 
@@ -418,6 +448,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26429](https://github.com/BerriAI/litellm/pull/26429) | fix: set verbose_logger level when LITELLM_LOG=INFO | [BerriAI-litellm-pr-26429.md](2026-W17/BerriAI-litellm-pr-26429.md) |
 | [#26435](https://github.com/BerriAI/litellm/pull/26435) | fix: bump python-dotenv to 1.2.2 to fix CVE-2026-28684 | [PR-26435-python-dotenv-cve-bump.md](BerriAI-litellm/PR-26435-python-dotenv-cve-bump.md) |
 | [#26434](https://github.com/BerriAI/litellm/pull/26434) | Fix/shared health check polling | [PR-26434-shared-health-check-polling.md](BerriAI-litellm/PR-26434-shared-health-check-polling.md) |
+| [#26438](https://github.com/BerriAI/litellm/pull/26438) | fix(jwt-auth): apply team TPM/RPM to proxy_admin users acting on behalf of a team | [BerriAI-litellm-pr-26438.md](2026-W17/BerriAI-litellm-pr-26438.md) |
+| [#26419](https://github.com/BerriAI/litellm/pull/26419) | fix(ui): add missing 'zai' (Z.AI / Zhipu AI) provider to Add-Model dropdown | [BerriAI-litellm-pr-26419.md](2026-W17/BerriAI-litellm-pr-26419.md) |
 
 ## charmbracelet/crush
 
@@ -452,6 +484,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2703](https://github.com/charmbracelet/crush/pull/2703) | fix(hyper): re-authorization flow not triggering on certain conditions | [PR-2703-reauth-flow-trigger.md](charmbracelet-crush/PR-2703-reauth-flow-trigger.md) |
 | [#2498](https://github.com/charmbracelet/crush/pull/2498) | fix(lsp): replace sticky unavailable cache with retry backoff | [PR-2498-lsp-unavailable-retry-backoff.md](charmbracelet-crush/PR-2498-lsp-unavailable-retry-backoff.md) |
 | [#2702](https://github.com/charmbracelet/crush/pull/2702) | feat: super yollo (dangerous-command warning in YOLO mode) | [PR-2702-super-yollo-dangerous-command-prompt.md](charmbracelet-crush/PR-2702-super-yollo-dangerous-command-prompt.md) |
+| [#2605](https://github.com/charmbracelet/crush/pull/2605) | feat(config): add additional_dirs option for tool access | [charmbracelet-crush-pr-2605.md](2026-W17/charmbracelet-crush-pr-2605.md) |
+| [#2601](https://github.com/charmbracelet/crush/pull/2601) | fix: refresh TUI when session is updated by an external process | [charmbracelet-crush-pr-2601.md](2026-W17/charmbracelet-crush-pr-2601.md) |
 
 ## cline/cline
 
@@ -527,6 +561,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19350](https://github.com/openai/codex/pull/19350) | fix alpha build (entitlements trim) | [PR-19350-fix-alpha-build-entitlements.md](openai-codex/PR-19350-fix-alpha-build-entitlements.md) |
 | [#19236](https://github.com/openai/codex/pull/19236) | Add instruction params to codex-app-server-test-client | [PR-19236-app-server-test-client-instructions.md](openai-codex/PR-19236-app-server-test-client-instructions.md) |
 | [#19323](https://github.com/openai/codex/pull/19323) | Update models.json and related fixtures (default_reasoning_level shift) | [PR-19323-models-json-fixtures-update.md](openai-codex/PR-19323-models-json-fixtures-update.md) |
+| [#19389](https://github.com/openai/codex/pull/19389) | Guard npm update prompt on registry readiness | [openai-codex-pr-19389.md](2026-W17/openai-codex-pr-19389.md) |
+| [#19266](https://github.com/openai/codex/pull/19266) | [codex] add non-local thread store regression harness | [openai-codex-pr-19266.md](2026-W17/openai-codex-pr-19266.md) |
 
 ---
 
