@@ -1,6 +1,6 @@
 # Review Index
 
-157 + W17 drips (through drip-21) PR reviews across 9 OSS AI-coding-agent projects. Each review
+165 + W17 drips (through drip-22) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -487,6 +487,45 @@ section.
   `lastProgress` timestamp was never being scheduled when zero
   bytes arrived in the first interval — clean one-line fix,
   merge-as-is.
+- **W17 drip-22 (2026-04-24)**: 8 more — codex's
+  `PermissionProfile` promotion to canonical runtime field with
+  paired `set_legacy_sandbox_policy`/`set_permission_profile`
+  mutators that keep all four projection fields coherent
+  (merge-after-nits: inline reconstruction in
+  `codex_message_processor.rs` should call
+  `Permissions::permission_profile()` instead of duplicating the
+  logic, plus a round-trip property test); a bundled-skill
+  upgrade-guide editorial pass that loses the
+  `parallel_tool_calling`-only-when-independent caveat
+  (merge-after-nits to restore it); two opencode fixes — DeepSeek
+  V4 empty `reasoning_content` preservation across non-streaming
+  + streaming paths with a clean split between `"reasoning_text"
+  in delta` (start gate) and truthy-content (delta gate), and a
+  question-dock overflow fix that replaces a global
+  `document.querySelector(".scroll-view__viewport")` with a
+  scoped panel-rooted traversal; a crush theming system that
+  ships `Charmtone`/`Gruvbox Dark` plus a 30-slot
+  `ThemePalette` and reflective struct-sync test
+  (merge-after-nits: silent fallback for unknown theme names is
+  the worst UX, want a startup warning); a litellm one-line
+  duplicated-three-times fix that adds `verbose_logger` to the
+  `LITELLM_LOG=INFO` branch (merge-as-is, plus a coordination
+  note that #26397/#26401/#26429 are the same patch); a litellm
+  Anthropic reasoning-family `temperature` drop fix whose 7-line
+  semantic change is buried in a 2,096-line full-file rewrite
+  (request-changes pending a clean reroll + committed test
+  matrix); ollama's missing repeat/frequency/presence penalty
+  implementation in the Go-native sampler with the asymmetric
+  positive/negative-logit branch matching llama.cpp's reference
+  (merge-after-nits to verify default `repeat_penalty=1.1` flows
+  through `req.Options` and to preallocate the ring buffer); and
+  a crush MCP `createSession` swap from `time.AfterFunc` +
+  `WithCancel` to `WithTimeout` that finally lets `maybeTimeoutErr`
+  distinguish deadline from cancel (needs-discussion: deleted
+  `TestMCPSession_CancelOnClose` is the only defense against the
+  mcp-go-sdk `ClientSession` retaining the connect context past
+  `Connect`, want explicit confirmation before the wrapper
+  removal lands).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -572,6 +611,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24174](https://github.com/sst/opencode/pull/24174) | feat(core): add background subagent support | [sst-opencode-pr-24174.md](2026-W17/drip-19/sst-opencode-pr-24174.md) |
 | [#24107](https://github.com/sst/opencode/pull/24107) | fix: prevent question custom input from hiding submit button | [sst-opencode-pr-24107.md](2026-W17/drip-19/sst-opencode-pr-24107.md) |
 | [#24047](https://github.com/sst/opencode/pull/24047) | docs: add agent architecture audit guide | [sst-opencode-pr-24047.md](2026-W17/drip-21/sst-opencode-pr-24047.md) |
+| [#24200](https://github.com/sst/opencode/pull/24200) | fix: preserve empty reasoning_content for DeepSeek V4 in non-streaming and streaming paths | [sst-opencode-pr-24200.md](2026-W17/drip-22/sst-opencode-pr-24200.md) |
+| [#24022](https://github.com/sst/opencode/pull/24022) | fix(app): prevent question dock overflow | [sst-opencode-pr-24022.md](2026-W17/drip-22/sst-opencode-pr-24022.md) |
 
 ## BerriAI/litellm
 
@@ -613,6 +654,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26442](https://github.com/BerriAI/litellm/pull/26442) | feat: restrict org admins from creating keys, teams, models via UI settings | [BerriAI-litellm-pr-26442.md](2026-W17/drip-17/BerriAI-litellm-pr-26442.md) |
 | [#26439](https://github.com/BerriAI/litellm/pull/26439) | fix(adapters,vertex): pass output_config through to backends that accept it | [BerriAI-litellm-pr-26439.md](2026-W17/drip-19/BerriAI-litellm-pr-26439.md) |
 | [#26405](https://github.com/BerriAI/litellm/pull/26405) | Fix: add fix to auth error (SSO callback OAuth-error surfacing) | [BerriAI-litellm-pr-26405.md](2026-W17/drip-21/BerriAI-litellm-pr-26405.md) |
+| [#26445](https://github.com/BerriAI/litellm/pull/26445) | fix(anthropic): drop temperature from reasoning-family supported params | [BerriAI-litellm-pr-26445.md](2026-W17/drip-22/BerriAI-litellm-pr-26445.md) |
+| [#26397](https://github.com/BerriAI/litellm/pull/26397) | fix(proxy): add verbose_logger to LITELLM_LOG=INFO branch | [BerriAI-litellm-pr-26397.md](2026-W17/drip-22/BerriAI-litellm-pr-26397.md) |
 
 ## charmbracelet/crush
 
@@ -658,6 +701,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2612](https://github.com/charmbracelet/crush/pull/2612) | feat(hooks): implement JSON-based compatibility layer and lifecycle hooks | [charmbracelet-crush-pr-2612.md](2026-W17/drip-20/charmbracelet-crush-pr-2612.md) |
 | [#2691](https://github.com/charmbracelet/crush/pull/2691) | fix(db): cap SQLite pool to one writer to prevent NOTADB corruption | [charmbracelet-crush-pr-2691.md](2026-W17/drip-21/charmbracelet-crush-pr-2691.md) |
 | [#2609](https://github.com/charmbracelet/crush/pull/2609) | feat(session): add `session export` command for markdown/JSON export | [charmbracelet-crush-pr-2609.md](2026-W17/drip-21/charmbracelet-crush-pr-2609.md) |
+| [#2593](https://github.com/charmbracelet/crush/pull/2593) | feat: add theme support with Charmtone default and Gruvbox Dark | [charmbracelet-crush-pr-2593.md](2026-W17/drip-22/charmbracelet-crush-pr-2593.md) |
+| [#2575](https://github.com/charmbracelet/crush/pull/2575) | fix: correctly identify context fate in mcp createSession | [charmbracelet-crush-pr-2575.md](2026-W17/drip-22/charmbracelet-crush-pr-2575.md) |
 
 ## cline/cline
 
@@ -749,6 +794,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19424](https://github.com/openai/codex/pull/19424) | Strip sandbox access defaults from app-server JSON schema | [openai-codex-pr-19424.md](2026-W17/drip-21/openai-codex-pr-19424.md) |
 | [#19392](https://github.com/openai/codex/pull/19392) | permissions: derive compatibility policies from profiles | [openai-codex-pr-19392.md](2026-W17/drip-21/openai-codex-pr-19392.md) |
 | [#19229](https://github.com/openai/codex/pull/19229) | Add agent graph store interface | [openai-codex-pr-19229.md](2026-W17/drip-21/openai-codex-pr-19229.md) |
+| [#19391](https://github.com/openai/codex/pull/19391) | permissions: runtime config profile-backed | [openai-codex-pr-19391.md](2026-W17/drip-22/openai-codex-pr-19391.md) |
+| [#19422](https://github.com/openai/codex/pull/19422) | Clarify bundled OpenAI Docs upgrade guide wording | [openai-codex-pr-19422.md](2026-W17/drip-22/openai-codex-pr-19422.md) |
 
 ## ollama/ollama
 
@@ -757,6 +804,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15774](https://github.com/ollama/ollama/pull/15774) | Harden Qwen-family tool payload rendering and fix Qwen 3.5 tool-block truncation integrity | [ollama-ollama-pr-15774.md](2026-W17/drip-19/ollama-ollama-pr-15774.md) |
 | [#15755](https://github.com/ollama/ollama/pull/15755) | metal: harden for ggml initialization failures | [ollama-ollama-pr-15755.md](2026-W17/drip-19/ollama-ollama-pr-15755.md) |
 | [#15716](https://github.com/ollama/ollama/pull/15716) | server: fix download stall watchdog not firing when no bytes arrive | [ollama-ollama-pr-15716.md](2026-W17/drip-21/ollama-ollama-pr-15716.md) |
+| [#15784](https://github.com/ollama/ollama/pull/15784) | Go sampler: implement repeat/freq/presence penalties | [ollama-ollama-pr-15784.md](2026-W17/drip-22/ollama-ollama-pr-15784.md) |
 
 ---
 
