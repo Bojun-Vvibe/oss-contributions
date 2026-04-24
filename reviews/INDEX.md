@@ -1,6 +1,6 @@
 # Review Index
 
-149 PR reviews across 8 OSS AI-coding-agent projects. Each review
+149 + W17 drips PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -256,6 +256,40 @@ section.
   user belongs to exactly one team (operator-mutable
   invariant — should be opt-in behind a flag, not
   default-on).
+- **W17 drip-13 (2026-04-24)**: 8 more — replay-time
+  rehydration of assistant `tool_call` parts from a
+  `WithParts`-derived `replayToolCalls` map plus a
+  send-time guard wrapped *twice* around
+  `ProviderTransform.message` for the OpenAI-compatible
+  NPM api (band-aid that masks an underlying transform
+  drop); per-route `Authorization` middleware on every
+  experimental HttpApi group with `auth_token` modeled
+  as a query-string `apiKey` security scheme (per-route
+  opt-in is a default-public footgun); `/uptime` slash
+  command + `processStartTime()` field on
+  `/global/health` (module-load capture, dialog renders
+  static-at-open snapshot — text reads like live
+  counter); `time.archived = null` symmetry on the
+  PATCH `/session/:id` validator wired through web,
+  TUI (`ctrl+a` toggle), and event reducer (no ACL
+  test on the new write path); `session_id` /
+  `thread_id` header split for multi-agent v2 spawn
+  flows with `current_window_id` keyed off the child
+  thread (no `debug_assert_ne!` on spawn invariant,
+  reopen path still on old single-id semantics); outer
+  tool `call_id` propagation into
+  `_meta._codex_apps.call_id` for Codex Apps MCP server
+  with the `unwrap_or_default()` refactor that now
+  always emits the `_codex_apps` block (broadens
+  backend "presence ⇒ context" contract); two bare
+  `.(float64)` / `.(string)` type-assertion panics in
+  `crush logs` replaced with comma-ok form (silent
+  skip + `time.Now()` fallback that hides
+  log-producer bugs); and `verbose_logger.setLevel(INFO)`
+  parity in the `LITELLM_LOG=INFO` branch alongside the
+  router/proxy loggers (volume blast radius for
+  deployments that were unintentionally relying on
+  `verbose_logger` staying quiet).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -325,6 +359,10 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24118](https://github.com/sst/opencode/pull/24118) | fix(config): avoid parseManagedPlist crash on non-object JSON | [PR-24118-managed-plist-non-object-guard.md](anomalyco-opencode/PR-24118-managed-plist-non-object-guard.md) |
 | [#24150](https://github.com/sst/opencode/pull/24150) | fix(transform): inject reasoning_content for ALL assistant msgs to fix DeepSeek thinking mode | [PR-24150-deepseek-reasoning-content-all-msgs.md](anomalyco-opencode/PR-24150-deepseek-reasoning-content-all-msgs.md) |
 | [#24149](https://github.com/sst/opencode/pull/24149) | feat(scout): add scout agent for repo research | [PR-24149-scout-agent-repo-research.md](anomalyco-opencode/PR-24149-scout-agent-repo-research.md) |
+| [#24170](https://github.com/sst/opencode/pull/24170) | fix: preserve assistant tool_calls in openai-compatible replay | [anomalyco-opencode-pr-24170.md](2026-W17/anomalyco-opencode-pr-24170.md) |
+| [#24168](https://github.com/sst/opencode/pull/24168) | Refactor HttpApi auth middleware wiring | [anomalyco-opencode-pr-24168.md](2026-W17/anomalyco-opencode-pr-24168.md) |
+| [#24161](https://github.com/sst/opencode/pull/24161) | feat: add /uptime slash command | [anomalyco-opencode-pr-24161.md](2026-W17/anomalyco-opencode-pr-24161.md) |
+| [#24154](https://github.com/sst/opencode/pull/24154) | feat: add unarchive/restore for archived sessions | [anomalyco-opencode-pr-24154.md](2026-W17/anomalyco-opencode-pr-24154.md) |
 
 ## BerriAI/litellm
 
@@ -356,6 +394,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26418](https://github.com/BerriAI/litellm/pull/26418) | fix(proxy): single-team DB fallback when JWT has no team_id | [PR-26418-jwt-single-team-db-fallback.md](BerriAI-litellm/PR-26418-jwt-single-team-db-fallback.md) |
 | [#26426](https://github.com/BerriAI/litellm/pull/26426) | fix(vertex_ai/anthropic): stop stripping output_config | [BerriAI-litellm-pr-26426.md](2026-W17/BerriAI-litellm-pr-26426.md) |
 | [#26427](https://github.com/BerriAI/litellm/pull/26427) | fix(model_management): refresh router after POST /model/update | [BerriAI-litellm-pr-26427.md](2026-W17/BerriAI-litellm-pr-26427.md) |
+| [#26429](https://github.com/BerriAI/litellm/pull/26429) | fix: set verbose_logger level when LITELLM_LOG=INFO | [BerriAI-litellm-pr-26429.md](2026-W17/BerriAI-litellm-pr-26429.md) |
 
 ## charmbracelet/crush
 
@@ -386,6 +425,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2686](https://github.com/charmbracelet/crush/pull/2686) | feat: support Moonshot and Moonshot China API keys in config | [PR-2686-moonshot-cn-api-keys.md](charmbracelet-crush/PR-2686-moonshot-cn-api-keys.md) |
 | [#2674](https://github.com/charmbracelet/crush/pull/2674) | config: APIURL/APIKEY env overrides with CRUSH_PROVIDER targeting | [charmbracelet-crush-pr-2674.md](2026-W17/charmbracelet-crush-pr-2674.md) |
 | [#2679](https://github.com/charmbracelet/crush/pull/2679) | fix: reduce token usage, use short tool descriptions by default | [charmbracelet-crush-pr-2679.md](2026-W17/charmbracelet-crush-pr-2679.md) |
+| [#2634](https://github.com/charmbracelet/crush/pull/2634) | fix(logs): guard against unsafe type assertions in printLogLine | [charmbracelet-crush-pr-2634.md](2026-W17/charmbracelet-crush-pr-2634.md) |
 
 ## cline/cline
 
@@ -456,6 +496,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19246](https://github.com/openai/codex/pull/19246) | Increase app-server WebSocket outbound buffer | [openai-codex-pr-19246.md](2026-W17/openai-codex-pr-19246.md) |
 | [#19351](https://github.com/openai/codex/pull/19351) | Add agents.interrupt_message for interruption markers | [openai-codex-pr-19351.md](2026-W17/openai-codex-pr-19351.md) |
 | [#19360](https://github.com/openai/codex/pull/19360) | feat: surface multi-agent thread limit in spawn description | [openai-codex-pr-19360.md](2026-W17/openai-codex-pr-19360.md) |
+| [#19377](https://github.com/openai/codex/pull/19377) | feat: separate session_id and thread_id in Responses requests | [openai-codex-pr-19377.md](2026-W17/openai-codex-pr-19377.md) |
+| [#19207](https://github.com/openai/codex/pull/19207) | Forward Codex Apps tool call IDs to backend metadata | [openai-codex-pr-19207.md](2026-W17/openai-codex-pr-19207.md) |
 
 ---
 
