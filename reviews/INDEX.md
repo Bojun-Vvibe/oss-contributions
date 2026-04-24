@@ -1,6 +1,6 @@
 # Review Index
 
-108 PR reviews across 8 OSS AI-coding-agent projects. Each review
+116 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -94,6 +94,43 @@ section.
   call added to `_execute_virtual_key_regeneration` to
   close the budget/duration privilege-escalation primitive
   on `/key/regenerate`.
+- **W17 drip-9 (2026-04-24)**: 8 more — desktop sidecar
+  health-check spin-poll replaced with bounded
+  exponential-backoff retry (6 attempts, 500→1000→2000→
+  4000→4000 ms, 2 s per-attempt timeout, ~23.5 s total
+  budget) plus an unconditional `no_proxy()` flip that
+  silently widens past the previous loopback-only check;
+  plan-mode bash deny-by-default with a 14-command
+  read-only allowlist enforced via a merge-order inversion
+  in a new `Agent.permissions(agent, session)` helper
+  (agent rules win for `plan`, session rules win
+  elsewhere); `onCleanup`-paired unsubscribe handles for
+  ~6 long-lived Solid TUI `event.on` registrations + a
+  `process.on("SIGHUP")` leak; HttpApi bridge of `GET
+  /mcp` status with the Effect-Schema-with-`.zod`-shim
+  pattern that lets the legacy Hono route keep working;
+  `CancellationToken`-propagated deferred network-proxy
+  denials so a Guardian-class denial arriving mid-command
+  cancels the running process instead of being silently
+  swallowed (with a `cancel_when_either` watchdog-task
+  pattern that risks leaking a parked tokio task per
+  command); supply-chain hardening sweep that pins
+  `@openai/codex` from `latest` to `0.121.0` in two
+  Dockerfiles, adds two committed `pnpm-lock.yaml`
+  install-boundary directories with `minimumReleaseAge:
+  10080` + `blockExoticSubdeps: true` + `strictDepBuilds:
+  true` + `trustPolicy: no-downgrade`, and commits two
+  Python `uv.lock` files; LSP `workspace/applyEdit`
+  filesystem-mutation boundary check via a new
+  `validateWorkspacePath` that calls `fsext.HasPrefix` on
+  resolved abs paths (does NOT call `EvalSymlinks`, so
+  symlink-escape gap remains); `OnRetry` callback body
+  filled with `slog.Warn` + `providerRetryLogFields`
+  helper after a stale TODO; and a Bedrock guardrails
+  `experimental_guardrail_input_roles` filter that drops
+  non-matching roles from INPUT validation (case-
+  sensitive role compare, silent-bypass on
+  empty-after-filter that should log).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -152,6 +189,10 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24116](https://github.com/anomalyco/opencode/pull/24116) | fix(snapshot): avoid E2BIG during batched revert checkout | [PR-24116.md](anomalyco-opencode/PR-24116.md) |
 | [#24117](https://github.com/sst/opencode/pull/24117) | fix(provider): allow remote local-network hosts when proxy env vars are set | [PR-24117-noproxy-private-hosts.md](anomalyco-opencode/PR-24117-noproxy-private-hosts.md) |
 | [#24127](https://github.com/sst/opencode/pull/24127) | fix: enable compaction prune by default | [PR-24127-compaction-prune-default.md](anomalyco-opencode/PR-24127-compaction-prune-default.md) |
+| [#24138](https://github.com/sst/opencode/pull/24138) | fix(desktop): add retry logic with exponential backoff to health check system | [PR-24138-health-check-retry-backoff.md](anomalyco-opencode/PR-24138-health-check-retry-backoff.md) |
+| [#24110](https://github.com/sst/opencode/pull/24110) | fix(opencode): enforce read-only bash permissions in plan mode | [PR-24110-plan-mode-readonly-bash.md](anomalyco-opencode/PR-24110-plan-mode-readonly-bash.md) |
+| [#24053](https://github.com/sst/opencode/pull/24053) | fix(tui): unsubscribe event listeners on component disposal | [PR-24053-tui-unsubscribe-listeners.md](anomalyco-opencode/PR-24053-tui-unsubscribe-listeners.md) |
+| [#24100](https://github.com/sst/opencode/pull/24100) | feat(httpapi): bridge mcp status endpoint | [PR-24100-httpapi-mcp-status.md](anomalyco-opencode/PR-24100-httpapi-mcp-status.md) |
 
 ## BerriAI/litellm
 
@@ -172,6 +213,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26385](https://github.com/BerriAI/litellm/pull/26385) | fix: remove duplicate MAX_SIZE_PER_ITEM_IN_MEMORY_CACHE_IN_KB definition | [PR-26385.md](BerriAI-litellm/PR-26385.md) |
 | [#26340](https://github.com/BerriAI/litellm/pull/26340) | fix(key_management): enforce upperbound_key_generate_params on /key/regenerate | [PR-26340-key-regenerate-upperbound.md](BerriAI-litellm/PR-26340-key-regenerate-upperbound.md) |
 | [#26383](https://github.com/BerriAI/litellm/pull/26383) | fix: prevent Azure output_config leakage | [PR-26383-azure-output-config-leak.md](BerriAI-litellm/PR-26383-azure-output-config-leak.md) |
+| [#26393](https://github.com/BerriAI/litellm/pull/26393) | feat: bedrock guardrail input roles filter | [PR-26393-bedrock-guardrail-input-roles.md](BerriAI-litellm/PR-26393-bedrock-guardrail-input-roles.md) |
 
 ## charmbracelet/crush
 
@@ -192,6 +234,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2694](https://github.com/charmbracelet/crush/pull/2694) | fix(skills): deduplicate skills discovered via symlinked directories | [PR-2694.md](charmbracelet-crush/PR-2694.md) |
 | [#2652](https://github.com/charmbracelet/crush/pull/2652) | fix(grep): stop regex fallback after cancellation | [PR-2652-grep-cancel-fallback.md](charmbracelet-crush/PR-2652-grep-cancel-fallback.md) |
 | [#2681](https://github.com/charmbracelet/crush/pull/2681) | fix(agent): retry title generation with large model on empty output | [PR-2681-title-empty-retry.md](charmbracelet-crush/PR-2681-title-empty-retry.md) |
+| [#2699](https://github.com/charmbracelet/crush/pull/2699) | fix(lsp): enforce workspace boundary for workspace edits | [PR-2699-lsp-workspace-boundary.md](charmbracelet-crush/PR-2699-lsp-workspace-boundary.md) |
+| [#2700](https://github.com/charmbracelet/crush/pull/2700) | fix(agent): implement OnRetry logging with structured retry fields | [PR-2700-onretry-structured-logging.md](charmbracelet-crush/PR-2700-onretry-structured-logging.md) |
 
 ## cline/cline
 
@@ -244,6 +288,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19283](https://github.com/openai/codex/pull/19283) | check PID of named pipe consumer | [PR-19283.md](openai-codex/PR-19283.md) |
 | [#19170](https://github.com/openai/codex/pull/19170) | Skip disabled rows in selection menu numbering and default focus | [PR-19170-skip-disabled-rows-numbering.md](openai-codex/PR-19170-skip-disabled-rows-numbering.md) |
 | [#19287](https://github.com/openai/codex/pull/19287) | Restore persisted model provider on thread resume | [PR-19287-resume-model-provider.md](openai-codex/PR-19287-resume-model-provider.md) |
+| [#19184](https://github.com/openai/codex/pull/19184) | fix: handle deferred network proxy denials | [PR-19184-deferred-proxy-denials.md](openai-codex/PR-19184-deferred-proxy-denials.md) |
+| [#19163](https://github.com/openai/codex/pull/19163) | Harden package-manager install policy | [PR-19163-package-manager-hardening.md](openai-codex/PR-19163-package-manager-hardening.md) |
 
 ---
 
