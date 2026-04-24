@@ -1,6 +1,6 @@
 # Review Index
 
-157 + W17 drips (through drip-17) PR reviews across 8 OSS AI-coding-agent projects. Each review
+157 + W17 drips (through drip-18) PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -364,6 +364,34 @@ section.
   `cache_creation_input_token_cost_above_1hr` (6e-06)
   pricing entry on both `vertex_ai/claude-sonnet-4-6`
   and its `@default` alias.
+- **W17 drip-18 (2026-04-25)**: 8 more — theme is
+  *"opinionated defaults vs user override"* and
+  *finishing migrations cleanly*. A hardcoded
+  Bedrock model allowlist that silently shadows user
+  whitelists and breaks ARN-based custom models;
+  the matching docs PR that *documents* the exact
+  pattern the allowlist breaks (custom Claude-named
+  keys with application inference profile ARNs);
+  Windows-Terminal `wt.exe` plumbing through both
+  Electron and Tauri with a small file-vs-dir
+  normalisation drift between the two; an
+  on-paste media optimization layer that quietly
+  pulls in `ffmpeg`/`sips`/`magick`/`shift-ai`
+  detection and a new plugin API at the same time;
+  a textbook subtractive PR removing the in-tree
+  JS REPL across 63 files (-9244) with all seven
+  seams (flag enum, handler, router, schema,
+  fixtures, CI prereqs, third-party notice) closed;
+  a Crush PreToolUse hook engine wired in *before*
+  permission checks with a Claude-Code-compatible
+  JSON wire protocol but Windows shell story
+  unspecified; 3000 lines of cross-platform PTY +
+  split-pane + tab-manager scaffolding with no
+  in-tree consumers and a stub Unix backend; and
+  the final pass of the codex `to_legacy_sandbox_policy`
+  removal that quietly tightens trust semantics for
+  `Managed` profiles whose write paths don't include
+  `cwd`.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -441,6 +469,10 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24162](https://github.com/sst/opencode/pull/24162) | fix(desktop): add retry logic with exponential backoff to health check system | [sst-opencode-pr-24162.md](2026-W17/sst-opencode-pr-24162.md) |
 | [#24144](https://github.com/sst/opencode/pull/24144) | docs: add MDNS workaround for WSL path issues in windows-wsl.mdx | [sst-opencode-pr-24144.md](2026-W17/drip-17/sst-opencode-pr-24144.md) |
 | [#24008](https://github.com/sst/opencode/pull/24008) | fix: preserve newlines in ACP command argument parsing | [sst-opencode-pr-24008.md](2026-W17/drip-17/sst-opencode-pr-24008.md) |
+| [#24194](https://github.com/sst/opencode/pull/24194) | restrict amazon-bedrock provider to curated model allowlist | [sst-opencode-pr-24194.md](2026-W17/drip-17/sst-opencode-pr-24194.md) |
+| [#24193](https://github.com/sst/opencode/pull/24193) | docs: clarify bedrock inference profile setup | [sst-opencode-pr-24193.md](2026-W17/drip-17/sst-opencode-pr-24193.md) |
+| [#24136](https://github.com/sst/opencode/pull/24136) | feat(desktop): add support for Open in Windows Terminal in the header menu | [sst-opencode-pr-24136.md](2026-W17/drip-17/sst-opencode-pr-24136.md) |
+| [#24128](https://github.com/sst/opencode/pull/24128) | feat: optimize media attachments on paste in TUI | [sst-opencode-pr-24128.md](2026-W17/drip-17/sst-opencode-pr-24128.md) |
 
 ## BerriAI/litellm
 
@@ -479,6 +511,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26419](https://github.com/BerriAI/litellm/pull/26419) | fix(ui): add missing 'zai' (Z.AI / Zhipu AI) provider to Add-Model dropdown | [BerriAI-litellm-pr-26419.md](2026-W17/BerriAI-litellm-pr-26419.md) |
 | [#26441](https://github.com/BerriAI/litellm/pull/26441) | fix(redis): cache GCP IAM token to prevent async event loop blocking | [BerriAI-litellm-pr-26441.md](2026-W17/drip-17/BerriAI-litellm-pr-26441.md) |
 | [#26410](https://github.com/BerriAI/litellm/pull/26410) | fix: add vertex sonnet 4.6 1h cache pricing | [BerriAI-litellm-pr-26410.md](2026-W17/drip-17/BerriAI-litellm-pr-26410.md) |
+| [#26442](https://github.com/BerriAI/litellm/pull/26442) | feat: restrict org admins from creating keys, teams, models via UI settings | [BerriAI-litellm-pr-26442.md](2026-W17/drip-17/BerriAI-litellm-pr-26442.md) |
 
 ## charmbracelet/crush
 
@@ -517,6 +550,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2601](https://github.com/charmbracelet/crush/pull/2601) | fix: refresh TUI when session is updated by an external process | [charmbracelet-crush-pr-2601.md](2026-W17/charmbracelet-crush-pr-2601.md) |
 | [#2590](https://github.com/charmbracelet/crush/pull/2590) | feat(notification): notify using OSC sequences for ssh terminal | [charmbracelet-crush-pr-2590.md](2026-W17/drip-17/charmbracelet-crush-pr-2590.md) |
 | [#2584](https://github.com/charmbracelet/crush/pull/2584) | feat(agent): allow user to configure agent model size | [charmbracelet-crush-pr-2584.md](2026-W17/drip-17/charmbracelet-crush-pr-2584.md) |
+| [#2598](https://github.com/charmbracelet/crush/pull/2598) | feat: PreToolUse hook | [charmbracelet-crush-pr-2598.md](2026-W17/drip-17/charmbracelet-crush-pr-2598.md) |
+| [#2606](https://github.com/charmbracelet/crush/pull/2606) | feat: split-pane tree, tab manager, and cross-platform PTY | [charmbracelet-crush-pr-2606.md](2026-W17/drip-17/charmbracelet-crush-pr-2606.md) |
 
 ## cline/cline
 
@@ -596,6 +631,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19266](https://github.com/openai/codex/pull/19266) | [codex] add non-local thread store regression harness | [openai-codex-pr-19266.md](2026-W17/openai-codex-pr-19266.md) |
 | [#19407](https://github.com/openai/codex/pull/19407) | Update bundled OpenAI Docs skill for GPT-5.5 | [openai-codex-pr-19407.md](2026-W17/drip-17/openai-codex-pr-19407.md) |
 | [#19234](https://github.com/openai/codex/pull/19234) | Carve out log DB interfaces for new sinks | [openai-codex-pr-19234.md](2026-W17/drip-17/openai-codex-pr-19234.md) |
+| [#19410](https://github.com/openai/codex/pull/19410) | Remove js_repl feature | [openai-codex-pr-19410.md](2026-W17/drip-17/openai-codex-pr-19410.md) |
+| [#19395](https://github.com/openai/codex/pull/19395) | permissions: finish profile-backed app surfaces | [openai-codex-pr-19395.md](2026-W17/drip-17/openai-codex-pr-19395.md) |
 
 ---
 
