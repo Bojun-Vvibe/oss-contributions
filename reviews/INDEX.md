@@ -1,6 +1,6 @@
 # Review Index
 
-96 PR reviews across 8 OSS AI-coding-agent projects. Each review
+100 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -55,6 +55,20 @@ section.
   expansion in stdio MCP server `args` via the same
   `ResolveValue` resolver already used for `command`/`env`/
   `headers`.
+- **W17 drip-7 (2026-04-24)**: 4 more — snapshot revert
+  E2BIG fix moving the file list off argv onto stdin via
+  `git checkout --pathspec-from-file=- --pathspec-file-nul`,
+  Windows elevated-sandbox PID gate on the named-pipe
+  consumer (`GetNamedPipeClientProcessId` compared against
+  the PID returned from `CreateProcessWithLogonW`) layered
+  with a ~260-line dedup of the one-shot capture path onto
+  the shared `spawn_runner_transport` helper, skill
+  discovery dedup-set keyed on `filepath.EvalSymlinks`
+  output so symlinked discovery roots don't double-render
+  in the sidebar, and a duplicate
+  `MAX_SIZE_PER_ITEM_IN_MEMORY_CACHE_IN_KB` constant
+  removal that silently doubles the in-memory cache item
+  ceiling from 512 KB to 1024 KB across deployments.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -110,6 +124,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24013](https://github.com/anomalyco/opencode/pull/24013) | fix(opencode): stop retrying non-transient rate limits | [PR-24013.md](anomalyco-opencode/PR-24013.md) |
 | [#24026](https://github.com/anomalyco/opencode/pull/24026) | fix(provider): coerce numeric tool call IDs for OpenAI-compatible providers | [PR-24026.md](anomalyco-opencode/PR-24026.md) |
 | [#24033](https://github.com/anomalyco/opencode/pull/24033) | tweak: simplify retry logic | [PR-24033.md](anomalyco-opencode/PR-24033.md) |
+| [#24116](https://github.com/anomalyco/opencode/pull/24116) | fix(snapshot): avoid E2BIG during batched revert checkout | [PR-24116.md](anomalyco-opencode/PR-24116.md) |
 
 ## BerriAI/litellm
 
@@ -127,6 +142,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26312](https://github.com/BerriAI/litellm/pull/26312) | fix(router): don't re-wrap structured errors from upstream providers | [PR-26312.md](BerriAI-litellm/PR-26312.md) |
 | [#24457](https://github.com/BerriAI/litellm/pull/24457) | fix(anthropic): handle tool_choice type 'none' in messages API | [PR-24457.md](BerriAI-litellm/PR-24457.md) |
 | [#26346](https://github.com/BerriAI/litellm/pull/26346) | fix: reset_budget_windows around Prisma Json? null-filter limitation via query_raw IS NOT NULL | [PR-26346.md](BerriAI-litellm/PR-26346.md) |
+| [#26385](https://github.com/BerriAI/litellm/pull/26385) | fix: remove duplicate MAX_SIZE_PER_ITEM_IN_MEMORY_CACHE_IN_KB definition | [PR-26385.md](BerriAI-litellm/PR-26385.md) |
 
 ## charmbracelet/crush
 
@@ -144,6 +160,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2691](https://github.com/charmbracelet/crush/pull/2691) | fix(lsp): cancel in-flight diagnostics request on buffer close | [PR-2691.md](charmbracelet-crush/PR-2691.md) |
 | [#2690](https://github.com/charmbracelet/crush/pull/2690) | fix(db): prevent SQLITE_NOTADB corruption under concurrent sub-agents | [PR-2690.md](charmbracelet-crush/PR-2690.md) |
 | [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [PR-2693.md](charmbracelet-crush/PR-2693.md) |
+| [#2694](https://github.com/charmbracelet/crush/pull/2694) | fix(skills): deduplicate skills discovered via symlinked directories | [PR-2694.md](charmbracelet-crush/PR-2694.md) |
 
 ## cline/cline
 
@@ -193,6 +210,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19247](https://github.com/openai/codex/pull/19247) | chore: apply truncation policy to unified_exec | [PR-19247.md](openai-codex/PR-19247.md) |
 | [#19261](https://github.com/openai/codex/pull/19261) | Resolve relative agent role config paths from layers | [PR-19261.md](openai-codex/PR-19261.md) |
 | [#19244](https://github.com/openai/codex/pull/19244) | Update unix socket transport to use WebSocket upgrade | [PR-19244.md](openai-codex/PR-19244.md) |
+| [#19283](https://github.com/openai/codex/pull/19283) | check PID of named pipe consumer | [PR-19283.md](openai-codex/PR-19283.md) |
 
 ---
 
