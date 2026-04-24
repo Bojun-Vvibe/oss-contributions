@@ -1,0 +1,12 @@
+# BerriAI/litellm#26427 — refresh router after POST /model/update
+
+**What changed.** Adds a single `await clear_cache()` call inside `update_model` (the `POST /model/update` handler) immediately after the Prisma `update` and before the fire-and-forget audit-log task. New regression test `TestUpdateModel::test_update_model_clears_cache_after_db_write` patches `clear_cache` at the call site and asserts it's awaited exactly once after the DB write.
+
+**Why it matters.** The endpoint persisted `litellm_params` updates to `LiteLLM_ProxyModelTable` and returned 200, but the in-memory `llm_router` kept serving the pre-update `Deployment` object. Effect: any `litellm_params` field changed via `POST /model/update` (guardrails, `api_key`, `tpm`/`rpm`) silently no-op'd on request handling for ~30s until the APScheduler reload tick. The sibling `PATCH /model/{model_id}/update` already had this fix from #10853; this brings the two handlers into alignment.
+
+**Concerns.**
+1. **Audit log ordering.** The new `clear_cache()` runs *before* `asyncio.create_task(create_object_audit_log(...))`. If `clear_cache` raises and is not internally swallowed, the audit log never gets created — quiet loss of compliance signal. The PR claims `clear_cache` has its own try/except; verify that's still true and consider scheduling the audit task first (or after, in a `finally`) so audit logging is independent of cache state.
+2. **Latency change on a hot endpoint.** `clear_cache` filters DB-model IDs out of the router and re-reads *all* DB rows via `proxy_config.add_deployment(...)`. Previously the endpoint returned in one Prisma round trip; now it does a full router rebuild before returning. On deployments with hundreds of models this turns a sub-100ms endpoint into a multi-second one, and management UIs that batch updates will feel it. Worth at least a benchmark note.
+3. **Test only mocks `clear_cache`.** Asserts it was called, not that the router actually reflects the new `litellm_params`. A future refactor that renames `clear_cache` or replaces it with a noop will pass this test while reintroducing the bug. An integration test against a real router would catch that.
+4. **Concurrent updates race.** Two `POST /model/update` calls in flight will each rebuild the router; whichever finishes second wins, but each does a full reload. Not a correctness bug — just a thundering-herd footgun under bulk migration scripts.
+5. **Scope is correctly minimal** — single line + targeted test. Land it once (1) is checked.
