@@ -1,6 +1,6 @@
 # Review Index
 
-165 + W17 drips (through drip-22) PR reviews across 9 OSS AI-coding-agent projects. Each review
+165 + W17 drips (through drip-23) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -526,6 +526,32 @@ section.
   mcp-go-sdk `ClientSession` retaining the connect context past
   `Connect`, want explicit confirmation before the wrapper
   removal lands).
+- **W17 drip-23 (2026-04-25)**: 8 more — tool-description prompt
+  diet (~66% char cut across 17 `*.txt` files in opencode, with
+  open questions on bash policy relocation and per-provider cache
+  audit), Polish translation polish for the opencode console
+  (mixed register flagged + `error.roleRequired` semantic shift
+  from "Rola" to "Stanowisko"), codex network-proxy prompt
+  guidance unconditionally appended to `PermissionsInstructions`
+  (gating + `NO_PROXY` mention + named permission-request tool
+  flagged), crush chroma formatter extracted into shared
+  `internal/ui/xchroma` package so markdown code blocks match
+  diffview's foreground+background style (global registry name
+  collision risk noted), litellm qdrant semantic cache `kwargs.
+  get("messages") or kwargs.get("message")` defensive access plus
+  `get_str_from_messages` helper for multimodal content blocks
+  (tests cover list-response but not the actual bug-fix branches),
+  litellm bedrock guardrail `try/except HTTPException` wrapping
+  the entire streaming hook with in-band SSE error frame
+  conversion (`HTTPException`-only catch leaves bare-Exception
+  leak class intact, two near-identical tests parametrizable),
+  Model Armor docs update adding `during_call` to the supported
+  modes (the `post_call` description over-corrects — runtime
+  back-fills input validation when no pre/during is configured),
+  and ollama runner surfacing `prompt_cached_count` as a new
+  `,omitempty` field on `CompletionResponse` (4-line additive
+  change, snapshot-timing comment + OpenAI-compat layer wiring
+  flagged as follow-ups).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -613,6 +639,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24047](https://github.com/sst/opencode/pull/24047) | docs: add agent architecture audit guide | [sst-opencode-pr-24047.md](2026-W17/drip-21/sst-opencode-pr-24047.md) |
 | [#24200](https://github.com/sst/opencode/pull/24200) | fix: preserve empty reasoning_content for DeepSeek V4 in non-streaming and streaming paths | [sst-opencode-pr-24200.md](2026-W17/drip-22/sst-opencode-pr-24200.md) |
 | [#24022](https://github.com/sst/opencode/pull/24022) | fix(app): prevent question dock overflow | [sst-opencode-pr-24022.md](2026-W17/drip-22/sst-opencode-pr-24022.md) |
+| [#24202](https://github.com/sst/opencode/pull/24202) | perf(tool): condense tool descriptions ~66% to cut system-prompt tokens | [sst-opencode-pr-24202.md](2026-W17/drip-23/sst-opencode-pr-24202.md) |
+| [#24196](https://github.com/sst/opencode/pull/24196) | feat(console): improve Polish translations | [sst-opencode-pr-24196.md](2026-W17/drip-23/sst-opencode-pr-24196.md) |
 
 ## BerriAI/litellm
 
@@ -656,6 +684,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26405](https://github.com/BerriAI/litellm/pull/26405) | Fix: add fix to auth error (SSO callback OAuth-error surfacing) | [BerriAI-litellm-pr-26405.md](2026-W17/drip-21/BerriAI-litellm-pr-26405.md) |
 | [#26445](https://github.com/BerriAI/litellm/pull/26445) | fix(anthropic): drop temperature from reasoning-family supported params | [BerriAI-litellm-pr-26445.md](2026-W17/drip-22/BerriAI-litellm-pr-26445.md) |
 | [#26397](https://github.com/BerriAI/litellm/pull/26397) | fix(proxy): add verbose_logger to LITELLM_LOG=INFO branch | [BerriAI-litellm-pr-26397.md](2026-W17/drip-22/BerriAI-litellm-pr-26397.md) |
+| [#26446](https://github.com/BerriAI/litellm/pull/26446) | fix(caching): handle list-based responses and message key variations in qdrant semantic cache | [BerriAI-litellm-pr-26446.md](2026-W17/drip-23/BerriAI-litellm-pr-26446.md) |
+| [#26388](https://github.com/BerriAI/litellm/pull/26388) | fix: bedrock guardrail sse streaming exception | [BerriAI-litellm-pr-26388.md](2026-W17/drip-23/BerriAI-litellm-pr-26388.md) |
+| [#26394](https://github.com/BerriAI/litellm/pull/26394) | docs(guardrails): add during_call mode to Model Armor guardrail docs | [BerriAI-litellm-pr-26394.md](2026-W17/drip-23/BerriAI-litellm-pr-26394.md) |
 
 ## charmbracelet/crush
 
@@ -703,6 +734,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2609](https://github.com/charmbracelet/crush/pull/2609) | feat(session): add `session export` command for markdown/JSON export | [charmbracelet-crush-pr-2609.md](2026-W17/drip-21/charmbracelet-crush-pr-2609.md) |
 | [#2593](https://github.com/charmbracelet/crush/pull/2593) | feat: add theme support with Charmtone default and Gruvbox Dark | [charmbracelet-crush-pr-2593.md](2026-W17/drip-22/charmbracelet-crush-pr-2593.md) |
 | [#2575](https://github.com/charmbracelet/crush/pull/2575) | fix: correctly identify context fate in mcp createSession | [charmbracelet-crush-pr-2575.md](2026-W17/drip-22/charmbracelet-crush-pr-2575.md) |
+| [#2656](https://github.com/charmbracelet/crush/pull/2656) | fix: use same chroma formatter as diffview for markdown | [charmbracelet-crush-pr-2656.md](2026-W17/drip-23/charmbracelet-crush-pr-2656.md) |
 
 ## cline/cline
 
@@ -796,6 +828,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19229](https://github.com/openai/codex/pull/19229) | Add agent graph store interface | [openai-codex-pr-19229.md](2026-W17/drip-21/openai-codex-pr-19229.md) |
 | [#19391](https://github.com/openai/codex/pull/19391) | permissions: runtime config profile-backed | [openai-codex-pr-19391.md](2026-W17/drip-22/openai-codex-pr-19391.md) |
 | [#19422](https://github.com/openai/codex/pull/19422) | Clarify bundled OpenAI Docs upgrade guide wording | [openai-codex-pr-19422.md](2026-W17/drip-22/openai-codex-pr-19422.md) |
+| [#19176](https://github.com/openai/codex/pull/19176) | Add network proxy prompt guidance | [openai-codex-pr-19176.md](2026-W17/drip-23/openai-codex-pr-19176.md) |
 
 ## ollama/ollama
 
@@ -805,6 +838,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15755](https://github.com/ollama/ollama/pull/15755) | metal: harden for ggml initialization failures | [ollama-ollama-pr-15755.md](2026-W17/drip-19/ollama-ollama-pr-15755.md) |
 | [#15716](https://github.com/ollama/ollama/pull/15716) | server: fix download stall watchdog not firing when no bytes arrive | [ollama-ollama-pr-15716.md](2026-W17/drip-21/ollama-ollama-pr-15716.md) |
 | [#15784](https://github.com/ollama/ollama/pull/15784) | Go sampler: implement repeat/freq/presence penalties | [ollama-ollama-pr-15784.md](2026-W17/drip-22/ollama-ollama-pr-15784.md) |
+| [#15768](https://github.com/ollama/ollama/pull/15768) | feat(runner): expose prompt cache hit count in completion response | [ollama-ollama-pr-15768.md](2026-W17/drip-23/ollama-ollama-pr-15768.md) |
 
 ---
 
