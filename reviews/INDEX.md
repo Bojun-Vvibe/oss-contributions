@@ -1,6 +1,6 @@
 # Review Index
 
-92 PR reviews across 8 OSS AI-coding-agent projects. Each review
+96 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -44,6 +44,17 @@ section.
   paths in agent role configs, and a Unix-socket transport
   unification onto the standard WebSocket HTTP-Upgrade
   handshake to close the framing gap with the TCP path.
+- **W17 drip-6 (2026-04-24)**: 4 more — numeric-tool-call-ID
+  coercion at the fetch interceptor for spec-violating
+  OpenAI-compatible providers (NVIDIA NIM kimi-k2.5 class),
+  collapse of the dual-arm (substring + JSON-parse) retry
+  classifier into a single broad-regex predicate covering
+  ~25 transient surfaces, SQLite WAL-mode corruption fix
+  via `MaxOpenConns(1)` + `_txlock=immediate` against
+  concurrent sub-agent write races, and `$VAR` env-var
+  expansion in stdio MCP server `args` via the same
+  `ResolveValue` resolver already used for `command`/`env`/
+  `headers`.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -97,6 +108,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24079](https://github.com/anomalyco/opencode/pull/24079) | fix(app): add experimental flag to disable vcs diff auto-fetch | [PR-24079.md](anomalyco-opencode/PR-24079.md) |
 | [#24066](https://github.com/anomalyco/opencode/pull/24066) | fix(provider): preserve custom User-Agent from provider.options.headers | [PR-24066.md](anomalyco-opencode/PR-24066.md) |
 | [#24013](https://github.com/anomalyco/opencode/pull/24013) | fix(opencode): stop retrying non-transient rate limits | [PR-24013.md](anomalyco-opencode/PR-24013.md) |
+| [#24026](https://github.com/anomalyco/opencode/pull/24026) | fix(provider): coerce numeric tool call IDs for OpenAI-compatible providers | [PR-24026.md](anomalyco-opencode/PR-24026.md) |
+| [#24033](https://github.com/anomalyco/opencode/pull/24033) | tweak: simplify retry logic | [PR-24033.md](anomalyco-opencode/PR-24033.md) |
 
 ## BerriAI/litellm
 
@@ -129,6 +142,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2607](https://github.com/charmbracelet/crush/pull/2607) | feat: generally render output that looks like a diff as a diff | [PR-2607.md](charmbracelet-crush/PR-2607.md) |
 | [#2611](https://github.com/charmbracelet/crush/pull/2611) | fix(events): prevent early events from being dropped before init | [PR-2611.md](charmbracelet-crush/PR-2611.md) |
 | [#2691](https://github.com/charmbracelet/crush/pull/2691) | fix(lsp): cancel in-flight diagnostics request on buffer close | [PR-2691.md](charmbracelet-crush/PR-2691.md) |
+| [#2690](https://github.com/charmbracelet/crush/pull/2690) | fix(db): prevent SQLITE_NOTADB corruption under concurrent sub-agents | [PR-2690.md](charmbracelet-crush/PR-2690.md) |
+| [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [PR-2693.md](charmbracelet-crush/PR-2693.md) |
 
 ## cline/cline
 
