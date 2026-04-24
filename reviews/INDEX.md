@@ -1,6 +1,6 @@
 # Review Index
 
-84 PR reviews across 8 OSS AI-coding-agent projects. Each review
+88 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -27,6 +27,14 @@ section.
   null-filter limitation via `query_raw IS NOT NULL` in the
   budget-window reset job, and V0→V1 dependency carve-off (memory
   package external-reference cleanup).
+- **W17 drip-4 (2026-04-24)**: 4 more — Bun fetch
+  stream-disconnect retry classification, experimental
+  `disable_vcs_diff` config flag as a session-page mitigation,
+  `truncation_policy` clamp pushed down into `unified_exec` so
+  rollout persistence stops diverging from model-visible context,
+  and the `PermissionProfile` tagged-union refactor that makes
+  `managed`/`disabled`/`external` enforcement modes round-trip
+  faithfully across the v2 wire.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -76,6 +84,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24087](https://github.com/anomalyco/opencode/pull/24087) | fix(session): drop zero-length assistant turns before compaction | [PR-24087.md](anomalyco-opencode/PR-24087.md) |
 | [#24009](https://github.com/anomalyco/opencode/pull/24009) | fix(tui): render all non-synthetic text parts of a user message | [PR-24009.md](anomalyco-opencode/PR-24009.md) |
 | [#24062](https://github.com/anomalyco/opencode/pull/24062) | feat(httpapi): bridge workspace read endpoints | [PR-24062.md](anomalyco-opencode/PR-24062.md) |
+| [#24076](https://github.com/anomalyco/opencode/pull/24076) | fix: handle Bun stream connection errors with automatic retry | [PR-24076.md](anomalyco-opencode/PR-24076.md) |
+| [#24079](https://github.com/anomalyco/opencode/pull/24079) | fix(app): add experimental flag to disable vcs diff auto-fetch | [PR-24079.md](anomalyco-opencode/PR-24079.md) |
 
 ## BerriAI/litellm
 
@@ -153,6 +163,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19204](https://github.com/openai/codex/pull/19204) | fix(exec-server): honor request timeout across tool loop iterations | [PR-19204.md](openai-codex/PR-19204.md) |
 | [#19130](https://github.com/openai/codex/pull/19130) | exec-server: wait for close after observed exit | [PR-19130.md](openai-codex/PR-19130.md) |
 | [#19127](https://github.com/openai/codex/pull/19127) | feat: drop spawned-agent context instructions | [PR-19127.md](openai-codex/PR-19127.md) |
+| [#19231](https://github.com/openai/codex/pull/19231) | permissions: make profiles represent enforcement | [PR-19231.md](openai-codex/PR-19231.md) |
+| [#19247](https://github.com/openai/codex/pull/19247) | chore: apply truncation policy to unified_exec | [PR-19247.md](openai-codex/PR-19247.md) |
 
 ---
 
