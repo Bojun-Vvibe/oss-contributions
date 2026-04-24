@@ -1,6 +1,6 @@
 # Review Index
 
-88 PR reviews across 8 OSS AI-coding-agent projects. Each review
+92 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -35,6 +35,15 @@ section.
   and the `PermissionProfile` tagged-union refactor that makes
   `managed`/`disabled`/`external` enforcement modes round-trip
   faithfully across the v2 wire.
+- **W17 drip-5 (2026-04-24)**: 4 more — a `User-Agent` header
+  collision in the session LLM layer that silently dropped
+  user-configured provider headers, a quota-vs-window 429
+  classification gap that turned weekly-cap rejections into
+  unbounded retry loops, a layered-config `AbsolutePathBuf`
+  base-path bug that broke relative `agents.*.config_file`
+  paths in agent role configs, and a Unix-socket transport
+  unification onto the standard WebSocket HTTP-Upgrade
+  handshake to close the framing gap with the TCP path.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -86,6 +95,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24062](https://github.com/anomalyco/opencode/pull/24062) | feat(httpapi): bridge workspace read endpoints | [PR-24062.md](anomalyco-opencode/PR-24062.md) |
 | [#24076](https://github.com/anomalyco/opencode/pull/24076) | fix: handle Bun stream connection errors with automatic retry | [PR-24076.md](anomalyco-opencode/PR-24076.md) |
 | [#24079](https://github.com/anomalyco/opencode/pull/24079) | fix(app): add experimental flag to disable vcs diff auto-fetch | [PR-24079.md](anomalyco-opencode/PR-24079.md) |
+| [#24066](https://github.com/anomalyco/opencode/pull/24066) | fix(provider): preserve custom User-Agent from provider.options.headers | [PR-24066.md](anomalyco-opencode/PR-24066.md) |
+| [#24013](https://github.com/anomalyco/opencode/pull/24013) | fix(opencode): stop retrying non-transient rate limits | [PR-24013.md](anomalyco-opencode/PR-24013.md) |
 
 ## BerriAI/litellm
 
@@ -165,6 +176,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19127](https://github.com/openai/codex/pull/19127) | feat: drop spawned-agent context instructions | [PR-19127.md](openai-codex/PR-19127.md) |
 | [#19231](https://github.com/openai/codex/pull/19231) | permissions: make profiles represent enforcement | [PR-19231.md](openai-codex/PR-19231.md) |
 | [#19247](https://github.com/openai/codex/pull/19247) | chore: apply truncation policy to unified_exec | [PR-19247.md](openai-codex/PR-19247.md) |
+| [#19261](https://github.com/openai/codex/pull/19261) | Resolve relative agent role config paths from layers | [PR-19261.md](openai-codex/PR-19261.md) |
+| [#19244](https://github.com/openai/codex/pull/19244) | Update unix socket transport to use WebSocket upgrade | [PR-19244.md](openai-codex/PR-19244.md) |
 
 ---
 
