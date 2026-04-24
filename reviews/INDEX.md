@@ -716,6 +716,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24210](https://github.com/anomalyco/opencode/pull/24210) | feat(opencode): add /context command | [anomalyco-opencode-pr-24210.md](2026-W17/drip-25/anomalyco-opencode-pr-24210.md) |
 | [#24218](https://github.com/anomalyco/opencode/pull/24218) | fix(provider): auto-enable interleaved for reasoning models | [anomalyco-opencode-pr-24218.md](2026-W17/drip-26/anomalyco-opencode-pr-24218.md) |
 | [#24222](https://github.com/anomalyco/opencode/pull/24222) | fix permission config order | [anomalyco-opencode-pr-24222.md](2026-W17/drip-26/anomalyco-opencode-pr-24222.md) |
+| [#24220](https://github.com/anomalyco/opencode/pull/24220) | Fix session event typechecks and shell cwd | [anomalyco-opencode-pr-24220.md](2026-W17/drip-27/anomalyco-opencode-pr-24220.md) |
+| [#24219](https://github.com/anomalyco/opencode/pull/24219) | docs(effect): add generated http route inventory | [anomalyco-opencode-pr-24219.md](2026-W17/drip-27/anomalyco-opencode-pr-24219.md) |
 
 ## BerriAI/litellm
 
@@ -768,6 +770,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26452](https://github.com/BerriAI/litellm/pull/26452) | fix(ci): CircleCI rerun awk preprocessor | [BerriAI-litellm-pr-26452.md](2026-W17/drip-25/BerriAI-litellm-pr-26452.md) |
 | [#26459](https://github.com/BerriAI/litellm/pull/26459) | [Fix] Reseed enforcement read path from DB on counter miss | [BerriAI-litellm-pr-26459.md](2026-W17/drip-26/BerriAI-litellm-pr-26459.md) |
 | [#26451](https://github.com/BerriAI/litellm/pull/26451) | Azure Sentinel truncation + gzip + batch splitting | [BerriAI-litellm-pr-26451.md](2026-W17/drip-26/BerriAI-litellm-pr-26451.md) |
+| [#26447](https://github.com/BerriAI/litellm/pull/26447) | New Relic AI Monitoring integration | [BerriAI-litellm-pr-26447.md](2026-W17/drip-27/BerriAI-litellm-pr-26447.md) |
 
 ## charmbracelet/crush
 
@@ -816,6 +819,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2593](https://github.com/charmbracelet/crush/pull/2593) | feat: add theme support with Charmtone default and Gruvbox Dark | [charmbracelet-crush-pr-2593.md](2026-W17/drip-22/charmbracelet-crush-pr-2593.md) |
 | [#2575](https://github.com/charmbracelet/crush/pull/2575) | fix: correctly identify context fate in mcp createSession | [charmbracelet-crush-pr-2575.md](2026-W17/drip-22/charmbracelet-crush-pr-2575.md) |
 | [#2656](https://github.com/charmbracelet/crush/pull/2656) | fix: use same chroma formatter as diffview for markdown | [charmbracelet-crush-pr-2656.md](2026-W17/drip-23/charmbracelet-crush-pr-2656.md) |
+| [#2555](https://github.com/charmbracelet/crush/pull/2555) | fix: use small model for task agent instead of large | [charmbracelet-crush-pr-2555.md](2026-W17/drip-27/charmbracelet-crush-pr-2555.md) |
 
 ## cline/cline
 
@@ -917,6 +921,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19447](https://github.com/openai/codex/pull/19447) | ci: publish codex-app-server release artifacts | [openai-codex-pr-19447.md](2026-W17/drip-25/openai-codex-pr-19447.md) |
 | [#19452](https://github.com/openai/codex/pull/19452) | Stabilize plugin MCP fixture tests | [openai-codex-pr-19452.md](2026-W17/drip-26/openai-codex-pr-19452.md) |
 | [#19454](https://github.com/openai/codex/pull/19454) | Split approval matrix test groups | [openai-codex-pr-19454.md](2026-W17/drip-26/openai-codex-pr-19454.md) |
+| [#19453](https://github.com/openai/codex/pull/19453) | Serialize legacy Windows PowerShell sandbox tests | [openai-codex-pr-19453.md](2026-W17/drip-27/openai-codex-pr-19453.md) |
+| [#19455](https://github.com/openai/codex/pull/19455) | Add gRPC feedback log sink | [openai-codex-pr-19455.md](2026-W17/drip-27/openai-codex-pr-19455.md) |
 
 ## ollama/ollama
 
@@ -934,6 +940,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15795](https://github.com/ollama/ollama/pull/15795) | launch: add codex model metadata catalog | [ollama-ollama-pr-15795.md](2026-W17/drip-25/ollama-ollama-pr-15795.md) |
 | [#15763](https://github.com/ollama/ollama/pull/15763) | Prevent system sleep during inference (fixes #4072) | [ollama-ollama-pr-15763.md](2026-W17/drip-26/ollama-ollama-pr-15763.md) |
 | [#15724](https://github.com/ollama/ollama/pull/15724) | convert: support fp8 safetensors import | [ollama-ollama-pr-15724.md](2026-W17/drip-26/ollama-ollama-pr-15724.md) |
+| [#15761](https://github.com/ollama/ollama/pull/15761) | x/mlxrunner/model: add baseline test coverage for quant metadata scanning | [ollama-ollama-pr-15761.md](2026-W17/drip-27/ollama-ollama-pr-15761.md) |
+| [#15760](https://github.com/ollama/ollama/pull/15760) | x/mlxrunner: apply config.json per-tensor quant overrides for mixed-precision MoE | [ollama-ollama-pr-15760.md](2026-W17/drip-27/ollama-ollama-pr-15760.md) |
+| [#15765](https://github.com/ollama/ollama/pull/15765) | docs: add HuggingFace Hub direct GGUF pull pattern to import guide | [ollama-ollama-pr-15765.md](2026-W17/drip-27/ollama-ollama-pr-15765.md) |
 
 ---
 
