@@ -1,6 +1,6 @@
 # Review Index
 
-132 PR reviews across 8 OSS AI-coding-agent projects. Each review
+140 PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -190,8 +190,35 @@ section.
   follow-up crashes; and a three-in-one guardrail PR
   combining recursive sensitive-key masking, masked
   `litellm_params` in `/guardrails/submissions`, and
-  team-scoped non-admin filtering on `/v2/guardrails/list`
-  with an authorization-shape change to the route signature.
+   team-scoped non-admin filtering on `/v2/guardrails/list`
+   with an authorization-shape change to the route signature.
+- **W17 drip-11 (2026-04-24)**: 8 more — narrowing of a
+  loose substring match (`id.includes("deepseek")`) into
+  a four-family allow-list that trades forward-compat for
+  precision; a `parseManagedPlist` non-object-JSON guard
+  that fixes a startup crash but silently masks malformed
+  MDM payloads; a second `CONFIG_KEY_ALIASES` table entry
+  (`agents.max_concurrent_threads_per_session` →
+  `max_threads`) with no collision policy or deprecation
+  warn; a tagged-union `ApprovalPolicyConstraint` that
+  introduces a scoped `granular = "any"` wildcard on
+  `allowed_approval_policies` (with the permanent
+  governance trade-off that adding new granular sub-flags
+  later silently loosens existing wildcards); env-resolution
+  test coverage for the hyper provider's `sync.OnceValue`
+  package globals via test-file-local reset helpers (with
+  the parallel-safety hazard that comes with mutating
+  package state from tests); a one-line `AtBottom()` fix
+  in the list widget that subtracts `offsetLine` before the
+  early-exit comparison so auto-follow stops desyncing
+  after manual scroll-back; addition of a `get_user_models`
+  helper plus integration into `get_available_models_for_user`
+  to close a listing-vs-invocation ACL parity gap on
+  `GET /v1/models`; and a high-severity Bedrock passthrough
+  ACL fix that adds path-extraction + reverse-lookup from
+  Bedrock `modelId` to LiteLLM `model_group` so that
+  `/bedrock/.../invoke` and friends can no longer bypass
+  `key.models` / `user.models` restrictions.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -257,6 +284,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24146](https://github.com/sst/opencode/pull/24146) | fix: preserve empty reasoning_content for DeepSeek V4 thinking mode | [PR-24146-deepseek-empty-reasoning.md](anomalyco-opencode/PR-24146-deepseek-empty-reasoning.md) |
 | [#24140](https://github.com/sst/opencode/pull/24140) | cli/tui: honor configured network defaults in thread mode | [PR-24140-thread-network-defaults.md](anomalyco-opencode/PR-24140-thread-network-defaults.md) |
 | [#24139](https://github.com/sst/opencode/pull/24139) | tool/lsp: include request details in permission metadata | [PR-24139-lsp-permission-metadata.md](anomalyco-opencode/PR-24139-lsp-permission-metadata.md) |
+| [#24157](https://github.com/sst/opencode/pull/24157) | fix: deepseek variants — substring → allow-list | [PR-24157-deepseek-variant-narrowing.md](anomalyco-opencode/PR-24157-deepseek-variant-narrowing.md) |
+| [#24118](https://github.com/sst/opencode/pull/24118) | fix(config): avoid parseManagedPlist crash on non-object JSON | [PR-24118-managed-plist-non-object-guard.md](anomalyco-opencode/PR-24118-managed-plist-non-object-guard.md) |
 
 ## BerriAI/litellm
 
@@ -282,6 +311,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26417](https://github.com/BerriAI/litellm/pull/26417) | fix(health_check): skip max_tokens for image_generation mode | [PR-26417-image-generation-skip-max-tokens.md](BerriAI-litellm/PR-26417-image-generation-skip-max-tokens.md) |
 | [#26400](https://github.com/BerriAI/litellm/pull/26400) | fix(websearch): deduplicate overlapping keys between kwargs and optional_params | [PR-26400-websearch-kwargs-optional-params-dedup.md](BerriAI-litellm/PR-26400-websearch-kwargs-optional-params-dedup.md) |
 | [#26390](https://github.com/BerriAI/litellm/pull/26390) | [Fix] Guardrail param handling in list and submission endpoints | [PR-26390-guardrail-team-scoping-mask-recursion.md](BerriAI-litellm/PR-26390-guardrail-team-scoping-mask-recursion.md) |
+| [#26421](https://github.com/BerriAI/litellm/pull/26421) | fix(proxy): apply user.models restriction to GET /v1/models list | [PR-26421-user-models-list-filter.md](BerriAI-litellm/PR-26421-user-models-list-filter.md) |
+| [#26416](https://github.com/BerriAI/litellm/pull/26416) | fix(auth): enforce model ACL on Bedrock passthrough routes | [PR-26416-bedrock-passthrough-acl.md](BerriAI-litellm/PR-26416-bedrock-passthrough-acl.md) |
 
 ## charmbracelet/crush
 
@@ -306,6 +337,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2700](https://github.com/charmbracelet/crush/pull/2700) | fix(agent): implement OnRetry logging with structured retry fields | [PR-2700-onretry-structured-logging.md](charmbracelet-crush/PR-2700-onretry-structured-logging.md) |
 | [#2675](https://github.com/charmbracelet/crush/pull/2675) | Fix command aliases/args parsing and empty tool-call input normalization | [PR-2675-cmd-aliases-empty-toolcall-input.md](charmbracelet-crush/PR-2675-cmd-aliases-empty-toolcall-input.md) |
 | [#2688](https://github.com/charmbracelet/crush/pull/2688) | fix: remove minimax api key validate | [PR-2688-minimax-key-validation-removal.md](charmbracelet-crush/PR-2688-minimax-key-validation-removal.md) |
+| [#2698](https://github.com/charmbracelet/crush/pull/2698) | test(hyper): add provider env behavior coverage | [PR-2698-hyper-provider-env-tests.md](charmbracelet-crush/PR-2698-hyper-provider-env-tests.md) |
+| [#2647](https://github.com/charmbracelet/crush/pull/2647) | fix(ui): AtBottom() early exit not accounting for offsetLine | [PR-2647-atbottom-offsetline.md](charmbracelet-crush/PR-2647-atbottom-offsetline.md) |
 
 ## cline/cline
 
@@ -367,6 +400,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19294](https://github.com/openai/codex/pull/19294) | Hide unsupported MCP bearer_token from config schema | [PR-19294-mcp-bearer-token-schema-hide.md](openai-codex/PR-19294-mcp-bearer-token-schema-hide.md) |
 | [#19292](https://github.com/openai/codex/pull/19292) | Reject unsupported js_repl image MIME types | [PR-19292-js-repl-image-mime-allowlist.md](openai-codex/PR-19292-js-repl-image-mime-allowlist.md) |
 | [#19233](https://github.com/openai/codex/pull/19233) | Make thread archive idempotent for archived threads | [PR-19233-thread-archive-idempotent.md](openai-codex/PR-19233-thread-archive-idempotent.md) |
+| [#19354](https://github.com/openai/codex/pull/19354) | chore: alias max_concurrent_threads_per_session | [PR-19354-max-threads-alias.md](openai-codex/PR-19354-max-threads-alias.md) |
+| [#19216](https://github.com/openai/codex/pull/19216) | Allow any granular approval requirement | [PR-19216-granular-approval-wildcard.md](openai-codex/PR-19216-granular-approval-wildcard.md) |
 
 ---
 
