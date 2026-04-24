@@ -1,6 +1,6 @@
 # Review Index
 
-157 + W17 drips PR reviews across 8 OSS AI-coding-agent projects. Each review
+157 + W17 drips (through drip-17) PR reviews across 8 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -339,6 +339,31 @@ section.
   Z.AI / Zhipu AI dropdown entry that closes the
   backend-complete / UI-incomplete gap from issue
   #25482.
+- **W17 drip-17 (2026-04-25)**: 8 more — WSL desktop
+  mDNS workaround docs (UNC-path bypass via hostname
+  resolution), ACP slash-command parser rewritten to
+  preserve internal whitespace via anchored
+  `^(\S+)(?:\s([\s\S]*))?$` regex, bundled openai-docs
+  skill refresh for GPT-5.5 (default-model flip,
+  `latest-model.md` table refit, 599→244 line
+  prompting-guide trim), `LogBatchWriter` trait carve-out
+  with `BufferedLogSink<W>` + `LogSinkQueueConfig` so
+  tracing log sinks can plug new destinations while
+  preserving fire-and-forget back-pressure shape, OSC
+  99 + OSC 777 dual-emit notification backend keyed off
+  `SSH_TTY` (with a load-bearing
+  `RequestModeFocusEvent` move out of the smart-terminal
+  branch), per-agent `model` size config in crush
+  config/schema with a schema/runtime-required mismatch
+  on `model` and five exposed-but-unwired Agent fields,
+  GCP IAM token cache (55-min TTL, double-checked
+  locking, module-level `Dict` keyed by service account)
+  to stop N parallel Redis connections from each
+  blocking the asyncio loop on a fresh IAM round-trip,
+  and the missing
+  `cache_creation_input_token_cost_above_1hr` (6e-06)
+  pricing entry on both `vertex_ai/claude-sonnet-4-6`
+  and its `@default` alias.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -414,6 +439,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24154](https://github.com/sst/opencode/pull/24154) | feat: add unarchive/restore for archived sessions | [anomalyco-opencode-pr-24154.md](2026-W17/anomalyco-opencode-pr-24154.md) |
 | [#24179](https://github.com/sst/opencode/pull/24179) | feat: expose a session-scoped permission bridge for external providers | [sst-opencode-pr-24179.md](2026-W17/sst-opencode-pr-24179.md) |
 | [#24162](https://github.com/sst/opencode/pull/24162) | fix(desktop): add retry logic with exponential backoff to health check system | [sst-opencode-pr-24162.md](2026-W17/sst-opencode-pr-24162.md) |
+| [#24144](https://github.com/sst/opencode/pull/24144) | docs: add MDNS workaround for WSL path issues in windows-wsl.mdx | [sst-opencode-pr-24144.md](2026-W17/drip-17/sst-opencode-pr-24144.md) |
+| [#24008](https://github.com/sst/opencode/pull/24008) | fix: preserve newlines in ACP command argument parsing | [sst-opencode-pr-24008.md](2026-W17/drip-17/sst-opencode-pr-24008.md) |
 
 ## BerriAI/litellm
 
@@ -450,6 +477,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26434](https://github.com/BerriAI/litellm/pull/26434) | Fix/shared health check polling | [PR-26434-shared-health-check-polling.md](BerriAI-litellm/PR-26434-shared-health-check-polling.md) |
 | [#26438](https://github.com/BerriAI/litellm/pull/26438) | fix(jwt-auth): apply team TPM/RPM to proxy_admin users acting on behalf of a team | [BerriAI-litellm-pr-26438.md](2026-W17/BerriAI-litellm-pr-26438.md) |
 | [#26419](https://github.com/BerriAI/litellm/pull/26419) | fix(ui): add missing 'zai' (Z.AI / Zhipu AI) provider to Add-Model dropdown | [BerriAI-litellm-pr-26419.md](2026-W17/BerriAI-litellm-pr-26419.md) |
+| [#26441](https://github.com/BerriAI/litellm/pull/26441) | fix(redis): cache GCP IAM token to prevent async event loop blocking | [BerriAI-litellm-pr-26441.md](2026-W17/drip-17/BerriAI-litellm-pr-26441.md) |
+| [#26410](https://github.com/BerriAI/litellm/pull/26410) | fix: add vertex sonnet 4.6 1h cache pricing | [BerriAI-litellm-pr-26410.md](2026-W17/drip-17/BerriAI-litellm-pr-26410.md) |
 
 ## charmbracelet/crush
 
@@ -486,6 +515,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2702](https://github.com/charmbracelet/crush/pull/2702) | feat: super yollo (dangerous-command warning in YOLO mode) | [PR-2702-super-yollo-dangerous-command-prompt.md](charmbracelet-crush/PR-2702-super-yollo-dangerous-command-prompt.md) |
 | [#2605](https://github.com/charmbracelet/crush/pull/2605) | feat(config): add additional_dirs option for tool access | [charmbracelet-crush-pr-2605.md](2026-W17/charmbracelet-crush-pr-2605.md) |
 | [#2601](https://github.com/charmbracelet/crush/pull/2601) | fix: refresh TUI when session is updated by an external process | [charmbracelet-crush-pr-2601.md](2026-W17/charmbracelet-crush-pr-2601.md) |
+| [#2590](https://github.com/charmbracelet/crush/pull/2590) | feat(notification): notify using OSC sequences for ssh terminal | [charmbracelet-crush-pr-2590.md](2026-W17/drip-17/charmbracelet-crush-pr-2590.md) |
+| [#2584](https://github.com/charmbracelet/crush/pull/2584) | feat(agent): allow user to configure agent model size | [charmbracelet-crush-pr-2584.md](2026-W17/drip-17/charmbracelet-crush-pr-2584.md) |
 
 ## cline/cline
 
@@ -563,6 +594,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19323](https://github.com/openai/codex/pull/19323) | Update models.json and related fixtures (default_reasoning_level shift) | [PR-19323-models-json-fixtures-update.md](openai-codex/PR-19323-models-json-fixtures-update.md) |
 | [#19389](https://github.com/openai/codex/pull/19389) | Guard npm update prompt on registry readiness | [openai-codex-pr-19389.md](2026-W17/openai-codex-pr-19389.md) |
 | [#19266](https://github.com/openai/codex/pull/19266) | [codex] add non-local thread store regression harness | [openai-codex-pr-19266.md](2026-W17/openai-codex-pr-19266.md) |
+| [#19407](https://github.com/openai/codex/pull/19407) | Update bundled OpenAI Docs skill for GPT-5.5 | [openai-codex-pr-19407.md](2026-W17/drip-17/openai-codex-pr-19407.md) |
+| [#19234](https://github.com/openai/codex/pull/19234) | Carve out log DB interfaces for new sinks | [openai-codex-pr-19234.md](2026-W17/drip-17/openai-codex-pr-19234.md) |
 
 ---
 
