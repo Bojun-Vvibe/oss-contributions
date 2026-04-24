@@ -354,6 +354,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26416](https://github.com/BerriAI/litellm/pull/26416) | fix(auth): enforce model ACL on Bedrock passthrough routes | [PR-26416-bedrock-passthrough-acl.md](BerriAI-litellm/PR-26416-bedrock-passthrough-acl.md) |
 | [#26425](https://github.com/BerriAI/litellm/pull/26425) | fix(proxy): downgrade 401/403 auth denials from ERROR to WARNING in auth_exception_handler | [PR-26425-auth-401-403-warning-downgrade.md](BerriAI-litellm/PR-26425-auth-401-403-warning-downgrade.md) |
 | [#26418](https://github.com/BerriAI/litellm/pull/26418) | fix(proxy): single-team DB fallback when JWT has no team_id | [PR-26418-jwt-single-team-db-fallback.md](BerriAI-litellm/PR-26418-jwt-single-team-db-fallback.md) |
+| [#26426](https://github.com/BerriAI/litellm/pull/26426) | fix(vertex_ai/anthropic): stop stripping output_config | [BerriAI-litellm-pr-26426.md](2026-W17/BerriAI-litellm-pr-26426.md) |
+| [#26427](https://github.com/BerriAI/litellm/pull/26427) | fix(model_management): refresh router after POST /model/update | [BerriAI-litellm-pr-26427.md](2026-W17/BerriAI-litellm-pr-26427.md) |
 
 ## charmbracelet/crush
 
@@ -382,6 +384,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2647](https://github.com/charmbracelet/crush/pull/2647) | fix(ui): AtBottom() early exit not accounting for offsetLine | [PR-2647-atbottom-offsetline.md](charmbracelet-crush/PR-2647-atbottom-offsetline.md) |
 | [#2643](https://github.com/charmbracelet/crush/pull/2643) | fix: enable real-time reasoning display and implement missing toggle handler | [PR-2643-realtime-reasoning-display-toggle.md](charmbracelet-crush/PR-2643-realtime-reasoning-display-toggle.md) |
 | [#2686](https://github.com/charmbracelet/crush/pull/2686) | feat: support Moonshot and Moonshot China API keys in config | [PR-2686-moonshot-cn-api-keys.md](charmbracelet-crush/PR-2686-moonshot-cn-api-keys.md) |
+| [#2674](https://github.com/charmbracelet/crush/pull/2674) | config: APIURL/APIKEY env overrides with CRUSH_PROVIDER targeting | [charmbracelet-crush-pr-2674.md](2026-W17/charmbracelet-crush-pr-2674.md) |
+| [#2679](https://github.com/charmbracelet/crush/pull/2679) | fix: reduce token usage, use short tool descriptions by default | [charmbracelet-crush-pr-2679.md](2026-W17/charmbracelet-crush-pr-2679.md) |
 
 ## cline/cline
 
@@ -448,6 +452,10 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19240](https://github.com/openai/codex/pull/19240) | fix: allow AgentIdentity through Apps MCP gates | [PR-19240-agent-identity-apps-mcp-gates.md](openai-codex/PR-19240-agent-identity-apps-mcp-gates.md) |
 | [#19211](https://github.com/openai/codex/pull/19211) | [codex] Fix Windows process management edge cases | [PR-19211-windows-process-edge-cases.md](openai-codex/PR-19211-windows-process-edge-cases.md) |
 | [#19193](https://github.com/openai/codex/pull/19193) | Support Codex Apps auth elicitations | [PR-19193-codex-apps-auth-elicitations.md](openai-codex/PR-19193-codex-apps-auth-elicitations.md) |
+| [#19218](https://github.com/openai/codex/pull/19218) | cli: add macOS seatbelt flags for Mach services and Apple events | [openai-codex-pr-19218.md](2026-W17/openai-codex-pr-19218.md) |
+| [#19246](https://github.com/openai/codex/pull/19246) | Increase app-server WebSocket outbound buffer | [openai-codex-pr-19246.md](2026-W17/openai-codex-pr-19246.md) |
+| [#19351](https://github.com/openai/codex/pull/19351) | Add agents.interrupt_message for interruption markers | [openai-codex-pr-19351.md](2026-W17/openai-codex-pr-19351.md) |
+| [#19360](https://github.com/openai/codex/pull/19360) | feat: surface multi-agent thread limit in spawn description | [openai-codex-pr-19360.md](2026-W17/openai-codex-pr-19360.md) |
 
 ---
 
