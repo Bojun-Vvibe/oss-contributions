@@ -1,6 +1,6 @@
 # Review Index
 
-157 + W17 drips (through drip-19) PR reviews across 9 OSS AI-coding-agent projects. Each review
+157 + W17 drips (through drip-20) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -424,6 +424,38 @@ section.
   `RunnerEnvOverrides` persistence) bundled with a
   GPU-discovery dummy-load serialization fix and a
   `StatusWriter` race repair via shared `cmd.Stdout`/`cmd.Stderr`.
+- **W17 drip-20 (2026-04-25)**: 8 more — codex's continued
+  `PermissionProfile` migration sweep (`from_legacy_sandbox_policy`
+  becomes cwd-free / symbolic with a separate `_for_cwd`
+  materializer for runtime callers; analytics + app-server
+  consumers re-keyed to `permission_profile`/`permission_profile_cwd`
+  with `Disabled` and `External` finally distinguishable in the
+  `sandbox_policy_mode` analytics bucket); the `thread/turns/list`
+  endpoint cut over from a four-fallback rollout-path resolver
+  to `ThreadStore::read_thread(... include_history: true)` with
+  a `thread_store_override` test seam threaded through
+  `InProcessClientStartArgs`; usage-limit popup `Shown`/`CtaClicked`
+  analytics emitted from the TUI via a new
+  `AppEvent::TrackUsageLimitBanner` plus extended status-and-layout
+  test coverage for the funnel; an event-driven rewrite of the
+  `plugin_mcp_tools_are_listed` flake (helpers now return the
+  full `TestCodex` so the `TempDir` cwd guard outlives stdio MCP
+  startup, and the 30s polling loop becomes a single
+  `McpStartupComplete` wait); CamelHumps subword editing on
+  `ctrl+left/right/backspace/delete` in crush with `parseHTTPResponse`
+  / `foo_barBaz` segmentation tests but missing `WithHelp` text
+  for the new bindings; a 4307-line crush JSON-hooks compatibility
+  PR that ships an unreleasable `replace charm.land/fantasy =>
+  ../../fantasy` directive in `go.mod`, double-fires the
+  `PromptSubmit` hook on first turns, and runs arbitrary shell
+  commands with no timeout/allowlist/trust-model documentation —
+  request-changes, not nits; and a tight opencode `.zod.parse`
+  → `Schema.decodeUnknownSync` migration that hoists decoders
+  to module scope across `acp/agent.ts`, `cli/cmd/import.ts`,
+  `control-plane/adaptors/worktree.ts`, and `server/routes/instance/pty.ts`
+  while keeping behavior identical except for malformed-JSON
+  todo-output now landing in the `Result.isFailure` log branch
+  instead of crashing the message-decoder loop.
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -497,6 +529,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24168](https://github.com/sst/opencode/pull/24168) | Refactor HttpApi auth middleware wiring | [anomalyco-opencode-pr-24168.md](2026-W17/anomalyco-opencode-pr-24168.md) |
 | [#24161](https://github.com/sst/opencode/pull/24161) | feat: add /uptime slash command | [anomalyco-opencode-pr-24161.md](2026-W17/anomalyco-opencode-pr-24161.md) |
 | [#24154](https://github.com/sst/opencode/pull/24154) | feat: add unarchive/restore for archived sessions | [anomalyco-opencode-pr-24154.md](2026-W17/anomalyco-opencode-pr-24154.md) |
+| [#24169](https://github.com/sst/opencode/pull/24169) | refactor(schema): decode effect schemas directly | [sst-opencode-pr-24169.md](2026-W17/drip-20/sst-opencode-pr-24169.md) |
 | [#24179](https://github.com/sst/opencode/pull/24179) | feat: expose a session-scoped permission bridge for external providers | [sst-opencode-pr-24179.md](2026-W17/sst-opencode-pr-24179.md) |
 | [#24162](https://github.com/sst/opencode/pull/24162) | fix(desktop): add retry logic with exponential backoff to health check system | [sst-opencode-pr-24162.md](2026-W17/sst-opencode-pr-24162.md) |
 | [#24144](https://github.com/sst/opencode/pull/24144) | docs: add MDNS workaround for WSL path issues in windows-wsl.mdx | [sst-opencode-pr-24144.md](2026-W17/drip-17/sst-opencode-pr-24144.md) |
@@ -588,6 +621,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2598](https://github.com/charmbracelet/crush/pull/2598) | feat: PreToolUse hook | [charmbracelet-crush-pr-2598.md](2026-W17/drip-17/charmbracelet-crush-pr-2598.md) |
 | [#2606](https://github.com/charmbracelet/crush/pull/2606) | feat: split-pane tree, tab manager, and cross-platform PTY | [charmbracelet-crush-pr-2606.md](2026-W17/drip-17/charmbracelet-crush-pr-2606.md) |
 | [#2620](https://github.com/charmbracelet/crush/pull/2620) | feat(cmd): add `crush skills list` command with group-by-source support | [charmbracelet-crush-pr-2620.md](2026-W17/drip-19/charmbracelet-crush-pr-2620.md) |
+| [#2646](https://github.com/charmbracelet/crush/pull/2646) | feat(ui): add CamelHumps editing for ctrl word shortcuts | [charmbracelet-crush-pr-2646.md](2026-W17/drip-20/charmbracelet-crush-pr-2646.md) |
+| [#2612](https://github.com/charmbracelet/crush/pull/2612) | feat(hooks): implement JSON-based compatibility layer and lifecycle hooks | [charmbracelet-crush-pr-2612.md](2026-W17/drip-20/charmbracelet-crush-pr-2612.md) |
 
 ## cline/cline
 
@@ -671,6 +706,11 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19395](https://github.com/openai/codex/pull/19395) | permissions: finish profile-backed app surfaces | [openai-codex-pr-19395.md](2026-W17/drip-17/openai-codex-pr-19395.md) |
 | [#19394](https://github.com/openai/codex/pull/19394) | permissions: remove core legacy policy round trips | [openai-codex-pr-19394.md](2026-W17/drip-19/openai-codex-pr-19394.md) |
 | [#19224](https://github.com/openai/codex/pull/19224) | Bump phase-two default model to gpt-5.5 | [openai-codex-pr-19224.md](2026-W17/drip-19/openai-codex-pr-19224.md) |
+| [#19414](https://github.com/openai/codex/pull/19414) | permissions: make legacy profile conversion cwd-free | [openai-codex-pr-19414.md](2026-W17/drip-20/openai-codex-pr-19414.md) |
+| [#19393](https://github.com/openai/codex/pull/19393) | permissions: migrate approval and sandbox consumers to profiles | [openai-codex-pr-19393.md](2026-W17/drip-20/openai-codex-pr-19393.md) |
+| [#19280](https://github.com/openai/codex/pull/19280) | [codex] Migrate thread turns list to thread store | [openai-codex-pr-19280.md](2026-W17/drip-20/openai-codex-pr-19280.md) |
+| [#19209](https://github.com/openai/codex/pull/19209) | [codex] Emit usage-limit prompt analytics from TUI | [openai-codex-pr-19209.md](2026-W17/drip-20/openai-codex-pr-19209.md) |
+| [#19169](https://github.com/openai/codex/pull/19169) | Stabilize plugin MCP tool listing test | [openai-codex-pr-19169.md](2026-W17/drip-20/openai-codex-pr-19169.md) |
 
 ## ollama/ollama
 
