@@ -1,6 +1,6 @@
 # Review Index
 
-181 + W17 drips (through drip-50) PR reviews across 10 OSS AI-coding-agent projects. Each review
+189 + W17 drips (through drip-51) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1219,9 +1219,68 @@ section.
       textbook public-field-with-no-impl fix), and a
       test-only PR locking the non-obvious
       "close-before-start rotates the event_bus"
-      contract that protects future close()-fast-path
-      optimizations from silently breaking session
-      reuse (#4707, merge-as-is).
+       contract that protects future close()-fast-path
+       optimizations from silently breaking session
+       reuse (#4707, merge-as-is).
+- **W17 drip-51 (2026-04-26)**: 8 more across 4 repos —
+       sst/opencode `AppFileSystem.resolve()` widens the
+       `realpathSync` catch from `ENOENT`-only to a
+       catch-all so `ELOOP`/`EACCES`/`ENOTDIR` no longer
+       crash callers that just want a normalized path
+       (#24337, merge-as-is, brings the helper into
+       parity with the sibling `util/filesystem.ts`
+       `normalizePath`); a 100-file barrel-removal sweep
+       that flips `import { Log } from "@/util"` to
+       `@/util/log` everywhere and rewrites `AGENTS.md`
+       wholesale, but silently contradicts the prior
+       documented self-export pattern and bundles three
+       policy changes into one mechanical refactor
+       (#24333, needs-discussion); a three-fix bundle
+       adding 60s eviction timers to the per-file edit
+       lock map and a 30s `Promise.race` timeout to the
+       rwlock primitive, with a real reader-count leak
+       on the timeout-after-acquisition race that should
+       be fixed before merge (#24332, merge-after-nits);
+       and a sweep promoting silent `catch {}` blocks to
+       `log.debug`/`log.warn` across 11 modules with
+       correct severity discipline plus a bonus
+       `catch(e: any)` → `unknown` narrowing fix in
+       `session/llm.ts` (#24331, merge-as-is, with one
+       stray `Session` self-export that conflicts with
+       the parallel barrel-removal PR);
+       openai/codex `--cloud` mode for `exec-server`
+       that registers with a cloud environments service
+       and serves over the rendezvous websocket with
+       sha256-derived idempotency keys, ChatGPT-only
+       auth enforced at AuthManager construction
+       (`enable_codex_api_key_env=false`), and 1s→30s
+       reconnect backoff — but the "waiting for account
+       id" error message implies wait-and-retry where
+       the code actually bubbles, and there's no
+       graceful drain on shutdown (#19575,
+       merge-after-nits);
+       litellm Fireworks AI `<think>...</think>`
+       extraction into `reasoning_content` mirroring
+       DeepSeek/Ollama, both non-streaming and
+       streaming surfaces — but the streaming state
+       machine never resets `started_reasoning_content`
+       on `</think>`, so a second `<think>` block in
+       the same stream (R1-style plan-then-act models)
+       silently leaks into `content` (#26505,
+       merge-after-nits);
+       browser-use one-line `'type'` removal from
+       `optimize_schema()`'s essential-fields elif —
+       genuinely unreachable because an earlier
+       `if key == 'type'` arm already handles it
+       (#4719, merge-as-is); and a six-step Docker
+       detection ladder that *makes the false-positive
+       rate strictly worse* — `'overlay' in mountinfo`
+       fires on `unshare`-based dev sandboxes, and
+       `KUBERNETES_SERVICE_HOST` conflates K8s with
+       Docker for a function whose return value gates
+       Chrome launch flags, silently degrading
+       interactive perf on dev laptops (#4718,
+       request-changes).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -1284,6 +1343,10 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24337](https://github.com/sst/opencode/pull/24337) | fix(filesystem): tolerate unresolved paths | [sst-opencode-pr-24337.md](2026-W17/drip-51/sst-opencode-pr-24337.md) |
+| [#24333](https://github.com/sst/opencode/pull/24333) | refactor: remove barrel index.ts and flatten export namespace | [sst-opencode-pr-24333.md](2026-W17/drip-51/sst-opencode-pr-24333.md) |
+| [#24332](https://github.com/sst/opencode/pull/24332) | fix: add lock timeout/eviction and fix concurrency issues | [sst-opencode-pr-24332.md](2026-W17/drip-51/sst-opencode-pr-24332.md) |
+| [#24331](https://github.com/sst/opencode/pull/24331) | fix: add logging to silent catch blocks across core modules | [sst-opencode-pr-24331.md](2026-W17/drip-51/sst-opencode-pr-24331.md) |
 | [#24323](https://github.com/sst/opencode/pull/24323) | fix(editor): reject lock files with no workspace match for cwd | [sst-opencode-pr-24323.md](2026-W17/drip-50/sst-opencode-pr-24323.md) |
 | [#24322](https://github.com/sst/opencode/pull/24322) | fix(permission): reject stale permission replies | [sst-opencode-pr-24322.md](2026-W17/drip-50/sst-opencode-pr-24322.md) |
 | [#24311](https://github.com/sst/opencode/pull/24311) | feat(app): support message annotations | [sst-opencode-pr-24311.md](2026-W17/drip-49/sst-opencode-pr-24311.md) |
@@ -1377,6 +1440,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26505](https://github.com/BerriAI/litellm/pull/26505) | feat(fireworks): extract think tags into reasoning_content | [BerriAI-litellm-pr-26505.md](2026-W17/drip-51/BerriAI-litellm-pr-26505.md) |
 | [#26415](https://github.com/BerriAI/litellm/pull/26415) | feat(mavvrik): add Mavvrik integration | [BerriAI-litellm-pr-26415.md](2026-W17/drip-50/BerriAI-litellm-pr-26415.md) |
 | [#26380](https://github.com/BerriAI/litellm/pull/26380) | feat(deepseek): add DeepSeek V4 Pro and V4 Flash model metadata | [BerriAI-litellm-pr-26380.md](2026-W17/drip-50/BerriAI-litellm-pr-26380.md) |
 | [#26506](https://github.com/BerriAI/litellm/pull/26506) | fix(arize): _set_usage_outputs handles raw OpenAI Pydantic CompletionUsage | [BerriAI-litellm-pr-26506.md](2026-W17/drip-49/BerriAI-litellm-pr-26506.md) |
@@ -1464,6 +1528,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#4719](https://github.com/browser-use/browser-use/pull/4719) | refactor(schema): remove unreachable type branch entry | [browser-use-browser-use-pr-4719.md](2026-W17/drip-51/browser-use-browser-use-pr-4719.md) |
+| [#4718](https://github.com/browser-use/browser-use/pull/4718) | fix: robust Docker detection using multi-signal heuristics | [browser-use-browser-use-pr-4718.md](2026-W17/drip-51/browser-use-browser-use-pr-4718.md) |
 | [#4708](https://github.com/browser-use/browser-use/pull/4708) | fix: fail fast for unimplemented traces_dir | [browser-use-browser-use-pr-4708.md](2026-W17/drip-50/browser-use-browser-use-pr-4708.md) |
 | [#4707](https://github.com/browser-use/browser-use/pull/4707) | test: cover BrowserSession.close before start | [browser-use-browser-use-pr-4707.md](2026-W17/drip-50/browser-use-browser-use-pr-4707.md) |
 | [#4726](https://github.com/browser-use/browser-use/pull/4726) | feat: add Astraflow provider support | [browser-use-browser-use-pr-4726.md](2026-W17/drip-49/browser-use-browser-use-pr-4726.md) |
@@ -1601,6 +1667,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19575](https://github.com/openai/codex/pull/19575) | Add cloud executor registration to exec-server | [openai-codex-pr-19575.md](2026-W17/drip-51/openai-codex-pr-19575.md) |
 | [#19160](https://github.com/openai/codex/pull/19160) | Make apply_patch streaming parser stateful | [openai-codex-pr-19160.md](2026-W17/drip-50/openai-codex-pr-19160.md) |
 | [#19082](https://github.com/openai/codex/pull/19082) | Drop duplicate contiguous user messages during compaction | [openai-codex-pr-19082.md](2026-W17/drip-50/openai-codex-pr-19082.md) |
 | [#19498](https://github.com/openai/codex/pull/19498) | Streamline review and feedback handlers | [openai-codex-pr-19498.md](2026-W17/drip-49/openai-codex-pr-19498.md) |
