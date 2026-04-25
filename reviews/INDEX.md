@@ -1,6 +1,6 @@
 # Review Index
 
-173 + W17 drips (through drip-38) PR reviews across 10 OSS AI-coding-agent projects. Each review
+173 + W17 drips (through drip-40) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1154,6 +1154,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14099](https://github.com/All-Hands-AI/OpenHands/pull/14099) | fix(git): support pagination for branch search queries | [All-Hands-AI-OpenHands-pr-14099.md](2026-W17/drip-40/All-Hands-AI-OpenHands-pr-14099.md) |
 | [#14101](https://github.com/All-Hands-AI/OpenHands/pull/14101) | fix(app): deliver pending messages queued during startup | [All-Hands-AI-OpenHands-pr-14101.md](2026-W17/drip-39/All-Hands-AI-OpenHands-pr-14101.md) |
 | [#14126](https://github.com/All-Hands-AI/OpenHands/pull/14126) | feat(settings): use from_persisted for stored settings | [All-Hands-AI-OpenHands-pr-14126.md](2026-W17/drip-38/All-Hands-AI-OpenHands-pr-14126.md) |
 | [#14104](https://github.com/All-Hands-AI/OpenHands/pull/14104) | fix(frontend): restore think title fallback | [All-Hands-AI-OpenHands-pr-14104.md](2026-W17/drip-34/All-Hands-AI-OpenHands-pr-14104.md) |
@@ -1178,6 +1179,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24259](https://github.com/sst/opencode/pull/24259) | docs: add opencode-simple-notify to ecosystem | [sst-opencode-pr-24259.md](2026-W17/drip-40/sst-opencode-pr-24259.md) |
 | [#24262](https://github.com/sst/opencode/pull/24262) | fix(provider): inject chat_template_kwargs for Nvidia NIM deepseek-v4 models | [sst-opencode-pr-24262.md](2026-W17/drip-39/sst-opencode-pr-24262.md) |
 | [#24258](https://github.com/sst/opencode/pull/24258) | feat(httpapi): bridge instance read endpoints | [sst-opencode-pr-24258.md](2026-W17/drip-38/sst-opencode-pr-24258.md) |
 | [#24251](https://github.com/anomalyco/opencode/pull/24251) | feat: add project run configs to the web app | [anomalyco-opencode-pr-24251.md](2026-W17/drip-34/anomalyco-opencode-pr-24251.md) |
@@ -1253,6 +1255,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26495](https://github.com/BerriAI/litellm/pull/26495) | fix(health_check): drop max_tokens from non-chat handler params (closes #26406) | [BerriAI-litellm-pr-26495.md](2026-W17/drip-40/BerriAI-litellm-pr-26495.md) |
 | [#26497](https://github.com/BerriAI/litellm/pull/26497) | fix(chatgpt): preserve text and parallel_tool_calls in responses | [BerriAI-litellm-pr-26497.md](2026-W17/drip-39/BerriAI-litellm-pr-26497.md) |
 | [#26469](https://github.com/BerriAI/litellm/pull/26469) | [WIP] Cache LiteLLM_Config param reads in DualCache and batch | [BerriAI-litellm-pr-26469.md](2026-W17/drip-39/BerriAI-litellm-pr-26469.md) |
 | [#26491](https://github.com/BerriAI/litellm/pull/26491) | [WIP] feat(tests): Claude Code Compatibility Matrix v0 (PRD #26476) | [BerriAI-litellm-pr-26491.md](2026-W17/drip-38/BerriAI-litellm-pr-26491.md) |
@@ -1327,6 +1330,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [charmbracelet-crush-pr-2693.md](2026-W17/drip-40/charmbracelet-crush-pr-2693.md) |
 | [#2702](https://github.com/charmbracelet/crush/pull/2702) | feat: super yollo (split yolo into yolo / super-yolo permission modes) | [charmbracelet-crush-pr-2702.md](2026-W17/drip-39/charmbracelet-crush-pr-2702.md) |
 | [#2663](https://github.com/charmbracelet/crush/pull/2663) | fix(app): replace single events channel with pubsub.Broker for fan-out | [charmbracelet-crush-pr-2663.md](2026-W17/drip-38/charmbracelet-crush-pr-2663.md) |
 | [#2706](https://github.com/charmbracelet/crush/pull/2706) | docs(contributing): inline tooling notes for git/gh | [charmbracelet-crush-pr-2706.md](2026-W17/drip-30/charmbracelet-crush-pr-2706.md) |
@@ -1382,6 +1386,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#10403](https://github.com/cline/cline/pull/10403) | feat: add Abliteration.ai provider | [cline-cline-pr-10403.md](2026-W17/drip-40/cline-cline-pr-10403.md) |
 | [#10384](https://github.com/cline/cline/pull/10384) | fix: cap retry-after delay to prevent silent multi-hour hangs | [cline-cline-pr-10384.md](2026-W17/drip-39/cline-cline-pr-10384.md) |
 | [#10397](https://github.com/cline/cline/pull/10397) | feat: add API key field to LM Studio provider | [cline-cline-pr-10397.md](2026-W17/drip-38/cline-cline-pr-10397.md) |
 | [#10401](https://github.com/cline/cline/pull/10401) | feat(deepseek): Add deepseek-v4-flash and deepseek-v4-pro support | [cline-cline-pr-10401.md](2026-W17/drip-38/cline-cline-pr-10401.md) |
@@ -1406,6 +1411,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#12206](https://github.com/continuedev/continue/pull/12206) | fix: When AGENTS.md does not exist, the traversal will be interrupted | [continuedev-continue-pr-12206.md](2026-W17/drip-40/continuedev-continue-pr-12206.md) |
 | [#12216](https://github.com/continuedev/continue/pull/12216) | docs(openrouter): document automatic identification headers | [continuedev-continue-pr-12216.md](2026-W17/drip-39/continuedev-continue-pr-12216.md) |
 | [#12212](https://github.com/continuedev/continue/pull/12212) | fix(bedrock): opt into httpBearerAuth when apiKey is set | [continuedev-continue-pr-12212.md](2026-W17/drip-38/continuedev-continue-pr-12212.md) |
 | [#12190](https://github.com/continuedev/continue/pull/12190) | fix: use x-goog-api-key header instead of URL query param for Gemini API | [continuedev-continue-pr-12190.md](2026-W17/drip-35/continuedev-continue-pr-12190.md) |
@@ -1429,6 +1435,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19526](https://github.com/openai/codex/pull/19526) | [codex] Order codex-mcp items by visibility | [openai-codex-pr-19526.md](2026-W17/drip-40/openai-codex-pr-19526.md) |
 | [#19524](https://github.com/openai/codex/pull/19524) | [codex] Minimize codex-mcp public surface | [openai-codex-pr-19524.md](2026-W17/drip-39/openai-codex-pr-19524.md) |
 | [#19511](https://github.com/openai/codex/pull/19511) | Keep slash command popup columns stable while scrolling | [openai-codex-pr-19511.md](2026-W17/drip-39/openai-codex-pr-19511.md) |
 | [#19513](https://github.com/openai/codex/pull/19513) | Delay approval prompts while typing | [openai-codex-pr-19513.md](2026-W17/drip-38/openai-codex-pr-19513.md) |
@@ -1531,6 +1538,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15808](https://github.com/ollama/ollama/pull/15808) | fix: improve error handling for model loading in Scheduler | [ollama-ollama-pr-15808.md](2026-W17/drip-40/ollama-ollama-pr-15808.md) |
 | [#15790](https://github.com/ollama/ollama/pull/15790) | Add Atlarix to Code Editors & Development integrations | [ollama-ollama-pr-15790.md](2026-W17/drip-37/ollama-ollama-pr-15790.md) |
 | [#15735](https://github.com/ollama/ollama/pull/15735) | server: add v2 manifest path | [ollama-ollama-pr-15735.md](2026-W17/drip-36/ollama-ollama-pr-15735.md) |
 | [#15805](https://github.com/ollama/ollama/pull/15805) | Add `ollama launch qwen` support for Qwen Code CLI | [ollama-ollama-pr-15805.md](2026-W17/drip-30/ollama-ollama-pr-15805.md) |
