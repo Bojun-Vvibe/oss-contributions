@@ -1,6 +1,6 @@
 # Review Index
 
-189 + W17 drips (through drip-52) PR reviews across 10 OSS AI-coding-agent projects. Each review
+189 + W17 drips (through drip-53) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1394,6 +1394,10 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24363](https://github.com/sst/opencode/pull/24363) | fix(agent): accept common color names | [sst-opencode-pr-24363.md](2026-W17/drip-53/sst-opencode-pr-24363.md) |
+| [#24350](https://github.com/sst/opencode/pull/24350) | fix: deepseek when using messages api | [sst-opencode-pr-24350.md](2026-W17/drip-53/sst-opencode-pr-24350.md) |
+| [#24340](https://github.com/sst/opencode/pull/24340) | fix(acp): expose variant config option | [sst-opencode-pr-24340.md](2026-W17/drip-53/sst-opencode-pr-24340.md) |
+| [#24336](https://github.com/sst/opencode/pull/24336) | fix(session): clamp token usage counts | [sst-opencode-pr-24336.md](2026-W17/drip-53/sst-opencode-pr-24336.md) |
 | [#24345](https://github.com/sst/opencode/pull/24345) | fix(ripgrep): time out binary download | [sst-opencode-pr-24345.md](2026-W17/drip-52/sst-opencode-pr-24345.md) |
 | [#24343](https://github.com/sst/opencode/pull/24343) | fix(session): drop stale plan reminders | [sst-opencode-pr-24343.md](2026-W17/drip-52/sst-opencode-pr-24343.md) |
 | [#24341](https://github.com/sst/opencode/pull/24341) | fix(app): normalize watcher paths | [sst-opencode-pr-24341.md](2026-W17/drip-52/sst-opencode-pr-24341.md) |
@@ -1494,6 +1498,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26508](https://github.com/BerriAI/litellm/pull/26508) | Litellm oss staging 04 25 2026 (Cloudflare response_text + Z.AI provider) | [BerriAI-litellm-pr-26508.md](2026-W17/drip-53/BerriAI-litellm-pr-26508.md) |
+| [#26374](https://github.com/BerriAI/litellm/pull/26374) | fix(mcp): do not prefix tool names when listing via scoped /mcp/{server_name} | [BerriAI-litellm-pr-26374.md](2026-W17/drip-53/BerriAI-litellm-pr-26374.md) |
 | [#26243](https://github.com/BerriAI/litellm/pull/26243) | fix: respect drop_params when mapping metadata.user_id to user in Responses adapter | [BerriAI-litellm-pr-26243.md](2026-W17/drip-52/BerriAI-litellm-pr-26243.md) |
 | [#26222](https://github.com/BerriAI/litellm/pull/26222) | fix(anthropic): json response_format + user tools non-streaming | [BerriAI-litellm-pr-26222.md](2026-W17/drip-52/BerriAI-litellm-pr-26222.md) |
 | [#26505](https://github.com/BerriAI/litellm/pull/26505) | feat(fireworks): extract think tags into reasoning_content | [BerriAI-litellm-pr-26505.md](2026-W17/drip-51/BerriAI-litellm-pr-26505.md) |
@@ -1841,6 +1847,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15814](https://github.com/ollama/ollama/pull/15814) | Model support for batching | [ollama-ollama-pr-15814.md](2026-W17/drip-53/ollama-ollama-pr-15814.md) |
+| [#15726](https://github.com/ollama/ollama/pull/15726) | fix: resolve gateway launch timeout on Windows | [ollama-ollama-pr-15726.md](2026-W17/drip-53/ollama-ollama-pr-15726.md) |
 | [#15787](https://github.com/ollama/ollama/pull/15787) | api: accept "max" as a think value | [ollama-ollama-pr-15787.md](2026-W17/drip-48/ollama-ollama-pr-15787.md) |
 | [#15736](https://github.com/ollama/ollama/pull/15736) | mlxrunner: batch the sampler across multiple sequences | [ollama-ollama-pr-15736.md](2026-W17/drip-47/ollama-ollama-pr-15736.md) |
 | [#15811](https://github.com/ollama/ollama/pull/15811) | docs: add RDNA4 / gfx1201 ROCm build instructions to development.md | [ollama-ollama-pr-15811.md](2026-W17/drip-45/ollama-ollama-pr-15811.md) |
