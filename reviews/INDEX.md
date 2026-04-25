@@ -1173,6 +1173,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14132](https://github.com/All-Hands-AI/OpenHands/pull/14132) | fix: support pagination for branch search | [All-Hands-AI-OpenHands-pr-14132.md](2026-W17/drip-45/All-Hands-AI-OpenHands-pr-14132.md) |
 | [#14120](https://github.com/All-Hands-AI/OpenHands/pull/14120) | Removed Architecture diagrams | [All-Hands-AI-OpenHands-pr-14120.md](2026-W17/drip-44/All-Hands-AI-OpenHands-pr-14120.md) |
 | [#14119](https://github.com/All-Hands-AI/OpenHands/pull/14119) | Removed V0 third party runtimes | [All-Hands-AI-OpenHands-pr-14119.md](2026-W17/drip-44/All-Hands-AI-OpenHands-pr-14119.md) |
 | [#14118](https://github.com/All-Hands-AI/OpenHands/pull/14118) | feat(enterprise): Add GitLab event forwarding to automation service | [All-Hands-AI-OpenHands-pr-14118.md](2026-W17/drip-43/All-Hands-AI-OpenHands-pr-14118.md) |
@@ -1203,6 +1204,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24290](https://github.com/sst/opencode/pull/24290) | fix(session): skip tool calls during summary instead of throwing | [sst-opencode-pr-24290.md](2026-W17/drip-45/sst-opencode-pr-24290.md) |
+| [#24289](https://github.com/sst/opencode/pull/24289) | fix: Repair truncated JSON tool inputs in LLM session | [sst-opencode-pr-24289.md](2026-W17/drip-45/sst-opencode-pr-24289.md) |
 | [#24283](https://github.com/sst/opencode/pull/24283) | docs: add opencode-provider-alias to ecosystem | [sst-opencode-pr-24283.md](2026-W17/drip-44/sst-opencode-pr-24283.md) |
 | [#24277](https://github.com/sst/opencode/pull/24277) | [codex] Fix team run preflight aborts (closed; scope mismatch) | [sst-opencode-pr-24277.md](2026-W17/drip-44/sst-opencode-pr-24277.md) |
 | [#24285](https://github.com/anomalyco/opencode/pull/24285) | fix(tui): add copy action for native question prompts | [anomalyco-opencode-pr-24285.md](2026-W17/drip-43/anomalyco-opencode-pr-24285.md) |
@@ -1366,6 +1369,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#4741](https://github.com/browser-use/browser-use/pull/4741) | fix(anthropic-serializer): type tool_calls + raise on malformed data URL | [browser-use-pr-4741.md](2026-W17/drip-45/browser-use-pr-4741.md) |
+| [#4727](https://github.com/browser-use/browser-use/pull/4727) | fix(browser): replace deprecated asyncio.get_event_loop() with get_running_loop() | [browser-use-pr-4727.md](2026-W17/drip-45/browser-use-pr-4727.md) |
 | [#4731](https://github.com/browser-use/browser-use/pull/4731) | fix: remove dead code in optimize_schema() (closed; not actually dead) | [browser-use-browser-use-pr-4731.md](2026-W17/drip-44/browser-use-browser-use-pr-4731.md) |
 | [#4728](https://github.com/browser-use/browser-use/pull/4728) | feat(cli): add --proxy-url flag for local Chromium sessions | [browser-use-browser-use-pr-4728.md](2026-W17/drip-43/browser-use-browser-use-pr-4728.md) |
 | [#4735](https://github.com/browser-use/browser-use/pull/4735) | Harden init template integrity and improve cloud tunnel recovery | [browser-use-browser-use-pr-4735.md](2026-W17/drip-42/browser-use-browser-use-pr-4735.md) |
@@ -1433,6 +1438,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#10406](https://github.com/cline/cline/pull/10406) | docs: Add FuturMix AI Gateway setup guide | [cline-cline-pr-10406.md](2026-W17/drip-45/cline-cline-pr-10406.md) |
 | [#10380](https://github.com/cline/cline/pull/10380) | [Aikido] Fix security issue in dompurify via minor version upgrade from 3.3.3 to 3.4.1 in webview-ui | [cline-cline-pr-10380.md](2026-W17/drip-42/cline-cline-pr-10380.md) |
 | [#10403](https://github.com/cline/cline/pull/10403) | feat: add Abliteration.ai provider | [cline-cline-pr-10403.md](2026-W17/drip-40/cline-cline-pr-10403.md) |
 | [#10384](https://github.com/cline/cline/pull/10384) | fix: cap retry-after delay to prevent silent multi-hour hangs | [cline-cline-pr-10384.md](2026-W17/drip-39/cline-cline-pr-10384.md) |
@@ -1459,6 +1465,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#12202](https://github.com/continuedev/continue/pull/12202) | update broken documentation references | [continuedev-continue-pr-12202.md](2026-W17/drip-45/continuedev-continue-pr-12202.md) |
 | [#12220](https://github.com/continuedev/continue/pull/12220) | feat: add FuturMix as a model provider | [continuedev-continue-pr-12220.md](2026-W17/drip-42/continuedev-continue-pr-12220.md) |
 | [#12219](https://github.com/continuedev/continue/pull/12219) | feat(llm): add Doubao (Volcengine Ark) as an LLM provider | [continuedev-continue-pr-12219.md](2026-W17/drip-41/continuedev-continue-pr-12219.md) |
 | [#12206](https://github.com/continuedev/continue/pull/12206) | fix: When AGENTS.md does not exist, the traversal will be interrupted | [continuedev-continue-pr-12206.md](2026-W17/drip-40/continuedev-continue-pr-12206.md) |
@@ -1591,6 +1598,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15811](https://github.com/ollama/ollama/pull/15811) | docs: add RDNA4 / gfx1201 ROCm build instructions to development.md | [ollama-ollama-pr-15811.md](2026-W17/drip-45/ollama-ollama-pr-15811.md) |
 | [#15710](https://github.com/ollama/ollama/pull/15710) | docs: fix tar decompression flags | [ollama-ollama-pr-15710.md](2026-W17/drip-43/ollama-ollama-pr-15710.md) |
 | [#15809](https://github.com/ollama/ollama/pull/15809) | create: prune imported blobs and startup invalid leftovers | [ollama-ollama-pr-15809.md](2026-W17/drip-41/ollama-ollama-pr-15809.md) |
 | [#15789](https://github.com/ollama/ollama/pull/15789) | openai: map responses reasoning effort to think | [ollama-ollama-pr-15789.md](2026-W17/drip-41/ollama-ollama-pr-15789.md) |
