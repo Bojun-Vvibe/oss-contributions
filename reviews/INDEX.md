@@ -1,6 +1,6 @@
 # Review Index
 
-165 + W17 drips (through drip-26) PR reviews across 9 OSS AI-coding-agent projects. Each review
+165 + W17 drips (through drip-28) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -619,9 +619,35 @@ section.
   modes (the `post_call` description over-corrects — runtime
   back-fills input validation when no pre/during is configured),
   and ollama runner surfacing `prompt_cached_count` as a new
-  `,omitempty` field on `CompletionResponse` (4-line additive
-  change, snapshot-timing comment + OpenAI-compat layer wiring
-  flagged as follow-ups).
+   `,omitempty` field on `CompletionResponse` (4-line additive
+   change, snapshot-timing comment + OpenAI-compat layer wiring
+   flagged as follow-ups).
+- **W17 drip-28 (2026-04-25)**: 8 more — codex routing MCP
+   elicitations through the existing Guardian review pipeline so
+   server-initiated prompts inherit the same allow/deny ledger as
+   tool calls (follow-up to drip-24's #19431; 23 files, schema
+   wiring + UI surface flagged); a second gRPC feedback log sink
+   crate landing as a standalone subscriber (1121-line additive,
+   no shared abstraction with the earlier #19455 sink — dedup
+   opportunity); the python SDK switching to a standalone
+   `codex-app-server` runtime instead of in-process spawn
+   (follow-up to drip-25's #19447; lifecycle teardown + Windows
+   path handling flagged); Bedrock GPT-5.4 reasoning levels
+   collapsing `xhigh` into `high` to match upstream's removed tier
+   (config-only, but silent behaviour change for users who pinned
+   `xhigh`); flipping `UnavailableDummyTools` from experimental to
+   stable + default-on so missing-MCP scenarios degrade to typed
+   stubs instead of hard failures (3-line default flip, telemetry
+   for stub invocations flagged); litellm CircleCI awk preprocessor
+   that rewrites `rerun-failed-tests` payloads so `local_testing`
+   suite paths match the rerun matcher (3-line awk substitution,
+   no test for the awk itself); litellm APScheduler job that purges
+   expired UI session keys from the dashboard auth table (437-line
+   addition, RBAC for the cleanup endpoint + tz-aware expiry
+   comparison flagged); and ollama recognising mlx-lm's plural
+   `quantization_aux_*` sibling-tensor naming at quant-metadata
+   load time (supersedes #15743; 7-file refactor with regression
+   test for both singular and plural conventions).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -771,6 +797,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26459](https://github.com/BerriAI/litellm/pull/26459) | [Fix] Reseed enforcement read path from DB on counter miss | [BerriAI-litellm-pr-26459.md](2026-W17/drip-26/BerriAI-litellm-pr-26459.md) |
 | [#26451](https://github.com/BerriAI/litellm/pull/26451) | Azure Sentinel truncation + gzip + batch splitting | [BerriAI-litellm-pr-26451.md](2026-W17/drip-26/BerriAI-litellm-pr-26451.md) |
 | [#26447](https://github.com/BerriAI/litellm/pull/26447) | New Relic AI Monitoring integration | [BerriAI-litellm-pr-26447.md](2026-W17/drip-27/BerriAI-litellm-pr-26447.md) |
+| [#26461](https://github.com/BerriAI/litellm/pull/26461) | fix(ci): support CircleCI rerun failed tests for local_testing jobs | [BerriAI-litellm-pr-26461.md](2026-W17/drip-28/BerriAI-litellm-pr-26461.md) |
+| [#26460](https://github.com/BerriAI/litellm/pull/26460) | feat(proxy): Add cleanup job for expired LiteLLM dashboard session keys | [BerriAI-litellm-pr-26460.md](2026-W17/drip-28/BerriAI-litellm-pr-26460.md) |
 
 ## charmbracelet/crush
 
@@ -923,6 +951,11 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19454](https://github.com/openai/codex/pull/19454) | Split approval matrix test groups | [openai-codex-pr-19454.md](2026-W17/drip-26/openai-codex-pr-19454.md) |
 | [#19453](https://github.com/openai/codex/pull/19453) | Serialize legacy Windows PowerShell sandbox tests | [openai-codex-pr-19453.md](2026-W17/drip-27/openai-codex-pr-19453.md) |
 | [#19455](https://github.com/openai/codex/pull/19455) | Add gRPC feedback log sink | [openai-codex-pr-19455.md](2026-W17/drip-27/openai-codex-pr-19455.md) |
+| [#19467](https://github.com/openai/codex/pull/19467) | feat: route MCP elicitations through guardian review | [openai-codex-pr-19467.md](2026-W17/drip-28/openai-codex-pr-19467.md) |
+| [#19465](https://github.com/openai/codex/pull/19465) | Add gRPC feedback log sink | [openai-codex-pr-19465.md](2026-W17/drip-28/openai-codex-pr-19465.md) |
+| [#19462](https://github.com/openai/codex/pull/19462) | sdk/python: use standalone codex-app-server runtime | [openai-codex-pr-19462.md](2026-W17/drip-28/openai-codex-pr-19462.md) |
+| [#19461](https://github.com/openai/codex/pull/19461) | fix: Bedrock GPT-5.4 reasoning levels | [openai-codex-pr-19461.md](2026-W17/drip-28/openai-codex-pr-19461.md) |
+| [#19459](https://github.com/openai/codex/pull/19459) | Enable unavailable dummy tools by default | [openai-codex-pr-19459.md](2026-W17/drip-28/openai-codex-pr-19459.md) |
 
 ## ollama/ollama
 
@@ -943,6 +976,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15761](https://github.com/ollama/ollama/pull/15761) | x/mlxrunner/model: add baseline test coverage for quant metadata scanning | [ollama-ollama-pr-15761.md](2026-W17/drip-27/ollama-ollama-pr-15761.md) |
 | [#15760](https://github.com/ollama/ollama/pull/15760) | x/mlxrunner: apply config.json per-tensor quant overrides for mixed-precision MoE | [ollama-ollama-pr-15760.md](2026-W17/drip-27/ollama-ollama-pr-15760.md) |
 | [#15765](https://github.com/ollama/ollama/pull/15765) | docs: add HuggingFace Hub direct GGUF pull pattern to import guide | [ollama-ollama-pr-15765.md](2026-W17/drip-27/ollama-ollama-pr-15765.md) |
+| [#15759](https://github.com/ollama/ollama/pull/15759) | x/mlxrunner: recognise mlx-lm plural aux naming at load time | [ollama-ollama-pr-15759.md](2026-W17/drip-28/ollama-ollama-pr-15759.md) |
 
 ---
 
