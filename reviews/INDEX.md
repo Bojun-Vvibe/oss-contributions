@@ -1154,6 +1154,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14101](https://github.com/All-Hands-AI/OpenHands/pull/14101) | fix(app): deliver pending messages queued during startup | [All-Hands-AI-OpenHands-pr-14101.md](2026-W17/drip-39/All-Hands-AI-OpenHands-pr-14101.md) |
 | [#14126](https://github.com/All-Hands-AI/OpenHands/pull/14126) | feat(settings): use from_persisted for stored settings | [All-Hands-AI-OpenHands-pr-14126.md](2026-W17/drip-38/All-Hands-AI-OpenHands-pr-14126.md) |
 | [#14104](https://github.com/All-Hands-AI/OpenHands/pull/14104) | fix(frontend): restore think title fallback | [All-Hands-AI-OpenHands-pr-14104.md](2026-W17/drip-34/All-Hands-AI-OpenHands-pr-14104.md) |
 | [#14122](https://github.com/All-Hands-AI/OpenHands/pull/14122) | feat: enable sub-agent delegation via TaskToolSet in app server | [All-Hands-AI-OpenHands-pr-14122.md](2026-W17/drip-33/All-Hands-AI-OpenHands-pr-14122.md) |
@@ -1177,6 +1178,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24262](https://github.com/sst/opencode/pull/24262) | fix(provider): inject chat_template_kwargs for Nvidia NIM deepseek-v4 models | [sst-opencode-pr-24262.md](2026-W17/drip-39/sst-opencode-pr-24262.md) |
 | [#24258](https://github.com/sst/opencode/pull/24258) | feat(httpapi): bridge instance read endpoints | [sst-opencode-pr-24258.md](2026-W17/drip-38/sst-opencode-pr-24258.md) |
 | [#24251](https://github.com/anomalyco/opencode/pull/24251) | feat: add project run configs to the web app | [anomalyco-opencode-pr-24251.md](2026-W17/drip-34/anomalyco-opencode-pr-24251.md) |
 | [#24250](https://github.com/anomalyco/opencode/pull/24250) | fix(provider): complete DeepSeek reasoning_content round-trip for multi-turn conversations | [anomalyco-opencode-pr-24250.md](2026-W17/drip-34/anomalyco-opencode-pr-24250.md) |
@@ -1251,6 +1253,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26497](https://github.com/BerriAI/litellm/pull/26497) | fix(chatgpt): preserve text and parallel_tool_calls in responses | [BerriAI-litellm-pr-26497.md](2026-W17/drip-39/BerriAI-litellm-pr-26497.md) |
+| [#26469](https://github.com/BerriAI/litellm/pull/26469) | [WIP] Cache LiteLLM_Config param reads in DualCache and batch | [BerriAI-litellm-pr-26469.md](2026-W17/drip-39/BerriAI-litellm-pr-26469.md) |
 | [#26491](https://github.com/BerriAI/litellm/pull/26491) | [WIP] feat(tests): Claude Code Compatibility Matrix v0 (PRD #26476) | [BerriAI-litellm-pr-26491.md](2026-W17/drip-38/BerriAI-litellm-pr-26491.md) |
 | [#26493](https://github.com/BerriAI/litellm/pull/26493) | [Fix] Extend caller-permission checks to service-account + tighten raw-body acceptance | [BerriAI-litellm-pr-26493.md](2026-W17/drip-37/BerriAI-litellm-pr-26493.md) |
 | [#26490](https://github.com/BerriAI/litellm/pull/26490) | [Fix] Restrict /global/spend/* routes to admin roles | [BerriAI-litellm-pr-26490.md](2026-W17/drip-37/BerriAI-litellm-pr-26490.md) |
@@ -1323,6 +1327,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#2702](https://github.com/charmbracelet/crush/pull/2702) | feat: super yollo (split yolo into yolo / super-yolo permission modes) | [charmbracelet-crush-pr-2702.md](2026-W17/drip-39/charmbracelet-crush-pr-2702.md) |
 | [#2663](https://github.com/charmbracelet/crush/pull/2663) | fix(app): replace single events channel with pubsub.Broker for fan-out | [charmbracelet-crush-pr-2663.md](2026-W17/drip-38/charmbracelet-crush-pr-2663.md) |
 | [#2706](https://github.com/charmbracelet/crush/pull/2706) | docs(contributing): inline tooling notes for git/gh | [charmbracelet-crush-pr-2706.md](2026-W17/drip-30/charmbracelet-crush-pr-2706.md) |
 | [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [charmbracelet-crush-pr-2693.md](2026-W17/drip-30/charmbracelet-crush-pr-2693.md) |
@@ -1377,6 +1382,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#10384](https://github.com/cline/cline/pull/10384) | fix: cap retry-after delay to prevent silent multi-hour hangs | [cline-cline-pr-10384.md](2026-W17/drip-39/cline-cline-pr-10384.md) |
 | [#10397](https://github.com/cline/cline/pull/10397) | feat: add API key field to LM Studio provider | [cline-cline-pr-10397.md](2026-W17/drip-38/cline-cline-pr-10397.md) |
 | [#10401](https://github.com/cline/cline/pull/10401) | feat(deepseek): Add deepseek-v4-flash and deepseek-v4-pro support | [cline-cline-pr-10401.md](2026-W17/drip-38/cline-cline-pr-10401.md) |
 | [#10369](https://github.com/cline/cline/pull/10369) | fix(ollama): strip data URI prefix from images for Ollama API compatibility | [cline-cline-pr-10369.md](2026-W17/drip-37/cline-cline-pr-10369.md) |
@@ -1400,6 +1406,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#12216](https://github.com/continuedev/continue/pull/12216) | docs(openrouter): document automatic identification headers | [continuedev-continue-pr-12216.md](2026-W17/drip-39/continuedev-continue-pr-12216.md) |
 | [#12212](https://github.com/continuedev/continue/pull/12212) | fix(bedrock): opt into httpBearerAuth when apiKey is set | [continuedev-continue-pr-12212.md](2026-W17/drip-38/continuedev-continue-pr-12212.md) |
 | [#12190](https://github.com/continuedev/continue/pull/12190) | fix: use x-goog-api-key header instead of URL query param for Gemini API | [continuedev-continue-pr-12190.md](2026-W17/drip-35/continuedev-continue-pr-12190.md) |
 | [#12198](https://github.com/continuedev/continue/pull/12198) | fix(cli): display full model name in TUI without trimming at slash delimiter | [continuedev-continue-pr-12198.md](2026-W17/drip-35/continuedev-continue-pr-12198.md) |
@@ -1422,6 +1429,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19524](https://github.com/openai/codex/pull/19524) | [codex] Minimize codex-mcp public surface | [openai-codex-pr-19524.md](2026-W17/drip-39/openai-codex-pr-19524.md) |
+| [#19511](https://github.com/openai/codex/pull/19511) | Keep slash command popup columns stable while scrolling | [openai-codex-pr-19511.md](2026-W17/drip-39/openai-codex-pr-19511.md) |
 | [#19513](https://github.com/openai/codex/pull/19513) | Delay approval prompts while typing | [openai-codex-pr-19513.md](2026-W17/drip-38/openai-codex-pr-19513.md) |
 | [#19490](https://github.com/openai/codex/pull/19490) | Streamline plugin, apps, and skills handlers | [openai-codex-pr-19490.md](2026-W17/drip-38/openai-codex-pr-19490.md) |
 | [#19510](https://github.com/openai/codex/pull/19510) | Hide rewind preview when no user message exists | [openai-codex-pr-19510.md](2026-W17/drip-37/openai-codex-pr-19510.md) |
