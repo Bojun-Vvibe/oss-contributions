@@ -1154,6 +1154,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14118](https://github.com/All-Hands-AI/OpenHands/pull/14118) | feat(enterprise): Add GitLab event forwarding to automation service | [All-Hands-AI-OpenHands-pr-14118.md](2026-W17/drip-43/All-Hands-AI-OpenHands-pr-14118.md) |
 | [#14122](https://github.com/All-Hands-AI/OpenHands/pull/14122) | feat: enable sub-agent delegation via TaskToolSet in app server | [All-Hands-AI-OpenHands-pr-14122.md](2026-W17/drip-42/All-Hands-AI-OpenHands-pr-14122.md) |
 | [#14128](https://github.com/All-Hands-AI/OpenHands/pull/14128) | Support pagination for branch search | [All-Hands-AI-OpenHands-pr-14128.md](2026-W17/drip-41/All-Hands-AI-OpenHands-pr-14128.md) |
 | [#14099](https://github.com/All-Hands-AI/OpenHands/pull/14099) | fix(git): support pagination for branch search queries | [All-Hands-AI-OpenHands-pr-14099.md](2026-W17/drip-40/All-Hands-AI-OpenHands-pr-14099.md) |
@@ -1181,6 +1182,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24285](https://github.com/anomalyco/opencode/pull/24285) | fix(tui): add copy action for native question prompts | [anomalyco-opencode-pr-24285.md](2026-W17/drip-43/anomalyco-opencode-pr-24285.md) |
+| [#24279](https://github.com/anomalyco/opencode/pull/24279) | fix(app): align usage chart with local timezone | [anomalyco-opencode-pr-24279.md](2026-W17/drip-43/anomalyco-opencode-pr-24279.md) |
 | [#24272](https://github.com/anomalyco/opencode/pull/24272) | docs: add Mongolian README documentation | [anomalyco-opencode-pr-24272.md](2026-W17/drip-42/anomalyco-opencode-pr-24272.md) |
 | [#24271](https://github.com/anomalyco/opencode/pull/24271) | Set active server before navigation and use replace navigation | [anomalyco-opencode-pr-24271.md](2026-W17/drip-42/anomalyco-opencode-pr-24271.md) |
 | [#24273](https://github.com/anomalyco/opencode/pull/24273) | docs: correct compaction prune default | [anomalyco-opencode-pr-24273.md](2026-W17/drip-41/anomalyco-opencode-pr-24273.md) |
@@ -1260,6 +1263,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26455](https://github.com/BerriAI/litellm/pull/26455) | feat: per-model team member budgets (project routes + GPT-5.5 rebase) | [BerriAI-litellm-pr-26455.md](2026-W17/drip-43/BerriAI-litellm-pr-26455.md) |
+| [#26449](https://github.com/BerriAI/litellm/pull/26449) | [Feat] Day-0 support for GPT-5.5 and GPT-5.5 Pro | [BerriAI-litellm-pr-26449.md](2026-W17/drip-43/BerriAI-litellm-pr-26449.md) |
 | [#26498](https://github.com/BerriAI/litellm/pull/26498) | fix(auth): apply temp_budget_increase on cache-hit path | [BerriAI-litellm-pr-26498.md](2026-W17/drip-42/BerriAI-litellm-pr-26498.md) |
 | [#26495](https://github.com/BerriAI/litellm/pull/26495) | fix(health_check): drop max_tokens from non-chat handler params (closes #26406) | [BerriAI-litellm-pr-26495.md](2026-W17/drip-40/BerriAI-litellm-pr-26495.md) |
 | [#26497](https://github.com/BerriAI/litellm/pull/26497) | fix(chatgpt): preserve text and parallel_tool_calls in responses | [BerriAI-litellm-pr-26497.md](2026-W17/drip-39/BerriAI-litellm-pr-26497.md) |
@@ -1336,6 +1341,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#4728](https://github.com/browser-use/browser-use/pull/4728) | feat(cli): add --proxy-url flag for local Chromium sessions | [browser-use-browser-use-pr-4728.md](2026-W17/drip-43/browser-use-browser-use-pr-4728.md) |
 | [#4735](https://github.com/browser-use/browser-use/pull/4735) | Harden init template integrity and improve cloud tunnel recovery | [browser-use-browser-use-pr-4735.md](2026-W17/drip-42/browser-use-browser-use-pr-4735.md) |
 | [#4732](https://github.com/browser-use/browser-use/pull/4732) | feat: self-healing element recovery engine | [browser-use-browser-use-pr-4732.md](2026-W17/drip-42/browser-use-browser-use-pr-4732.md) |
 | [#4737](https://github.com/browser-use/browser-use/pull/4737) | Fix Windows CLI session probe timeouts | [browser-use-browser-use-pr-4737.md](2026-W17/drip-41/browser-use-browser-use-pr-4737.md) |
@@ -1453,6 +1459,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19491](https://github.com/openai/codex/pull/19491) | Streamline account and command handlers | [openai-codex-pr-19491.md](2026-W17/drip-43/openai-codex-pr-19491.md) |
 | [#19537](https://github.com/openai/codex/pull/19537) | Add plugin MCP policy persistence | [openai-codex-pr-19537.md](2026-W17/drip-41/openai-codex-pr-19537.md) |
 | [#19526](https://github.com/openai/codex/pull/19526) | [codex] Order codex-mcp items by visibility | [openai-codex-pr-19526.md](2026-W17/drip-40/openai-codex-pr-19526.md) |
 | [#19524](https://github.com/openai/codex/pull/19524) | [codex] Minimize codex-mcp public surface | [openai-codex-pr-19524.md](2026-W17/drip-39/openai-codex-pr-19524.md) |
@@ -1557,6 +1564,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15710](https://github.com/ollama/ollama/pull/15710) | docs: fix tar decompression flags | [ollama-ollama-pr-15710.md](2026-W17/drip-43/ollama-ollama-pr-15710.md) |
 | [#15809](https://github.com/ollama/ollama/pull/15809) | create: prune imported blobs and startup invalid leftovers | [ollama-ollama-pr-15809.md](2026-W17/drip-41/ollama-ollama-pr-15809.md) |
 | [#15789](https://github.com/ollama/ollama/pull/15789) | openai: map responses reasoning effort to think | [ollama-ollama-pr-15789.md](2026-W17/drip-41/ollama-ollama-pr-15789.md) |
 | [#15808](https://github.com/ollama/ollama/pull/15808) | fix: improve error handling for model loading in Scheduler | [ollama-ollama-pr-15808.md](2026-W17/drip-40/ollama-ollama-pr-15808.md) |
