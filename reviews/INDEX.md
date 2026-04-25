@@ -1,6 +1,6 @@
 # Review Index
 
-189 + W17 drips (through drip-53) PR reviews across 10 OSS AI-coding-agent projects. Each review
+189 + W17 drips (through drip-56) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1340,6 +1340,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#5050](https://github.com/Aider-AI/aider/pull/5050) | fix: fall back to ASCII in tool_output | [Aider-AI-aider-pr-5050.md](2026-W17/drip-56/Aider-AI-aider-pr-5050.md) |
 | [#5024](https://github.com/Aider-AI/aider/pull/5024) | fix: check len(errors) before string conversion in udiff_coder.py | [Aider-AI-aider-pr-5024.md](2026-W17/drip-34/Aider-AI-aider-pr-5024.md) |
 | [#5066](https://github.com/Aider-AI/aider/pull/5066) | Polyglot benchmark: Claude Opus 4.7 new #1 at 93.3% | [Aider-AI-aider-pr-5066.md](2026-W17/drip-35/Aider-AI-aider-pr-5066.md) |
 | [#5052](https://github.com/Aider-AI/aider/pull/5052) | Add bash/shell repomap support | [Aider-AI-aider-pr-5052.md](2026-W17/drip-35/Aider-AI-aider-pr-5052.md) |
@@ -1501,6 +1502,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26517](https://github.com/BerriAI/litellm/pull/26517) | feat(mcp): non-admin MCP self-service (disconnect, approval filter, BYOK admin guard) | [BerriAI-litellm-pr-26517.md](2026-W17/drip-56/BerriAI-litellm-pr-26517.md) |
+| [#26515](https://github.com/BerriAI/litellm/pull/26515) | fix(ui): render dict-shaped fallback entries in router settings | [BerriAI-litellm-pr-26515.md](2026-W17/drip-56/BerriAI-litellm-pr-26515.md) |
+| [#26499](https://github.com/BerriAI/litellm/pull/26499) | fix(auth): join team-member budget so rpm/tpm limits are enforced | [BerriAI-litellm-pr-26499.md](2026-W17/drip-56/BerriAI-litellm-pr-26499.md) |
 | [#26513](https://github.com/BerriAI/litellm/pull/26513) | [Fix] Harden /model/info redaction for plural credential field names | [BerriAI-litellm-pr-26513.md](2026-W17/drip-55/BerriAI-litellm-pr-26513.md) |
 | [#26512](https://github.com/BerriAI/litellm/pull/26512) | [Fix] bind RAG ingestion config to stored credential values | [BerriAI-litellm-pr-26512.md](2026-W17/drip-55/BerriAI-litellm-pr-26512.md) |
 | [#26373](https://github.com/BerriAI/litellm/pull/26373) | fix(azure): propagate llm_provider- response headers on Responses API cancel | [BerriAI-litellm-pr-26373.md](2026-W17/drip-55/BerriAI-litellm-pr-26373.md) |
@@ -1620,6 +1624,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#2710](https://github.com/charmbracelet/crush/pull/2710) | fix(agent): pass max output tokens to summary stream | [charmbracelet-crush-pr-2710.md](2026-W17/drip-56/charmbracelet-crush-pr-2710.md) |
+| [#2709](https://github.com/charmbracelet/crush/pull/2709) | fix(agent,ui): persist terminal finish for Run and Summarize + scoped spinner stall-guard | [charmbracelet-crush-pr-2709.md](2026-W17/drip-56/charmbracelet-crush-pr-2709.md) |
 | [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [charmbracelet-crush-pr-2693.md](2026-W17/drip-40/charmbracelet-crush-pr-2693.md) |
 | [#2702](https://github.com/charmbracelet/crush/pull/2702) | feat: super yollo (split yolo into yolo / super-yolo permission modes) | [charmbracelet-crush-pr-2702.md](2026-W17/drip-39/charmbracelet-crush-pr-2702.md) |
 | [#2663](https://github.com/charmbracelet/crush/pull/2663) | fix(app): replace single events channel with pubsub.Broker for fan-out | [charmbracelet-crush-pr-2663.md](2026-W17/drip-38/charmbracelet-crush-pr-2663.md) |
@@ -1740,6 +1746,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19591](https://github.com/openai/codex/pull/19591) | Fix TUI resume performance regression | [openai-codex-pr-19591.md](2026-W17/drip-56/openai-codex-pr-19591.md) |
+| [#19589](https://github.com/openai/codex/pull/19589) | Fix request_permissions tool flake in core tests | [openai-codex-pr-19589.md](2026-W17/drip-56/openai-codex-pr-19589.md) |
 | [#18901](https://github.com/openai/codex/pull/18901) | Install standalone archives with checksum verification | [openai-codex-pr-18901.md](2026-W17/drip-52/openai-codex-pr-18901.md) |
 | [#18883](https://github.com/openai/codex/pull/18883) | [codex] fix network context removal | [openai-codex-pr-18883.md](2026-W17/drip-52/openai-codex-pr-18883.md) |
 | [#19575](https://github.com/openai/codex/pull/19575) | Add cloud executor registration to exec-server | [openai-codex-pr-19575.md](2026-W17/drip-51/openai-codex-pr-19575.md) |
