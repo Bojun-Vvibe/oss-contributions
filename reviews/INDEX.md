@@ -1990,6 +1990,23 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24386](https://github.com/sst/opencode/pull/24386) | fix(provider): preserve Azure API version | [sst-opencode/PR-24386.md](sst-opencode/PR-24386.md) |
 | [#24384](https://github.com/sst/opencode/pull/24384) | fix(provider): respect configured output limit | [sst-opencode/PR-24384.md](sst-opencode/PR-24384.md) |
 
+### W17 drip-61 (2026-04-26) — MCP tool-name normalisation, dict-shaped UI inputs, shell-spawn pgroup safety
+
+8-PR sweep across five repos (litellm × 3, opencode × 2, goose × 2, codex × 1) covering: a meaningful expansion of the litellm MCP semantic tool filter to recognise LibreChat-style `<canonical><sep><uid>` suffix mangling; a dashboard fix that stops React error #31 when fallback chain entries arrive as override-dicts (with secret-leak surface area flagged for confirmation); JSON-registered providers finally getting the same `extra_body` wrapping as the static `openai_compatible_providers` list; two opencode defensive-coding fixes (nullish guards on tool output, and an explicit allow-list for image MIME types); two goose subprocess fixes (drop interactive-shell SIGTTOU race; allow quoted-numeric YAML config values); and an `end_turn` plumbing PR in codex that is otherwise correct but ships with an author FIXME in the only human-visible CLI output path.
+
+| PR | Title | Path |
+|---|---|---|
+| [#26533](https://github.com/BerriAI/litellm/pull/26533) | fix(proxy): handle client-side unique-ID suffixes in MCP semantic tool filter | [BerriAI-litellm/PR-26533.md](BerriAI-litellm/PR-26533.md) |
+| [#26515](https://github.com/BerriAI/litellm/pull/26515) | fix(ui): render dict-shaped fallback entries in router settings | [BerriAI-litellm/PR-26515.md](BerriAI-litellm/PR-26515.md) |
+| [#26500](https://github.com/BerriAI/litellm/pull/26500) | fix: wrap extra_body for JSON-configured OpenAI-compatible providers | [BerriAI-litellm/PR-26500.md](BerriAI-litellm/PR-26500.md) |
+| [#24401](https://github.com/sst/opencode/pull/24401) | fix: guard against undefined MCP tool output causing output.split crash | [sst-opencode/PR-24401.md](sst-opencode/PR-24401.md) |
+| [#24364](https://github.com/sst/opencode/pull/24364) | fix(provider): reject unsupported image mime types | [sst-opencode/PR-24364.md](sst-opencode/PR-24364.md) |
+| [#8836](https://github.com/block/goose/pull/8836) | fix: drop -i flag from login shell PATH resolution to prevent SIGTTOU | [block-goose/PR-8836.md](block-goose/PR-8836.md) |
+| [#8844](https://github.com/block/goose/pull/8844) | fix: convert quoted numeric config values to numbers if needed | [block-goose/PR-8844.md](block-goose/PR-8844.md) |
+| [#19610](https://github.com/openai/codex/pull/19610) | Support end_turn in response.completed | [openai-codex/PR-19610-end-turn-completed.md](openai-codex/PR-19610-end-turn-completed.md) |
+
+Verdict mix: 4 merge-as-is, 3 merge-after-nits, 1 request-changes (codex#19610 — author FIXME blocking).
+
 ---
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
