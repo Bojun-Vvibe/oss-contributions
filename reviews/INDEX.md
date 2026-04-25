@@ -1,6 +1,6 @@
 # Review Index
 
-173 + W17 drips (through drip-37) PR reviews across 10 OSS AI-coding-agent projects. Each review
+173 + W17 drips (through drip-38) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1037,6 +1037,95 @@ section.
     is actually attached to the outgoing wire message,
     tighten regex to `^data:image\/[^;]+;base64,`, and
     add a unit test pinning the wire shape).
+  - **W17 drip-38 (2026-04-25)**: eight reviews across
+     eight repos. openai/codex #19513 adds a 1-second
+     composer-idle gate before any new approval modal
+     via a `VecDeque<DelayedApprovalRequest>` queue
+     and an `APPROVAL_PROMPT_TYPING_IDLE_DELAY` constant
+     in `bottom_pane/mod.rs`, drained FIFO via
+     `pop_front` + reverse-`pop_back` to preserve
+     overlay display order; the activity filter
+     (Press/Repeat, no CTRL/ALT, only
+     Char/Backspace/Delete/Enter/Tab) lives at the
+     boundary, and `cancel_approval_for_resolved_request`
+     was extended to drop matching delayed entries
+     (merge-after-nits). openai/codex #19490 continues
+     the streamline-handlers refactor for
+     plugin/apps/skills surfaces, lifting error
+     construction into `internal_error`/`invalid_params`/
+     `invalid_request` helpers and converting handlers
+     to `Result<*Response, JSONRPCErrorError>` + single
+     `send_result`; `send_marketplace_error` is deleted
+     entirely (merge-as-is, -44% LOC on touched code).
+     BerriAI/litellm #26491 lands the v0 Claude-Code
+     compatibility matrix — CircleCI PR gate using
+     `latest-minus-3-days` CLI plus a daily GH-Actions
+     cron with always-latest CLI publishing JSON to
+     `litellm-docs` via a `contents:write`-only GitHub
+     App; trust split is real and third-party actions
+     are SHA-pinned, but the 5604-LOC drop should be
+     split per the PRD's #26477-#26481 slice IDs and
+     the resolver step needs a
+     `[ -n "$CLAUDE_CODE_VERSION" ]` guard
+     (needs-discussion). sst/opencode #24258 bridges
+     `/path`, `/vcs`, `/vcs/diff` through the
+     experimental Effect HttpApi using a `withStatics`
+     pattern that attaches a `.zod` static to each
+     Effect Schema so Hono call sites keep working
+     unchanged; `getVcs` runs `branch()`/`defaultBranch()`
+     with `concurrency: 2` (merge-as-is). cline/cline
+     #10397 adds an optional `lmStudioApiKey` plumbed
+     through all eight Cline provider-key touch points
+     (proto secret/config, SECRETS_KEYS, provider-keys
+     map, handler, controller probe sending
+     `Authorization: Bearer`, proto conversions both
+     ways, UI ApiKeyField, configured-providers
+     heuristic); handler falls back to `"noop"` so
+     unauthenticated servers keep working
+     (merge-after-nits — add a test pinning the
+     `Authorization` header on the model-discovery
+     probe). All-Hands-AI/OpenHands #14126 routes
+     enterprise org/conversation settings reads
+     through the SDK's new
+     `_load_persisted_agent_settings`/
+     `_load_persisted_conversation_settings` loaders
+     and pins the SDK + agent-server image to commit
+     `054bbd4` across `poetry.lock`, dev/prod compose,
+     and pre-commit `additional_dependencies`; AGENTS.md
+     gains a note about the easy-to-miss pre-commit
+     mypy dep sync (merge-after-nits — request the SDK
+     promote `_load_persisted_*` to public names).
+     charmbracelet/crush #2663 swaps the shared
+     `App.events chan tea.Msg` (competing-consumer)
+     for `*pubsub.Broker[tea.Msg]` (fan-out) so each
+     SSE client gets its own subscriber channel via
+     `Subscribe(ctx)`; the old per-message
+     `subscriberSendTimeout` drop logic is deleted
+     since the broker owns backpressure, `Events()`
+     now takes `ctx` (breaking signature change),
+     and `app.events.Shutdown()` lands in the cleanup
+     func (merge-as-is). continuedev/continue #12212
+     fixes Bedrock long-lived API-key auth by adding
+     `authSchemePreference: ["httpBearerAuth"]` to the
+     `BedrockRuntimeClient` config inside the
+     `if (this.apiKey)` branch — without it the AWS
+     SDK falls back to SigV4 and 401s; however the
+     change is a 2-line `as any` cast with no test
+     (request-changes — replace `as any` with a typed
+     extension and add a unit test). cline/cline
+     #10401 adds `deepseek-v4-flash`/`deepseek-v4-pro`
+     to the `deepSeekModels` catalog in
+     `src/shared/api.ts`, widening the closing
+     `satisfies Record<string, ModelInfo>` to
+     `OpenAiCompatibleModelInfo` so the new
+     `supportsReasoningEffort: true` on V4-pro
+     typechecks; both entries set `inputPrice: 0`
+     which feeds Cline's cost panel as `$0.00` for
+     uncached input — likely a billing-shock landmine
+     and almost certainly not what DeepSeek publishes
+     (request-changes — cite the pricing source, fix
+     `inputPrice: 0`, narrow the type widening to
+     per-entry instead of map-wide).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -1065,6 +1154,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14126](https://github.com/All-Hands-AI/OpenHands/pull/14126) | feat(settings): use from_persisted for stored settings | [All-Hands-AI-OpenHands-pr-14126.md](2026-W17/drip-38/All-Hands-AI-OpenHands-pr-14126.md) |
 | [#14104](https://github.com/All-Hands-AI/OpenHands/pull/14104) | fix(frontend): restore think title fallback | [All-Hands-AI-OpenHands-pr-14104.md](2026-W17/drip-34/All-Hands-AI-OpenHands-pr-14104.md) |
 | [#14122](https://github.com/All-Hands-AI/OpenHands/pull/14122) | feat: enable sub-agent delegation via TaskToolSet in app server | [All-Hands-AI-OpenHands-pr-14122.md](2026-W17/drip-33/All-Hands-AI-OpenHands-pr-14122.md) |
 | [#14105](https://github.com/All-Hands-AI/OpenHands/pull/14105) | fix(frontend): allow send when only attachments are present | [All-Hands-AI-OpenHands-pr-14105.md](2026-W17/drip-33/All-Hands-AI-OpenHands-pr-14105.md) |
@@ -1087,6 +1177,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24258](https://github.com/sst/opencode/pull/24258) | feat(httpapi): bridge instance read endpoints | [sst-opencode-pr-24258.md](2026-W17/drip-38/sst-opencode-pr-24258.md) |
 | [#24251](https://github.com/anomalyco/opencode/pull/24251) | feat: add project run configs to the web app | [anomalyco-opencode-pr-24251.md](2026-W17/drip-34/anomalyco-opencode-pr-24251.md) |
 | [#24250](https://github.com/anomalyco/opencode/pull/24250) | fix(provider): complete DeepSeek reasoning_content round-trip for multi-turn conversations | [anomalyco-opencode-pr-24250.md](2026-W17/drip-34/anomalyco-opencode-pr-24250.md) |
 | [#24246](https://github.com/anomalyco/opencode/pull/24246) | fix: preserve nix/direnv PATH in login shell for ! commands | [anomalyco-opencode-pr-24246.md](2026-W17/drip-33/anomalyco-opencode-pr-24246.md) |
@@ -1160,6 +1251,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26491](https://github.com/BerriAI/litellm/pull/26491) | [WIP] feat(tests): Claude Code Compatibility Matrix v0 (PRD #26476) | [BerriAI-litellm-pr-26491.md](2026-W17/drip-38/BerriAI-litellm-pr-26491.md) |
 | [#26493](https://github.com/BerriAI/litellm/pull/26493) | [Fix] Extend caller-permission checks to service-account + tighten raw-body acceptance | [BerriAI-litellm-pr-26493.md](2026-W17/drip-37/BerriAI-litellm-pr-26493.md) |
 | [#26490](https://github.com/BerriAI/litellm/pull/26490) | [Fix] Restrict /global/spend/* routes to admin roles | [BerriAI-litellm-pr-26490.md](2026-W17/drip-37/BerriAI-litellm-pr-26490.md) |
 | [#26488](https://github.com/BerriAI/litellm/pull/26488) | [Feature] UI - Spend Logs: sortable Model and TTFT columns | [BerriAI-litellm-pr-26488.md](2026-W17/drip-37/BerriAI-litellm-pr-26488.md) |
@@ -1231,6 +1323,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#2663](https://github.com/charmbracelet/crush/pull/2663) | fix(app): replace single events channel with pubsub.Broker for fan-out | [charmbracelet-crush-pr-2663.md](2026-W17/drip-38/charmbracelet-crush-pr-2663.md) |
 | [#2706](https://github.com/charmbracelet/crush/pull/2706) | docs(contributing): inline tooling notes for git/gh | [charmbracelet-crush-pr-2706.md](2026-W17/drip-30/charmbracelet-crush-pr-2706.md) |
 | [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [charmbracelet-crush-pr-2693.md](2026-W17/drip-30/charmbracelet-crush-pr-2693.md) |
 | [#2671](https://github.com/charmbracelet/crush/pull/2671) | fix: reduce `fetch` and `view` tools truncation size to 100KB | [charmbracelet-crush-pr-2671.md](2026-W17/drip-34/charmbracelet-crush-pr-2671.md) |
@@ -1284,6 +1377,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#10397](https://github.com/cline/cline/pull/10397) | feat: add API key field to LM Studio provider | [cline-cline-pr-10397.md](2026-W17/drip-38/cline-cline-pr-10397.md) |
+| [#10401](https://github.com/cline/cline/pull/10401) | feat(deepseek): Add deepseek-v4-flash and deepseek-v4-pro support | [cline-cline-pr-10401.md](2026-W17/drip-38/cline-cline-pr-10401.md) |
 | [#10369](https://github.com/cline/cline/pull/10369) | fix(ollama): strip data URI prefix from images for Ollama API compatibility | [cline-cline-pr-10369.md](2026-W17/drip-37/cline-cline-pr-10369.md) |
 | [#10396](https://github.com/cline/cline/pull/10396) | fix: respect image support toggle for paste and drag-drop operations | [cline-cline-pr-10396.md](2026-W17/drip-36/cline-cline-pr-10396.md) |
 | [#10385](https://github.com/cline/cline/pull/10385) | fix(claude-code): handle CLI v2.1+ result chunks and error_max_turns | [cline-cline-pr-10385.md](2026-W17/drip-36/cline-cline-pr-10385.md) |
@@ -1305,6 +1400,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#12212](https://github.com/continuedev/continue/pull/12212) | fix(bedrock): opt into httpBearerAuth when apiKey is set | [continuedev-continue-pr-12212.md](2026-W17/drip-38/continuedev-continue-pr-12212.md) |
 | [#12190](https://github.com/continuedev/continue/pull/12190) | fix: use x-goog-api-key header instead of URL query param for Gemini API | [continuedev-continue-pr-12190.md](2026-W17/drip-35/continuedev-continue-pr-12190.md) |
 | [#12198](https://github.com/continuedev/continue/pull/12198) | fix(cli): display full model name in TUI without trimming at slash delimiter | [continuedev-continue-pr-12198.md](2026-W17/drip-35/continuedev-continue-pr-12198.md) |
 
@@ -1326,6 +1422,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19513](https://github.com/openai/codex/pull/19513) | Delay approval prompts while typing | [openai-codex-pr-19513.md](2026-W17/drip-38/openai-codex-pr-19513.md) |
+| [#19490](https://github.com/openai/codex/pull/19490) | Streamline plugin, apps, and skills handlers | [openai-codex-pr-19490.md](2026-W17/drip-38/openai-codex-pr-19490.md) |
 | [#19510](https://github.com/openai/codex/pull/19510) | Hide rewind preview when no user message exists | [openai-codex-pr-19510.md](2026-W17/drip-37/openai-codex-pr-19510.md) |
 | [#19509](https://github.com/openai/codex/pull/19509) | Record MCP tool result telemetry on spans | [openai-codex-pr-19509.md](2026-W17/drip-37/openai-codex-pr-19509.md) |
 | [#19494](https://github.com/openai/codex/pull/19494) | Streamline thread read handlers | [openai-codex-pr-19494.md](2026-W17/drip-37/openai-codex-pr-19494.md) |
