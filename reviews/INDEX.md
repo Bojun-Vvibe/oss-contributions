@@ -1395,6 +1395,11 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24392](https://github.com/anomalyco/opencode/pull/24392) | chore: add changelog sync workflow and changelog | [anomalyco-opencode-pr-24392.md](2026-W17/drip-58/anomalyco-opencode-pr-24392.md) |
+| [#24387](https://github.com/anomalyco/opencode/pull/24387) | feat(httpapi): bridge config update endpoint | [anomalyco-opencode-pr-24387.md](2026-W17/drip-58/anomalyco-opencode-pr-24387.md) |
+| [#24386](https://github.com/anomalyco/opencode/pull/24386) | fix(provider): preserve Azure API version | [anomalyco-opencode-pr-24386.md](2026-W17/drip-58/anomalyco-opencode-pr-24386.md) |
+| [#24384](https://github.com/anomalyco/opencode/pull/24384) | fix(provider): respect configured output limit | [anomalyco-opencode-pr-24384.md](2026-W17/drip-58/anomalyco-opencode-pr-24384.md) |
+| [#24383](https://github.com/anomalyco/opencode/pull/24383) | fix: move session roots filter from client-side to SQL layer | [anomalyco-opencode-pr-24383.md](2026-W17/drip-58/anomalyco-opencode-pr-24383.md) |
 | [#24379](https://github.com/anomalyco/opencode/pull/24379) | fix(session): use transcript position instead of lexical ID compare in prompt loop | [anomalyco-opencode-pr-24379.md](2026-W17/drip-57/anomalyco-opencode-pr-24379.md) |
 | [#24369](https://github.com/anomalyco/opencode/pull/24369) | feat(processor): add model fallback chain when retries are exhausted | [anomalyco-opencode-pr-24369.md](2026-W17/drip-57/anomalyco-opencode-pr-24369.md) |
 | [#24367](https://github.com/anomalyco/opencode/pull/24367) | fix(zen): stop double-counting reasoning_tokens in oa-compat usage | [anomalyco-opencode-pr-24367.md](2026-W17/drip-57/anomalyco-opencode-pr-24367.md) |
@@ -1505,6 +1510,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26525](https://github.com/BerriAI/litellm/pull/26525) | [Fix] broaden RAG ingestion credential cleanup to AWS endpoint/identity fields | [BerriAI-litellm-pr-26525.md](2026-W17/drip-58/BerriAI-litellm-pr-26525.md) |
+| [#26520](https://github.com/BerriAI/litellm/pull/26520) | [Feat] Add "My User" tab to team info page | [BerriAI-litellm-pr-26520.md](2026-W17/drip-58/BerriAI-litellm-pr-26520.md) |
 | [#26518](https://github.com/BerriAI/litellm/pull/26518) | chore(auth): tighten clientside api_base handling | [BerriAI-litellm-pr-26518.md](2026-W17/drip-57/BerriAI-litellm-pr-26518.md) |
 | [#26498](https://github.com/BerriAI/litellm/pull/26498) | fix(auth): apply temp_budget_increase on cache-hit path | [BerriAI-litellm-pr-26498.md](2026-W17/drip-57/BerriAI-litellm-pr-26498.md) |
 | [#26517](https://github.com/BerriAI/litellm/pull/26517) | feat(mcp): non-admin MCP self-service (disconnect, approval filter, BYOK admin guard) | [BerriAI-litellm-pr-26517.md](2026-W17/drip-56/BerriAI-litellm-pr-26517.md) |
@@ -1629,6 +1636,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#2714](https://github.com/charmbracelet/crush/pull/2714) | update terminal notifier for macos | [charmbracelet-crush-pr-2714.md](2026-W17/drip-58/charmbracelet-crush-pr-2714.md) |
 | [#2711](https://github.com/charmbracelet/crush/pull/2711) | fix(ui): refresh todo pills on every session update | [charmbracelet-crush-pr-2711.md](2026-W17/drip-57/charmbracelet-crush-pr-2711.md) |
 | [#2710](https://github.com/charmbracelet/crush/pull/2710) | fix(agent): pass max output tokens to summary stream | [charmbracelet-crush-pr-2710.md](2026-W17/drip-56/charmbracelet-crush-pr-2710.md) |
 | [#2709](https://github.com/charmbracelet/crush/pull/2709) | fix(agent,ui): persist terminal finish for Run and Summarize + scoped spinner stall-guard | [charmbracelet-crush-pr-2709.md](2026-W17/drip-56/charmbracelet-crush-pr-2709.md) |
