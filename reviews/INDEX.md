@@ -1,6 +1,6 @@
 # Review Index
 
-181 + W17 drips (through drip-41) PR reviews across 10 OSS AI-coding-agent projects. Each review
+181 + W17 drips (through drip-42) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1154,6 +1154,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14122](https://github.com/All-Hands-AI/OpenHands/pull/14122) | feat: enable sub-agent delegation via TaskToolSet in app server | [All-Hands-AI-OpenHands-pr-14122.md](2026-W17/drip-42/All-Hands-AI-OpenHands-pr-14122.md) |
 | [#14128](https://github.com/All-Hands-AI/OpenHands/pull/14128) | Support pagination for branch search | [All-Hands-AI-OpenHands-pr-14128.md](2026-W17/drip-41/All-Hands-AI-OpenHands-pr-14128.md) |
 | [#14099](https://github.com/All-Hands-AI/OpenHands/pull/14099) | fix(git): support pagination for branch search queries | [All-Hands-AI-OpenHands-pr-14099.md](2026-W17/drip-40/All-Hands-AI-OpenHands-pr-14099.md) |
 | [#14101](https://github.com/All-Hands-AI/OpenHands/pull/14101) | fix(app): deliver pending messages queued during startup | [All-Hands-AI-OpenHands-pr-14101.md](2026-W17/drip-39/All-Hands-AI-OpenHands-pr-14101.md) |
@@ -1180,6 +1181,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24272](https://github.com/anomalyco/opencode/pull/24272) | docs: add Mongolian README documentation | [anomalyco-opencode-pr-24272.md](2026-W17/drip-42/anomalyco-opencode-pr-24272.md) |
+| [#24271](https://github.com/anomalyco/opencode/pull/24271) | Set active server before navigation and use replace navigation | [anomalyco-opencode-pr-24271.md](2026-W17/drip-42/anomalyco-opencode-pr-24271.md) |
 | [#24273](https://github.com/anomalyco/opencode/pull/24273) | docs: correct compaction prune default | [anomalyco-opencode-pr-24273.md](2026-W17/drip-41/anomalyco-opencode-pr-24273.md) |
 | [#24259](https://github.com/sst/opencode/pull/24259) | docs: add opencode-simple-notify to ecosystem | [sst-opencode-pr-24259.md](2026-W17/drip-40/sst-opencode-pr-24259.md) |
 | [#24262](https://github.com/sst/opencode/pull/24262) | fix(provider): inject chat_template_kwargs for Nvidia NIM deepseek-v4 models | [sst-opencode-pr-24262.md](2026-W17/drip-39/sst-opencode-pr-24262.md) |
@@ -1257,6 +1260,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26498](https://github.com/BerriAI/litellm/pull/26498) | fix(auth): apply temp_budget_increase on cache-hit path | [BerriAI-litellm-pr-26498.md](2026-W17/drip-42/BerriAI-litellm-pr-26498.md) |
 | [#26495](https://github.com/BerriAI/litellm/pull/26495) | fix(health_check): drop max_tokens from non-chat handler params (closes #26406) | [BerriAI-litellm-pr-26495.md](2026-W17/drip-40/BerriAI-litellm-pr-26495.md) |
 | [#26497](https://github.com/BerriAI/litellm/pull/26497) | fix(chatgpt): preserve text and parallel_tool_calls in responses | [BerriAI-litellm-pr-26497.md](2026-W17/drip-39/BerriAI-litellm-pr-26497.md) |
 | [#26469](https://github.com/BerriAI/litellm/pull/26469) | [WIP] Cache LiteLLM_Config param reads in DualCache and batch | [BerriAI-litellm-pr-26469.md](2026-W17/drip-39/BerriAI-litellm-pr-26469.md) |
@@ -1332,6 +1336,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#4735](https://github.com/browser-use/browser-use/pull/4735) | Harden init template integrity and improve cloud tunnel recovery | [browser-use-browser-use-pr-4735.md](2026-W17/drip-42/browser-use-browser-use-pr-4735.md) |
+| [#4732](https://github.com/browser-use/browser-use/pull/4732) | feat: self-healing element recovery engine | [browser-use-browser-use-pr-4732.md](2026-W17/drip-42/browser-use-browser-use-pr-4732.md) |
 | [#4737](https://github.com/browser-use/browser-use/pull/4737) | Fix Windows CLI session probe timeouts | [browser-use-browser-use-pr-4737.md](2026-W17/drip-41/browser-use-browser-use-pr-4737.md) |
 | [#4736](https://github.com/browser-use/browser-use/pull/4736) | fix(element): redact sensitive values in fill() debug logging | [browser-use-browser-use-pr-4736.md](2026-W17/drip-41/browser-use-browser-use-pr-4736.md) |
 
@@ -1395,6 +1401,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#10380](https://github.com/cline/cline/pull/10380) | [Aikido] Fix security issue in dompurify via minor version upgrade from 3.3.3 to 3.4.1 in webview-ui | [cline-cline-pr-10380.md](2026-W17/drip-42/cline-cline-pr-10380.md) |
 | [#10403](https://github.com/cline/cline/pull/10403) | feat: add Abliteration.ai provider | [cline-cline-pr-10403.md](2026-W17/drip-40/cline-cline-pr-10403.md) |
 | [#10384](https://github.com/cline/cline/pull/10384) | fix: cap retry-after delay to prevent silent multi-hour hangs | [cline-cline-pr-10384.md](2026-W17/drip-39/cline-cline-pr-10384.md) |
 | [#10397](https://github.com/cline/cline/pull/10397) | feat: add API key field to LM Studio provider | [cline-cline-pr-10397.md](2026-W17/drip-38/cline-cline-pr-10397.md) |
@@ -1420,6 +1427,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#12220](https://github.com/continuedev/continue/pull/12220) | feat: add FuturMix as a model provider | [continuedev-continue-pr-12220.md](2026-W17/drip-42/continuedev-continue-pr-12220.md) |
 | [#12219](https://github.com/continuedev/continue/pull/12219) | feat(llm): add Doubao (Volcengine Ark) as an LLM provider | [continuedev-continue-pr-12219.md](2026-W17/drip-41/continuedev-continue-pr-12219.md) |
 | [#12206](https://github.com/continuedev/continue/pull/12206) | fix: When AGENTS.md does not exist, the traversal will be interrupted | [continuedev-continue-pr-12206.md](2026-W17/drip-40/continuedev-continue-pr-12206.md) |
 | [#12216](https://github.com/continuedev/continue/pull/12216) | docs(openrouter): document automatic identification headers | [continuedev-continue-pr-12216.md](2026-W17/drip-39/continuedev-continue-pr-12216.md) |
