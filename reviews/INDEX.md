@@ -1,6 +1,6 @@
 # Review Index
 
-189 + W17 drips (through drip-51) PR reviews across 10 OSS AI-coding-agent projects. Each review
+189 + W17 drips (through drip-52) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1281,6 +1281,57 @@ section.
        Chrome launch flags, silently degrading
        interactive perf on dev laptops (#4718,
        request-changes).
+- **W17 drip-52 (2026-04-26)**: 8 more across 4 repos —
+       sst/opencode adds a 30s `Effect.timeoutOrElse` to
+       the ripgrep bootstrap download with a defensive
+       `normalizeDownloadError` so the timeout error
+       isn't silently relabeled by the downstream
+       `mapError` (#24345, merge-as-is); a
+       `stripPlanModeReminders` flag on
+       `toModelMessagesEffect` that filters synthetic
+       `<system-reminder>Plan mode is active</system-reminder>`
+       parts from history when the agent is no longer
+       the plan agent — substring-matched on prose,
+       which works today but is brittle vs. a structured
+       discriminator (#24343, merge-after-nits); and a
+       two-bug watcher fix that flips Windows
+       `\`-paths to `/` and walks up to the nearest
+       loaded ancestor on add/unlink instead of only
+       checking the immediate parent (#24341,
+       merge-as-is); litellm gates the implicit
+       `metadata.user_id`→`user` mapping in the
+       Anthropic→Responses adapter on `litellm.drop_params`
+       so silent-drop callers don't get a rejected
+       `user` field (#26243, merge-after-nits); and
+       splits the non-streaming json+tools path into a
+       new `_resolve_json_mode_non_streaming` 3-tuple
+       that handles the previously-broken case of
+       `RESPONSE_FORMAT_TOOL_NAME` mixed with real user
+       tool calls in one response (#26222,
+       merge-after-nits, with a separator nit on the
+       merged content); openai/codex switches the
+       Bash + PowerShell installers from the GitHub
+       Releases API JSON (rate-limited) to a static
+       checksums manifest + predictable download URL,
+       and flattens the standalone archive layout —
+       but the Bash awk parser doesn't strip the
+       leading `*` that `sha256sum -b` emits, while
+       PowerShell does (#18901, merge-as-is with a
+       one-line awk fix recommended); and adds an
+       explicit `enabled: bool` to `NetworkContext`
+       so removing a network policy mid-session
+       renders `<network enabled="false" />` instead
+       of going silent — disambiguating "removed" from
+       "unchanged" via a private `disabled()`
+       constructor and a match-arm-with-guard
+       (#18883, merge-as-is); browser-use uses CDP
+       `screencastFrame.metadata.timestamp` to
+       duplicate-fill frames so video playback runs in
+       real time, but the fill loop has no upper bound
+       — a 5-minute backgrounded tab inserts ~9000
+       frames in a tight Python loop and stalls the
+       async event loop (#4717, request-changes,
+       cap+test required).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -1343,6 +1394,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24345](https://github.com/sst/opencode/pull/24345) | fix(ripgrep): time out binary download | [sst-opencode-pr-24345.md](2026-W17/drip-52/sst-opencode-pr-24345.md) |
+| [#24343](https://github.com/sst/opencode/pull/24343) | fix(session): drop stale plan reminders | [sst-opencode-pr-24343.md](2026-W17/drip-52/sst-opencode-pr-24343.md) |
+| [#24341](https://github.com/sst/opencode/pull/24341) | fix(app): normalize watcher paths | [sst-opencode-pr-24341.md](2026-W17/drip-52/sst-opencode-pr-24341.md) |
 | [#24337](https://github.com/sst/opencode/pull/24337) | fix(filesystem): tolerate unresolved paths | [sst-opencode-pr-24337.md](2026-W17/drip-51/sst-opencode-pr-24337.md) |
 | [#24333](https://github.com/sst/opencode/pull/24333) | refactor: remove barrel index.ts and flatten export namespace | [sst-opencode-pr-24333.md](2026-W17/drip-51/sst-opencode-pr-24333.md) |
 | [#24332](https://github.com/sst/opencode/pull/24332) | fix: add lock timeout/eviction and fix concurrency issues | [sst-opencode-pr-24332.md](2026-W17/drip-51/sst-opencode-pr-24332.md) |
@@ -1440,6 +1494,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26243](https://github.com/BerriAI/litellm/pull/26243) | fix: respect drop_params when mapping metadata.user_id to user in Responses adapter | [BerriAI-litellm-pr-26243.md](2026-W17/drip-52/BerriAI-litellm-pr-26243.md) |
+| [#26222](https://github.com/BerriAI/litellm/pull/26222) | fix(anthropic): json response_format + user tools non-streaming | [BerriAI-litellm-pr-26222.md](2026-W17/drip-52/BerriAI-litellm-pr-26222.md) |
 | [#26505](https://github.com/BerriAI/litellm/pull/26505) | feat(fireworks): extract think tags into reasoning_content | [BerriAI-litellm-pr-26505.md](2026-W17/drip-51/BerriAI-litellm-pr-26505.md) |
 | [#26415](https://github.com/BerriAI/litellm/pull/26415) | feat(mavvrik): add Mavvrik integration | [BerriAI-litellm-pr-26415.md](2026-W17/drip-50/BerriAI-litellm-pr-26415.md) |
 | [#26380](https://github.com/BerriAI/litellm/pull/26380) | feat(deepseek): add DeepSeek V4 Pro and V4 Flash model metadata | [BerriAI-litellm-pr-26380.md](2026-W17/drip-50/BerriAI-litellm-pr-26380.md) |
@@ -1528,6 +1584,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#4717](https://github.com/browser-use/browser-use/pull/4717) | fix: video recording speed by implementing frame duplication | [browser-use-browser-use-pr-4717.md](2026-W17/drip-52/browser-use-browser-use-pr-4717.md) |
 | [#4719](https://github.com/browser-use/browser-use/pull/4719) | refactor(schema): remove unreachable type branch entry | [browser-use-browser-use-pr-4719.md](2026-W17/drip-51/browser-use-browser-use-pr-4719.md) |
 | [#4718](https://github.com/browser-use/browser-use/pull/4718) | fix: robust Docker detection using multi-signal heuristics | [browser-use-browser-use-pr-4718.md](2026-W17/drip-51/browser-use-browser-use-pr-4718.md) |
 | [#4708](https://github.com/browser-use/browser-use/pull/4708) | fix: fail fast for unimplemented traces_dir | [browser-use-browser-use-pr-4708.md](2026-W17/drip-50/browser-use-browser-use-pr-4708.md) |
@@ -1667,6 +1724,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#18901](https://github.com/openai/codex/pull/18901) | Install standalone archives with checksum verification | [openai-codex-pr-18901.md](2026-W17/drip-52/openai-codex-pr-18901.md) |
+| [#18883](https://github.com/openai/codex/pull/18883) | [codex] fix network context removal | [openai-codex-pr-18883.md](2026-W17/drip-52/openai-codex-pr-18883.md) |
 | [#19575](https://github.com/openai/codex/pull/19575) | Add cloud executor registration to exec-server | [openai-codex-pr-19575.md](2026-W17/drip-51/openai-codex-pr-19575.md) |
 | [#19160](https://github.com/openai/codex/pull/19160) | Make apply_patch streaming parser stateful | [openai-codex-pr-19160.md](2026-W17/drip-50/openai-codex-pr-19160.md) |
 | [#19082](https://github.com/openai/codex/pull/19082) | Drop duplicate contiguous user messages during compaction | [openai-codex-pr-19082.md](2026-W17/drip-50/openai-codex-pr-19082.md) |
