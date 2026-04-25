@@ -1,6 +1,6 @@
 # Review Index
 
-181 + W17 drips (through drip-44) PR reviews across 10 OSS AI-coding-agent projects. Each review
+181 + W17 drips (through drip-48) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1173,6 +1173,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14116](https://github.com/All-Hands-AI/OpenHands/pull/14116) | fix: normalize legacy MCP config in migration 108 | [All-Hands-AI-OpenHands-pr-14116.md](2026-W17/drip-48/All-Hands-AI-OpenHands-pr-14116.md) |
 | [#14086](https://github.com/All-Hands-AI/OpenHands/pull/14086) | fix: don't persist Gemini model-specific endpoint as base_url | [All-Hands-AI-OpenHands-pr-14086.md](2026-W17/drip-47/All-Hands-AI-OpenHands-pr-14086.md) |
 | [#14125](https://github.com/All-Hands-AI/OpenHands/pull/14125) | fix(integrations): guard Bitbucket Data Center against null nested fields | [All-Hands-AI-OpenHands-pr-14125.md](2026-W17/drip-46/All-Hands-AI-OpenHands-pr-14125.md) |
 | [#14132](https://github.com/All-Hands-AI/OpenHands/pull/14132) | fix: support pagination for branch search | [All-Hands-AI-OpenHands-pr-14132.md](2026-W17/drip-45/All-Hands-AI-OpenHands-pr-14132.md) |
@@ -1295,6 +1296,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26492](https://github.com/BerriAI/litellm/pull/26492) | [Fix] Tighten caller-permission checks on key route fields | [BerriAI-litellm-pr-26492.md](2026-W17/drip-48/BerriAI-litellm-pr-26492.md) |
 | [#26503](https://github.com/BerriAI/litellm/pull/26503) | [Fix] Enforce key.models / user.models on Bedrock passthrough routes | [BerriAI-litellm-pr-26503.md](2026-W17/drip-47/BerriAI-litellm-pr-26503.md) |
 | [#26468](https://github.com/BerriAI/litellm/pull/26468) | [WIP] Add endpoint for bulk key updates for team | [BerriAI-litellm-pr-26468.md](2026-W17/drip-46/BerriAI-litellm-pr-26468.md) |
 | [#26500](https://github.com/BerriAI/litellm/pull/26500) | [Fix] Wrap extra_body for JSON-configured OpenAI-compatible providers | [BerriAI-litellm-pr-26500.md](2026-W17/drip-44/BerriAI-litellm-pr-26500.md) |
@@ -1377,6 +1379,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#4734](https://github.com/browser-use/browser-use/pull/4734) | fix(schema): remove unreachable 'type' key from validation fields list | [browser-use-browser-use-pr-4734.md](2026-W17/drip-48/browser-use-browser-use-pr-4734.md) |
 | [#4723](https://github.com/browser-use/browser-use/pull/4723) | security: verify init template integrity | [browser-use-browser-use-pr-4723.md](2026-W17/drip-47/browser-use-browser-use-pr-4723.md) |
 | [#4724](https://github.com/browser-use/browser-use/pull/4724) | fix: implement retry logic for captureScreenshot to avoid timeouts | [browser-use-browser-use-pr-4724.md](2026-W17/drip-46/browser-use-browser-use-pr-4724.md) |
 | [#4741](https://github.com/browser-use/browser-use/pull/4741) | fix(anthropic-serializer): type tool_calls + raise on malformed data URL | [browser-use-pr-4741.md](2026-W17/drip-45/browser-use-pr-4741.md) |
@@ -1448,6 +1451,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#10382](https://github.com/cline/cline/pull/10382) | fix(hooks): Use shell escapes on JSON literals in hooks templates | [cline-cline-pr-10382.md](2026-W17/drip-48/cline-cline-pr-10382.md) |
 | [#10400](https://github.com/cline/cline/pull/10400) | [Aikido] Fix 26 security issues in node-forge, @xmldom/xmldom, basic-ftp and 7 more | [cline-cline-pr-10400.md](2026-W17/drip-47/cline-cline-pr-10400.md) |
 | [#10404](https://github.com/cline/cline/pull/10404) | feat(deepseek): deepseek-v4-pro supports reasoning effort control | [cline-cline-pr-10404.md](2026-W17/drip-46/cline-cline-pr-10404.md) |
 | [#10406](https://github.com/cline/cline/pull/10406) | docs: Add FuturMix AI Gateway setup guide | [cline-cline-pr-10406.md](2026-W17/drip-45/cline-cline-pr-10406.md) |
@@ -1477,6 +1481,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#12200](https://github.com/continuedev/continue/pull/12200) | Added new supported models, and removed deprecated models for Ask Sage | [continuedev-continue-pr-12200.md](2026-W17/drip-48/continuedev-continue-pr-12200.md) |
 | [#12201](https://github.com/continuedev/continue/pull/12201) | chore(deps): bump dompurify from 3.3.3 to 3.4.1 in /gui | [continuedev-continue-pr-12201.md](2026-W17/drip-47/continuedev-continue-pr-12201.md) |
 | [#12158](https://github.com/continuedev/continue/pull/12158) | fix(ollama): add Gemma to tool support heuristic for Ollama and LM Studio | [continuedev-continue-pr-12158.md](2026-W17/drip-46/continuedev-continue-pr-12158.md) |
 | [#12151](https://github.com/continuedev/continue/pull/12151) | fix(gui): ignore stale provider model fetch results after provider switch | [continuedev-continue-pr-12151.md](2026-W17/drip-46/continuedev-continue-pr-12151.md) |
@@ -1507,6 +1512,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19470](https://github.com/openai/codex/pull/19470) | Add turn start timestamp to turn metadata | [openai-codex-pr-19470.md](2026-W17/drip-48/openai-codex-pr-19470.md) |
+| [#19468](https://github.com/openai/codex/pull/19468) | Fix Bazel cargo_bin runfiles paths | [openai-codex-pr-19468.md](2026-W17/drip-48/openai-codex-pr-19468.md) |
 | [#19442](https://github.com/openai/codex/pull/19442) | feat: apply provider capability disables through config layers | [openai-codex-pr-19442.md](2026-W17/drip-47/openai-codex-pr-19442.md) |
 | [#19456](https://github.com/openai/codex/pull/19456) | Add remote plugin uninstall API | [openai-codex-pr-19456.md](2026-W17/drip-46/openai-codex-pr-19456.md) |
 | [#19514](https://github.com/openai/codex/pull/19514) | Fix codex-rs README grammar | [openai-codex-pr-19514.md](2026-W17/drip-44/openai-codex-pr-19514.md) |
@@ -1615,6 +1622,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15787](https://github.com/ollama/ollama/pull/15787) | api: accept "max" as a think value | [ollama-ollama-pr-15787.md](2026-W17/drip-48/ollama-ollama-pr-15787.md) |
 | [#15736](https://github.com/ollama/ollama/pull/15736) | mlxrunner: batch the sampler across multiple sequences | [ollama-ollama-pr-15736.md](2026-W17/drip-47/ollama-ollama-pr-15736.md) |
 | [#15811](https://github.com/ollama/ollama/pull/15811) | docs: add RDNA4 / gfx1201 ROCm build instructions to development.md | [ollama-ollama-pr-15811.md](2026-W17/drip-45/ollama-ollama-pr-15811.md) |
 | [#15710](https://github.com/ollama/ollama/pull/15710) | docs: fix tar decompression flags | [ollama-ollama-pr-15710.md](2026-W17/drip-43/ollama-ollama-pr-15710.md) |
