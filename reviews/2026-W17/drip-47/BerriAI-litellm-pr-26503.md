@@ -1,0 +1,25 @@
+# BerriAI/litellm #26503 — [Fix] Enforce key.models / user.models on Bedrock passthrough routes
+
+- **PR:** https://github.com/BerriAI/litellm/pull/26503
+- **Head SHA:** `164b3ae34da0de1fa888ad448d49101b04edcee3`
+- **Files changed:** 4 — `proxy/auth/auth_checks.py` (+1/−1), `proxy/auth/auth_utils.py` (+53/−1), `proxy/auth/user_api_key_auth.py` (+5/−3), `tests/test_litellm/proxy/auth/test_auth_utils.py` (+131/−0)
+
+## Summary
+
+Fixes #26399. Bedrock passthrough endpoints (`/bedrock/model/{modelId}/{invoke|converse|...}`) carry the model exclusively in the URL path — the underlying AWS request body has no top-level `model` field. Before this PR, `get_model_from_request()` returned `None` on those routes, the `can_key_call_model` access check was skipped, and any valid LiteLLM key with `key.models = ["claude-haiku"]` could still POST to `/bedrock/model/anthropic.claude-3-5-sonnet-.../invoke` and call any Bedrock model the proxy could reach. The fix extracts `modelId` from the URL via regex, resolves it back to the router's user-facing `model_group` name, and threads it through the existing access-control machinery.
+
+## Line-level call-outs
+
+- `litellm/proxy/auth/auth_utils.py:880-884` — `_BEDROCK_PASSTHROUGH_PATH_RE` is anchored `^/bedrock/model/(.+)/(?:invoke|...)$` with `(.+)` for the model id. The PR's own docstring at `:894` flags that `application-inference-profile/{profileId}` paths exist (`/bedrock/model/application-inference-profile/{profileId}/converse`), and `(.+)` will greedily swallow `application-inference-profile/{profileId}` as a single id. That's actually the **desired** behaviour for the matcher — but `_resolve_bedrock_model_id_to_router_model_group` then looks for a deployment whose `litellm_params.model` ends with `/application-inference-profile/<uuid>`, which a typical config will not have. The fall-through at `:973` (`model = resolved if resolved is not None else model_id`) does the right thing — falls back to the raw id and lets `can_key_call_model` deny it — but please add a unit test for the application-inference-profile case so the deny-by-default behaviour is pinned.
+- `litellm/proxy/auth/auth_utils.py:899-907` — `_resolve_bedrock_model_id_to_router_model_group` iterates `llm_router.get_model_list()` and matches `deployment_model.endswith(f"/{model_id}")`. **Suffix matching is ambiguous** when two deployments share the same model id under different prefixes, e.g. `bedrock/global.anthropic.claude-opus-4-7` and `bedrock/us.anthropic.claude-opus-4-7` both end with `/anthropic.claude-opus-4-7` if a user passes the bare id. The first match wins and the second deployment is invisible to access control. Either: (a) require an exact match on the `litellm_params.model` field after stripping the leading `bedrock/`, or (b) collect **all** matches and OR-combine the access decision (deny only if all matching deployments are denied). The current behaviour is non-deterministic across router init order.
+- `litellm/proxy/auth/auth_utils.py:967-973` — the comment block here is genuinely good documentation and exactly the kind of "why" comment a security-sensitive auth check needs. Keep it.
+- `litellm/proxy/auth/user_api_key_auth.py:872`, `:1281`, `:1812` — three call sites updated to pass `llm_router=llm_router`. **One missed call site:** `auth_checks.py:488` is the *fourth* call in the auth path. The PR's diff at `auth_checks.py:485-488` shows the update there, so that's covered. Confirm by `rg "get_model_from_request\(" litellm/proxy/` that no fourth call site exists without the router kwarg — if there is one, the fix is partial and Bedrock passthrough still bypasses budget checks on that path.
+- `tests/test_litellm/proxy/auth/test_auth_utils.py` (+131) — covers the resolver and the regex, but the **integration assertion** ("a key with `models=['claude-haiku']` is rejected at `/bedrock/model/anthropic.claude-3-5-sonnet-.../invoke`") isn't visible in the diff. The unit test pins the helpers; without an end-to-end auth test, a future regression that shorts `can_key_call_model` for passthrough won't be caught. Add at least one `test_user_api_key_auth_*` integration test that hits the Bedrock route through the full auth pipeline.
+
+## Verdict
+
+**merge-after-nits**
+
+## Rationale
+
+This is a real CVE-class fix — silent access-control bypass on a production-exposed passthrough surface — and the implementation is structured correctly: extract model from URL, resolve to model group, route through existing checks. Three things to tighten before merge: (1) the suffix-match ambiguity between same-id-different-region Bedrock deployments, (2) explicit test for the application-inference-profile deny-by-default path, (3) one integration test that proves the end-to-end key/model enforcement actually denies. Until then there's a small but real risk that the patched proxy still lets a misconfigured router silently route to the wrong deployment. The direction is right, the docstring is excellent — just close the determinism gap.
