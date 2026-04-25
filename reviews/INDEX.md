@@ -683,6 +683,44 @@ section.
    `git rebase --continue --no-edit` flag combo is wrong
    — `--no-edit` isn't a rebase flag, it belongs on the
    inner commit — merge-after-nits).
+- **W17 drip-32 (2026-04-25)**: eight reviews split
+   across openai/codex (two slices of pakrym-oai's
+   handler-streamlining chain — #19498 and #19484
+   fold long if-let-Err ladders into single
+   `async {}` blocks dispatching one `Result`, plus
+   #19497 doing the same for the turn/realtime entry
+   points; all three preserve analytics-emit ordering
+   and are merge-after-nits on style-consistency
+   grounds), BerriAI/litellm (#26474 collapses
+   Bedrock guardrails' duplicate INPUT/OUTPUT
+   asyncio.gather post-call into a single pass —
+   merge-after-nits; and #26471 introduces per-
+   (team, member, model) budget enforcement with a
+   new `LiteLLM_TeamMemberModelSpend` table — the
+   migration story is honest but the writer-side
+   cache key (`team_id::...::user_id::...::model::...`)
+   doesn't appear to bridge to the reader-side cache
+   key (`spend:team_member:...:model:...`), so 429s
+   may only fire on TTL flips rather than on the
+   next request — request-changes), All-Hands
+   OpenHands (#14125 hardens Bitbucket DC webhook
+   parsing with `(x or {})` and isinstance guards —
+   clean merge-as-is; and #14127 cuts resolver
+   comment noise by editing the original "I'm on it"
+   ack in place via a hidden HTML marker, with sane
+   fallback to a fresh comment and a widened
+   non-fatal-status set including 423/429 —
+   merge-after-nits pending confirmation that the
+   marker actually lands on the posted comment), and
+   Aider-AI/aider (#5065 attempts to fix the
+   Architect-mode prompt-injection issue #5058 by
+   asking the same model to self-classify its own
+   proposal as SAFE/UNSAFE, but same-model self-
+   validation isn't a trust boundary — the injected
+   payload travels intact into the validator prompt;
+   plus the check fails open on litellm exceptions,
+   so the most common error path silently bypasses
+   the control — request-changes).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -690,6 +728,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#5065](https://github.com/Aider-AI/aider/pull/5065) | Fix prompt injection vulnerability in Architect mode (Issue #5058) | [Aider-AI-aider-pr-5065.md](2026-W17/drip-32/Aider-AI-aider-pr-5065.md) |
 | [#5031](https://github.com/Aider-AI/aider/pull/5031) | fix(io): tool_output falls back to ASCII on UnicodeEncodeError (#5029) | [Aider-AI-aider-pr-5031.md](2026-W17/drip-30/Aider-AI-aider-pr-5031.md) |
 | [#4748](https://github.com/Aider-AI/aider/pull/4748) | Fix regression in the LiteLLM exception list | [PR-4748.md](Aider-AI-aider/PR-4748.md) |
 | [#4830](https://github.com/Aider-AI/aider/pull/4830) | Allow adding files outside repo when git commits off | [PR-4830.md](Aider-AI-aider/PR-4830.md) |
@@ -705,6 +744,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14127](https://github.com/All-Hands-AI/OpenHands/pull/14127) | Reduce GitHub resolver comment noise by editing acknowledgement comment | [All-Hands-AI-OpenHands-pr-14127.md](2026-W17/drip-32/All-Hands-AI-OpenHands-pr-14127.md) |
+| [#14125](https://github.com/All-Hands-AI/OpenHands/pull/14125) | fix(integrations): Bitbucket Data Center webhook null guards | [All-Hands-AI-OpenHands-pr-14125.md](2026-W17/drip-32/All-Hands-AI-OpenHands-pr-14125.md) |
 | [#14114](https://github.com/All-Hands-AI/OpenHands/pull/14114) | fix(runtime): shrink BashSession tmux pane from 1000x1000 to 256x50 | [All-Hands-AI-OpenHands-pr-14114.md](2026-W17/drip-30/All-Hands-AI-OpenHands-pr-14114.md) |
 | [#13977](https://github.com/All-Hands-AI/OpenHands/pull/13977) | Warn before resetting hidden SDK settings | [PR-13977.md](All-Hands-AI-OpenHands/PR-13977.md) |
 | [#13983](https://github.com/All-Hands-AI/OpenHands/pull/13983) | feat(app-server): route ACP agents to the ACP conversation endpoint | [PR-13983.md](All-Hands-AI-OpenHands/PR-13983.md) |
@@ -790,6 +831,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26474](https://github.com/BerriAI/litellm/pull/26474) | fix(bedrock guardrails): collapse duplicate INPUT/OUTPUT post-call passes | [BerriAI-litellm-pr-26474.md](2026-W17/drip-32/BerriAI-litellm-pr-26474.md) |
+| [#26471](https://github.com/BerriAI/litellm/pull/26471) | feat(teams): per-model team member budgets | [BerriAI-litellm-pr-26471.md](2026-W17/drip-32/BerriAI-litellm-pr-26471.md) |
 | [#26472](https://github.com/BerriAI/litellm/pull/26472) | fix(bedrock): avoid duplicate post-call guardrail logs on streaming | [BerriAI-litellm-pr-26472.md](2026-W17/drip-30/BerriAI-litellm-pr-26472.md) |
 | [#26470](https://github.com/BerriAI/litellm/pull/26470) | [Fix] Prevent atexit flush hangs and guard proxy_server_request header lookup | [BerriAI-litellm-pr-26470.md](2026-W17/drip-30/BerriAI-litellm-pr-26470.md) |
 | [#26467](https://github.com/BerriAI/litellm/pull/26467) | fix(pass-through): harden target URL construction | [BerriAI-litellm-pr-26467.md](2026-W17/drip-30/BerriAI-litellm-pr-26467.md) |
@@ -932,6 +975,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19498](https://github.com/openai/codex/pull/19498) | Streamline conversation init and resume handlers | [openai-codex-pr-19498.md](2026-W17/drip-32/openai-codex-pr-19498.md) |
+| [#19497](https://github.com/openai/codex/pull/19497) | Streamline turn and realtime handlers | [openai-codex-pr-19497.md](2026-W17/drip-32/openai-codex-pr-19497.md) |
+| [#19484](https://github.com/openai/codex/pull/19484) | Centralize JsonRpc error_code constructors and trim leaf handlers | [openai-codex-pr-19484.md](2026-W17/drip-32/openai-codex-pr-19484.md) |
 | [#19487](https://github.com/openai/codex/pull/19487) | [codex] Move config loading into codex-config | [openai-codex-pr-19487.md](2026-W17/drip-30/openai-codex-pr-19487.md) |
 | [#19481](https://github.com/openai/codex/pull/19481) | Remove ghost reasoning snapshots from Responses API turns | [openai-codex-pr-19481.md](2026-W17/drip-30/openai-codex-pr-19481.md) |
 | [#19471](https://github.com/openai/codex/pull/19471) | test: gate Windows sandbox tests behind serial_test | [openai-codex-pr-19471.md](2026-W17/drip-30/openai-codex-pr-19471.md) |
