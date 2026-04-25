@@ -1,6 +1,6 @@
 # Review Index
 
-173 + W17 drips (through drip-40) PR reviews across 10 OSS AI-coding-agent projects. Each review
+181 + W17 drips (through drip-41) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1154,6 +1154,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14128](https://github.com/All-Hands-AI/OpenHands/pull/14128) | Support pagination for branch search | [All-Hands-AI-OpenHands-pr-14128.md](2026-W17/drip-41/All-Hands-AI-OpenHands-pr-14128.md) |
 | [#14099](https://github.com/All-Hands-AI/OpenHands/pull/14099) | fix(git): support pagination for branch search queries | [All-Hands-AI-OpenHands-pr-14099.md](2026-W17/drip-40/All-Hands-AI-OpenHands-pr-14099.md) |
 | [#14101](https://github.com/All-Hands-AI/OpenHands/pull/14101) | fix(app): deliver pending messages queued during startup | [All-Hands-AI-OpenHands-pr-14101.md](2026-W17/drip-39/All-Hands-AI-OpenHands-pr-14101.md) |
 | [#14126](https://github.com/All-Hands-AI/OpenHands/pull/14126) | feat(settings): use from_persisted for stored settings | [All-Hands-AI-OpenHands-pr-14126.md](2026-W17/drip-38/All-Hands-AI-OpenHands-pr-14126.md) |
@@ -1179,6 +1180,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24273](https://github.com/anomalyco/opencode/pull/24273) | docs: correct compaction prune default | [anomalyco-opencode-pr-24273.md](2026-W17/drip-41/anomalyco-opencode-pr-24273.md) |
 | [#24259](https://github.com/sst/opencode/pull/24259) | docs: add opencode-simple-notify to ecosystem | [sst-opencode-pr-24259.md](2026-W17/drip-40/sst-opencode-pr-24259.md) |
 | [#24262](https://github.com/sst/opencode/pull/24262) | fix(provider): inject chat_template_kwargs for Nvidia NIM deepseek-v4 models | [sst-opencode-pr-24262.md](2026-W17/drip-39/sst-opencode-pr-24262.md) |
 | [#24258](https://github.com/sst/opencode/pull/24258) | feat(httpapi): bridge instance read endpoints | [sst-opencode-pr-24258.md](2026-W17/drip-38/sst-opencode-pr-24258.md) |
@@ -1326,6 +1328,13 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26464](https://github.com/BerriAI/litellm/pull/26464) | Harden team metadata handling in /team/new and /team/update | [BerriAI-litellm-pr-26464.md](2026-W17/drip-29/BerriAI-litellm-pr-26464.md) |
 | [#26463](https://github.com/BerriAI/litellm/pull/26463) | fix(mcp): tighten public-route detection and OAuth2 fallback gating | [BerriAI-litellm-pr-26463.md](2026-W17/drip-29/BerriAI-litellm-pr-26463.md) |
 
+## browser-use/browser-use
+
+| PR | Title | File |
+|---|---|---|
+| [#4737](https://github.com/browser-use/browser-use/pull/4737) | Fix Windows CLI session probe timeouts | [browser-use-browser-use-pr-4737.md](2026-W17/drip-41/browser-use-browser-use-pr-4737.md) |
+| [#4736](https://github.com/browser-use/browser-use/pull/4736) | fix(element): redact sensitive values in fill() debug logging | [browser-use-browser-use-pr-4736.md](2026-W17/drip-41/browser-use-browser-use-pr-4736.md) |
+
 ## charmbracelet/crush
 
 | PR | Title | File |
@@ -1411,6 +1420,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#12219](https://github.com/continuedev/continue/pull/12219) | feat(llm): add Doubao (Volcengine Ark) as an LLM provider | [continuedev-continue-pr-12219.md](2026-W17/drip-41/continuedev-continue-pr-12219.md) |
 | [#12206](https://github.com/continuedev/continue/pull/12206) | fix: When AGENTS.md does not exist, the traversal will be interrupted | [continuedev-continue-pr-12206.md](2026-W17/drip-40/continuedev-continue-pr-12206.md) |
 | [#12216](https://github.com/continuedev/continue/pull/12216) | docs(openrouter): document automatic identification headers | [continuedev-continue-pr-12216.md](2026-W17/drip-39/continuedev-continue-pr-12216.md) |
 | [#12212](https://github.com/continuedev/continue/pull/12212) | fix(bedrock): opt into httpBearerAuth when apiKey is set | [continuedev-continue-pr-12212.md](2026-W17/drip-38/continuedev-continue-pr-12212.md) |
@@ -1435,6 +1445,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19537](https://github.com/openai/codex/pull/19537) | Add plugin MCP policy persistence | [openai-codex-pr-19537.md](2026-W17/drip-41/openai-codex-pr-19537.md) |
 | [#19526](https://github.com/openai/codex/pull/19526) | [codex] Order codex-mcp items by visibility | [openai-codex-pr-19526.md](2026-W17/drip-40/openai-codex-pr-19526.md) |
 | [#19524](https://github.com/openai/codex/pull/19524) | [codex] Minimize codex-mcp public surface | [openai-codex-pr-19524.md](2026-W17/drip-39/openai-codex-pr-19524.md) |
 | [#19511](https://github.com/openai/codex/pull/19511) | Keep slash command popup columns stable while scrolling | [openai-codex-pr-19511.md](2026-W17/drip-39/openai-codex-pr-19511.md) |
@@ -1538,6 +1549,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15809](https://github.com/ollama/ollama/pull/15809) | create: prune imported blobs and startup invalid leftovers | [ollama-ollama-pr-15809.md](2026-W17/drip-41/ollama-ollama-pr-15809.md) |
+| [#15789](https://github.com/ollama/ollama/pull/15789) | openai: map responses reasoning effort to think | [ollama-ollama-pr-15789.md](2026-W17/drip-41/ollama-ollama-pr-15789.md) |
 | [#15808](https://github.com/ollama/ollama/pull/15808) | fix: improve error handling for model loading in Scheduler | [ollama-ollama-pr-15808.md](2026-W17/drip-40/ollama-ollama-pr-15808.md) |
 | [#15790](https://github.com/ollama/ollama/pull/15790) | Add Atlarix to Code Editors & Development integrations | [ollama-ollama-pr-15790.md](2026-W17/drip-37/ollama-ollama-pr-15790.md) |
 | [#15735](https://github.com/ollama/ollama/pull/15735) | server: add v2 manifest path | [ollama-ollama-pr-15735.md](2026-W17/drip-36/ollama-ollama-pr-15735.md) |
