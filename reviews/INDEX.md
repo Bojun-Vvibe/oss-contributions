@@ -1,6 +1,6 @@
 # Review Index
 
-165 + W17 drips (through drip-28) PR reviews across 9 OSS AI-coding-agent projects. Each review
+165 + W17 drips (through drip-30) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -648,6 +648,41 @@ section.
    `quantization_aux_*` sibling-tensor naming at quant-metadata
    load time (supersedes #15743; 7-file refactor with regression
    test for both singular and plural conventions).
+- **W17 drip-30 (2026-04-25)**: 9 more — codex removing
+   ghost reasoning snapshots from Responses API turns
+   (output-array trim that's correct semantically but
+   changes rollout JSON wire-format — replay-tooling
+   risk flagged); codex gating Windows sandbox tests
+   behind `serial_test` to stop registry-key contention
+   under cargo's parallel runner (test-only, clean);
+   codex ChatGPT Library file upload/download adding a
+   streaming multipart parser + new SDK signatures with
+   thin test coverage and one breaking method rename
+   (needs-discussion); litellm hardening pass-through
+   target URL construction so user-supplied paths can't
+   escape the configured base via `..` / scheme override
+   (urllib.parse.urljoin replaced with explicit prefix
+   join + suffix validation, good test matrix); litellm
+   wiring `gpt-5.5` reasoning_effort flags + new
+   `supports_low_reasoning_effort` capability flag through
+   the model-cost JSON and capability resolver
+   (additive); opencode detecting non-object frontmatter
+   from gray-matter and surfacing a typed error instead
+   of a downstream `Object.keys` crash (1-line guard +
+   regression test); opencode lazy session error schema
+   via `Schema.suspend` to break a circular import that
+   was forcing eager evaluation at module load
+   (Effect-Schema idiom, no behavior change); opencode
+   per-model reasoning token pricing — retires the
+   long-standing TODO that billed reasoning at the output
+   rate, adds optional `reasoning` field through 4 cost
+   schemas + the user-config merge, with both explicit
+   and fallback test cases (textbook backward-compat
+   shape); and crush adding inline tooling notes for
+   git/gh in CONTRIBUTING (docs-only but the suggested
+   `git rebase --continue --no-edit` flag combo is wrong
+   — `--no-edit` isn't a rebase flag, it belongs on the
+   inner commit — merge-after-nits).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -685,6 +720,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24234](https://github.com/anomalyco/opencode/pull/24234) | fix(agent): detect non-object frontmatter from gray-matter | [anomalyco-opencode-pr-24234.md](2026-W17/drip-30/anomalyco-opencode-pr-24234.md) |
+| [#24233](https://github.com/anomalyco/opencode/pull/24233) | fix(provider): honor per-model reasoning token pricing | [anomalyco-opencode-pr-24233.md](2026-W17/drip-30/anomalyco-opencode-pr-24233.md) |
+| [#24229](https://github.com/anomalyco/opencode/pull/24229) | fix(session): lazy session error schema via Schema.suspend | [anomalyco-opencode-pr-24229.md](2026-W17/drip-30/anomalyco-opencode-pr-24229.md) |
 | [#23755](https://github.com/anomalyco/opencode/pull/23755) | fix: preserve thinking/redacted_thinking blocks in Anthropic message transforms | [PR-23755.md](anomalyco-opencode/PR-23755.md) |
 | [#23797](https://github.com/anomalyco/opencode/pull/23797) | fix: preserve UTF-8 BOM through edit/patch operations | [PR-23797.md](anomalyco-opencode/PR-23797.md) |
 | [#23837](https://github.com/anomalyco/opencode/pull/23837) | fix: fail fast on invalid session payloads | [PR-23837.md](anomalyco-opencode/PR-23837.md) |
@@ -749,6 +787,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26467](https://github.com/BerriAI/litellm/pull/26467) | fix(pass-through): harden target URL construction | [BerriAI-litellm-pr-26467.md](2026-W17/drip-30/BerriAI-litellm-pr-26467.md) |
+| [#26456](https://github.com/BerriAI/litellm/pull/26456) | feat(models): gpt-5.5 reasoning_effort flags + supports_low_reasoning_effort | [BerriAI-litellm-pr-26456.md](2026-W17/drip-30/BerriAI-litellm-pr-26456.md) |
 | [#26219](https://github.com/BerriAI/litellm/pull/26219) | fix: ChatGPT responses bridge recovery | [PR-26219.md](BerriAI-litellm/PR-26219.md) |
 | [#26228](https://github.com/BerriAI/litellm/pull/26228) | fix(anthropic): skip file-block discovery on unsupported content | [PR-26228.md](BerriAI-litellm/PR-26228.md) |
 | [#26266](https://github.com/BerriAI/litellm/pull/26266) | fix(bedrock): guardrail logging + redaction | [PR-26266.md](BerriAI-litellm/PR-26266.md) |
@@ -807,6 +847,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#2706](https://github.com/charmbracelet/crush/pull/2706) | docs(contributing): inline tooling notes for git/gh | [charmbracelet-crush-pr-2706.md](2026-W17/drip-30/charmbracelet-crush-pr-2706.md) |
 | [#2579](https://github.com/charmbracelet/crush/pull/2579) | feat(tool): add `ask-user-questions` tool | [PR-2579.md](charmbracelet-crush/PR-2579.md) |
 | [#2613](https://github.com/charmbracelet/crush/pull/2613) | fix(agent): prune excess images from history to prevent session deadlock | [PR-2613.md](charmbracelet-crush/PR-2613.md) |
 | [#2615](https://github.com/charmbracelet/crush/pull/2615) | fix(agent): validate tool call/results + strip tags from titles | [PR-2615.md](charmbracelet-crush/PR-2615.md) |
@@ -885,6 +926,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19481](https://github.com/openai/codex/pull/19481) | Remove ghost reasoning snapshots from Responses API turns | [openai-codex-pr-19481.md](2026-W17/drip-30/openai-codex-pr-19481.md) |
+| [#19471](https://github.com/openai/codex/pull/19471) | test: gate Windows sandbox tests behind serial_test | [openai-codex-pr-19471.md](2026-W17/drip-30/openai-codex-pr-19471.md) |
+| [#19458](https://github.com/openai/codex/pull/19458) | feat(chatgpt-library): file upload/download hooks | [openai-codex-pr-19458.md](2026-W17/drip-30/openai-codex-pr-19458.md) |
 | [#18868](https://github.com/openai/codex/pull/18868) | Add MITM hooks for host specific HTTPS request clamping | [PR-18868.md](openai-codex/PR-18868.md) |
 | [#19030](https://github.com/openai/codex/pull/19030) | Support to add prefetched tool result to a user turn | [PR-19030.md](openai-codex/PR-19030.md) |
 | [#19031](https://github.com/openai/codex/pull/19031) | Fix relative stdio MCP cwd fallback | [PR-19031.md](openai-codex/PR-19031.md) |
