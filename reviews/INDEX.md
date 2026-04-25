@@ -1,6 +1,6 @@
 # Review Index
 
-181 + W17 drips (through drip-49) PR reviews across 10 OSS AI-coding-agent projects. Each review
+181 + W17 drips (through drip-50) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1174,6 +1174,54 @@ section.
       reconnect guard that's right but doesn't cover the
       public `clear_cookies()` sibling (#4722,
       merge-after-nits).
+- **W17 drip-50 (2026-04-25)**: 8 more across 4 repos —
+      sst/opencode `Permission.reply()` flips silent
+      no-op on unknown requestID into a typed
+      `NotFoundError` mapped to HTTP 404 at the
+      experimental HttpApi boundary (#24322,
+      merge-as-is) and an editor lock-file resolver fix
+      that filters cross-workspace VSCode IDE locks
+      before they cross-inject `selection_changed`
+      events into unrelated cwd sessions (#24323,
+      merge-after-nits, ranks by resolved-path-string
+      length not segment depth — note for future
+      readers); openai/codex compaction
+      `collect_user_messages` now drops empty + 
+      contiguous-duplicate user turns while
+      preserving repeats separated by non-user items
+      (#19082, merge-as-is, single fixture covers
+      both behaviors), and the apply_patch streaming
+      parser rewrite from "reparse on every delta" to
+      a stateful `StreamingPatchParser` with claimed
+      10–15× speedup but couples three changes —
+      algorithm, public-API removal of
+      `parse_patch_streaming()`, and deletion of the
+      largest existing test surface (#19160,
+      needs-discussion, want re-asserted
+      character-at-a-time fuzz before merge);
+      litellm new Mavvrik third-party cost-export
+      integration — +5,706 lines / 28 files / 1700+
+      lines of test, GCS chunked resumable upload,
+      Redis distributed-lock scheduler, 6 admin
+      endpoints (#26415, needs-discussion on
+      maintenance-debt scope and 45-line proxy_server.py
+      delta), and a DeepSeek V4 Pro/V4 Flash metadata
+      addition where PR table vs. JSON disagree by
+      2.35× / 7.25× on v4-pro input/output prices
+      and the new tests assert existence-only with
+      zero price-value assertions (#26380,
+      merge-after-nits, hard blocker until pricing
+      reconciled and price-value tests added);
+      browser-use `BrowserProfile.traces_dir` flips
+      from silent no-op to fail-loud `ValueError` via
+      `@model_validator(mode='after')` and deletes
+      the misleading example (#4708, merge-as-is,
+      textbook public-field-with-no-impl fix), and a
+      test-only PR locking the non-obvious
+      "close-before-start rotates the event_bus"
+      contract that protects future close()-fast-path
+      optimizations from silently breaking session
+      reuse (#4707, merge-as-is).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -1236,6 +1284,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24323](https://github.com/sst/opencode/pull/24323) | fix(editor): reject lock files with no workspace match for cwd | [sst-opencode-pr-24323.md](2026-W17/drip-50/sst-opencode-pr-24323.md) |
+| [#24322](https://github.com/sst/opencode/pull/24322) | fix(permission): reject stale permission replies | [sst-opencode-pr-24322.md](2026-W17/drip-50/sst-opencode-pr-24322.md) |
 | [#24311](https://github.com/sst/opencode/pull/24311) | feat(app): support message annotations | [sst-opencode-pr-24311.md](2026-W17/drip-49/sst-opencode-pr-24311.md) |
 | [#24308](https://github.com/sst/opencode/pull/24308) | fix(config): preserve permission order with Effect decode | [sst-opencode-pr-24308.md](2026-W17/drip-49/sst-opencode-pr-24308.md) |
 | [#24297](https://github.com/sst/opencode/pull/24297) | fix(opencode): resolve heap unlimited + orphan processes on Linux | [sst-opencode-pr-24297.md](2026-W17/drip-47/sst-opencode-pr-24297.md) |
@@ -1327,6 +1377,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26415](https://github.com/BerriAI/litellm/pull/26415) | feat(mavvrik): add Mavvrik integration | [BerriAI-litellm-pr-26415.md](2026-W17/drip-50/BerriAI-litellm-pr-26415.md) |
+| [#26380](https://github.com/BerriAI/litellm/pull/26380) | feat(deepseek): add DeepSeek V4 Pro and V4 Flash model metadata | [BerriAI-litellm-pr-26380.md](2026-W17/drip-50/BerriAI-litellm-pr-26380.md) |
 | [#26506](https://github.com/BerriAI/litellm/pull/26506) | fix(arize): _set_usage_outputs handles raw OpenAI Pydantic CompletionUsage | [BerriAI-litellm-pr-26506.md](2026-W17/drip-49/BerriAI-litellm-pr-26506.md) |
 | [#26504](https://github.com/BerriAI/litellm/pull/26504) | feat: add FuturMix as named OpenAI-compatible provider | [BerriAI-litellm-pr-26504.md](2026-W17/drip-49/BerriAI-litellm-pr-26504.md) |
 | [#26492](https://github.com/BerriAI/litellm/pull/26492) | [Fix] Tighten caller-permission checks on key route fields | [BerriAI-litellm-pr-26492.md](2026-W17/drip-48/BerriAI-litellm-pr-26492.md) |
@@ -1412,6 +1464,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#4708](https://github.com/browser-use/browser-use/pull/4708) | fix: fail fast for unimplemented traces_dir | [browser-use-browser-use-pr-4708.md](2026-W17/drip-50/browser-use-browser-use-pr-4708.md) |
+| [#4707](https://github.com/browser-use/browser-use/pull/4707) | test: cover BrowserSession.close before start | [browser-use-browser-use-pr-4707.md](2026-W17/drip-50/browser-use-browser-use-pr-4707.md) |
 | [#4726](https://github.com/browser-use/browser-use/pull/4726) | feat: add Astraflow provider support | [browser-use-browser-use-pr-4726.md](2026-W17/drip-49/browser-use-browser-use-pr-4726.md) |
 | [#4722](https://github.com/browser-use/browser-use/pull/4722) | Guard direct CDP helpers during reconnect | [browser-use-browser-use-pr-4722.md](2026-W17/drip-49/browser-use-browser-use-pr-4722.md) |
 | [#4734](https://github.com/browser-use/browser-use/pull/4734) | fix(schema): remove unreachable 'type' key from validation fields list | [browser-use-browser-use-pr-4734.md](2026-W17/drip-48/browser-use-browser-use-pr-4734.md) |
@@ -1547,6 +1601,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19160](https://github.com/openai/codex/pull/19160) | Make apply_patch streaming parser stateful | [openai-codex-pr-19160.md](2026-W17/drip-50/openai-codex-pr-19160.md) |
+| [#19082](https://github.com/openai/codex/pull/19082) | Drop duplicate contiguous user messages during compaction | [openai-codex-pr-19082.md](2026-W17/drip-50/openai-codex-pr-19082.md) |
 | [#19498](https://github.com/openai/codex/pull/19498) | Streamline review and feedback handlers | [openai-codex-pr-19498.md](2026-W17/drip-49/openai-codex-pr-19498.md) |
 | [#19481](https://github.com/openai/codex/pull/19481) | Remove ghost snapshots | [openai-codex-pr-19481.md](2026-W17/drip-49/openai-codex-pr-19481.md) |
 | [#19470](https://github.com/openai/codex/pull/19470) | Add turn start timestamp to turn metadata | [openai-codex-pr-19470.md](2026-W17/drip-48/openai-codex-pr-19470.md) |
