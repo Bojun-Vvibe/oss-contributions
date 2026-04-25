@@ -1,6 +1,6 @@
 # Review Index
 
-165 + W17 drips (through drip-30) PR reviews across 9 OSS AI-coding-agent projects. Each review
+165 + W17 drips (through drip-33) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -719,8 +719,47 @@ section.
    validation isn't a trust boundary — the injected
    payload travels intact into the validator prompt;
    plus the check fails open on litellm exceptions,
-   so the most common error path silently bypasses
-   the control — request-changes).
+    so the most common error path silently bypasses
+    the control — request-changes).
+- **W17 drip-33 (2026-04-25)**: eight reviews across
+   five repos. openai/codex contributes two more
+   slices of pakrym-oai's handler-streamlining chain
+   (#19496 MCP handlers — clean merge-as-is, and
+   #19493 thread mutation handlers — merge-after-nits
+   on test-coverage callout grounds; both extract
+   `Result`-returning helpers and funnel through
+   `send_result`). BerriAI/litellm #26484 hardens
+   master-key auth by aliasing the master key once at
+   the auth boundary so neither the raw key nor its
+   hash propagates to spend logs / Prometheus labels
+   / audit trails — merge-after-nits pending a
+   changelog callout for the silent dashboard-filter
+   migration. anomalyco/opencode contributes three:
+   #24232 fixes DeepSeek/Moonshot cache-token double-
+   counting by preferring `noCacheTokens` when
+   present (clean merge-as-is, two sharp tests);
+   #24246 preserves nix/direnv PATH across login-
+   shell rc sourcing but silently flips precedence
+   for all users (request-changes — needs a
+   `IN_NIX_SHELL`/`DIRENV_DIR` gate or config flag);
+   #24244 removes the wildcard-first sort in
+   permission config and ships a "regression" test
+   that codifies the new footgun where a trailing
+   `*` rule overrides earlier specifics (needs-
+   discussion — empty PR body, undocumented policy
+   reversal). All-Hands OpenHands #14122 wires
+   `TaskToolSet` behind a per-user `enable_sub_agents`
+   bool but lacks defensive `getattr` for the SDK-
+   pin gap and any tests (needs-discussion). #14105
+   correctly fixes the empty-text guard to permit
+   attachment-only chat submissions
+   (merge-after-nits pending a 4-case unit test).
+   Aider-AI/aider #5033 adds a truncation-detection
+   heuristic that skips auto-commit, but the 92%
+   threshold is unjustified, the prefill-model
+   exclusion is too broad, and the `auto_commit`
+   return-type change risks misinterpretation
+   downstream (request-changes).
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -728,6 +767,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#5033](https://github.com/Aider-AI/aider/pull/5033) | feat: skip auto-commit when LLM response is truncated | [Aider-AI-aider-pr-5033.md](2026-W17/drip-33/Aider-AI-aider-pr-5033.md) |
 | [#5065](https://github.com/Aider-AI/aider/pull/5065) | Fix prompt injection vulnerability in Architect mode (Issue #5058) | [Aider-AI-aider-pr-5065.md](2026-W17/drip-32/Aider-AI-aider-pr-5065.md) |
 | [#5031](https://github.com/Aider-AI/aider/pull/5031) | fix(io): tool_output falls back to ASCII on UnicodeEncodeError (#5029) | [Aider-AI-aider-pr-5031.md](2026-W17/drip-30/Aider-AI-aider-pr-5031.md) |
 | [#4748](https://github.com/Aider-AI/aider/pull/4748) | Fix regression in the LiteLLM exception list | [PR-4748.md](Aider-AI-aider/PR-4748.md) |
@@ -744,6 +784,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14122](https://github.com/All-Hands-AI/OpenHands/pull/14122) | feat: enable sub-agent delegation via TaskToolSet in app server | [All-Hands-AI-OpenHands-pr-14122.md](2026-W17/drip-33/All-Hands-AI-OpenHands-pr-14122.md) |
+| [#14105](https://github.com/All-Hands-AI/OpenHands/pull/14105) | fix(frontend): allow send when only attachments are present | [All-Hands-AI-OpenHands-pr-14105.md](2026-W17/drip-33/All-Hands-AI-OpenHands-pr-14105.md) |
 | [#14127](https://github.com/All-Hands-AI/OpenHands/pull/14127) | Reduce GitHub resolver comment noise by editing acknowledgement comment | [All-Hands-AI-OpenHands-pr-14127.md](2026-W17/drip-32/All-Hands-AI-OpenHands-pr-14127.md) |
 | [#14125](https://github.com/All-Hands-AI/OpenHands/pull/14125) | fix(integrations): Bitbucket Data Center webhook null guards | [All-Hands-AI-OpenHands-pr-14125.md](2026-W17/drip-32/All-Hands-AI-OpenHands-pr-14125.md) |
 | [#14114](https://github.com/All-Hands-AI/OpenHands/pull/14114) | fix(runtime): shrink BashSession tmux pane from 1000x1000 to 256x50 | [All-Hands-AI-OpenHands-pr-14114.md](2026-W17/drip-30/All-Hands-AI-OpenHands-pr-14114.md) |
@@ -763,6 +805,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24246](https://github.com/anomalyco/opencode/pull/24246) | fix: preserve nix/direnv PATH in login shell for ! commands | [anomalyco-opencode-pr-24246.md](2026-W17/drip-33/anomalyco-opencode-pr-24246.md) |
+| [#24244](https://github.com/anomalyco/opencode/pull/24244) | fix: remove top-level wildcard-first sort in permission config | [anomalyco-opencode-pr-24244.md](2026-W17/drip-33/anomalyco-opencode-pr-24244.md) |
+| [#24232](https://github.com/anomalyco/opencode/pull/24232) | fix(session): honor noCacheTokens in usage accounting | [anomalyco-opencode-pr-24232.md](2026-W17/drip-33/anomalyco-opencode-pr-24232.md) |
 | [#24241](https://github.com/anomalyco/opencode/pull/24241) | fix(tui): clean zero-width agent display labels | [anomalyco-opencode-pr-24241.md](2026-W17/drip-30/anomalyco-opencode-pr-24241.md) |
 | [#24234](https://github.com/anomalyco/opencode/pull/24234) | fix(agent): detect non-object frontmatter from gray-matter | [anomalyco-opencode-pr-24234.md](2026-W17/drip-30/anomalyco-opencode-pr-24234.md) |
 | [#24233](https://github.com/anomalyco/opencode/pull/24233) | fix(provider): honor per-model reasoning token pricing | [anomalyco-opencode-pr-24233.md](2026-W17/drip-30/anomalyco-opencode-pr-24233.md) |
@@ -831,6 +876,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26484](https://github.com/BerriAI/litellm/pull/26484) | chore(auth): substitute alias for master key on UserAPIKeyAuth | [BerriAI-litellm-pr-26484.md](2026-W17/drip-33/BerriAI-litellm-pr-26484.md) |
 | [#26474](https://github.com/BerriAI/litellm/pull/26474) | fix(bedrock guardrails): collapse duplicate INPUT/OUTPUT post-call passes | [BerriAI-litellm-pr-26474.md](2026-W17/drip-32/BerriAI-litellm-pr-26474.md) |
 | [#26471](https://github.com/BerriAI/litellm/pull/26471) | feat(teams): per-model team member budgets | [BerriAI-litellm-pr-26471.md](2026-W17/drip-32/BerriAI-litellm-pr-26471.md) |
 | [#26472](https://github.com/BerriAI/litellm/pull/26472) | fix(bedrock): avoid duplicate post-call guardrail logs on streaming | [BerriAI-litellm-pr-26472.md](2026-W17/drip-30/BerriAI-litellm-pr-26472.md) |
@@ -975,6 +1021,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19496](https://github.com/openai/codex/pull/19496) | Streamline MCP handlers | [openai-codex-pr-19496.md](2026-W17/drip-33/openai-codex-pr-19496.md) |
+| [#19493](https://github.com/openai/codex/pull/19493) | Streamline thread mutation handlers | [openai-codex-pr-19493.md](2026-W17/drip-33/openai-codex-pr-19493.md) |
 | [#19498](https://github.com/openai/codex/pull/19498) | Streamline conversation init and resume handlers | [openai-codex-pr-19498.md](2026-W17/drip-32/openai-codex-pr-19498.md) |
 | [#19497](https://github.com/openai/codex/pull/19497) | Streamline turn and realtime handlers | [openai-codex-pr-19497.md](2026-W17/drip-32/openai-codex-pr-19497.md) |
 | [#19484](https://github.com/openai/codex/pull/19484) | Centralize JsonRpc error_code constructors and trim leaf handlers | [openai-codex-pr-19484.md](2026-W17/drip-32/openai-codex-pr-19484.md) |
