@@ -1585,6 +1585,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26466](https://github.com/BerriAI/litellm/pull/26466) | fix(guardrails): team-level guardrails auto-apply alongside global policy guardrails | [BerriAI-litellm-pr-26466.md](2026-W17/drip-29/BerriAI-litellm-pr-26466.md) |
 | [#26464](https://github.com/BerriAI/litellm/pull/26464) | Harden team metadata handling in /team/new and /team/update | [BerriAI-litellm-pr-26464.md](2026-W17/drip-29/BerriAI-litellm-pr-26464.md) |
 | [#26463](https://github.com/BerriAI/litellm/pull/26463) | fix(mcp): tighten public-route detection and OAuth2 fallback gating | [BerriAI-litellm-pr-26463.md](2026-W17/drip-29/BerriAI-litellm-pr-26463.md) |
+| [#26511](https://github.com/BerriAI/litellm/pull/26511) | ci: add supply-chain guard to block fork PRs that modify dependencies | [BerriAI-litellm-pr-26511.md](2026-W17/drip-54/BerriAI-litellm-pr-26511.md) |
 
 ## browser-use/browser-use
 
@@ -1694,6 +1695,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#10377](https://github.com/cline/cline/pull/10377) | fix: expose Plan/Act mode as an accessible radio group | [cline-cline-pr-10377.md](2026-W17/drip-35/cline-cline-pr-10377.md) |
 | [#10384](https://github.com/cline/cline/pull/10384) | fix: cap retry-after delay to prevent silent multi-hour hangs | [cline-cline-pr-10384.md](2026-W17/drip-35/cline-cline-pr-10384.md) |
 | [#10386](https://github.com/cline/cline/pull/10386) | fix: preserve multiline thinking blocks | [cline-cline-pr-10386.md](2026-W17/drip-35/cline-cline-pr-10386.md) |
+| [#10242](https://github.com/cline/cline/pull/10242) | fix: quote file mention paths containing spaces | [cline-cline-pr-10242.md](2026-W17/drip-54/cline-cline-pr-10242.md) |
+| [#10243](https://github.com/cline/cline/pull/10243) | fix: DiffViewProvider — await scroll, accurate line count, BOM preservation | [cline-cline-pr-10243.md](2026-W17/drip-54/cline-cline-pr-10243.md) |
+| [#10331](https://github.com/cline/cline/pull/10331) | feat(ui): redesign chat toolbar with popup panels | [cline-cline-pr-10331.md](2026-W17/drip-54/cline-cline-pr-10331.md) |
 
 ## continuedev/continue
 
@@ -1878,6 +1882,10 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15759](https://github.com/ollama/ollama/pull/15759) | x/mlxrunner: recognise mlx-lm plural aux naming at load time | [ollama-ollama-pr-15759.md](2026-W17/drip-28/ollama-ollama-pr-15759.md) |
 | [#15705](https://github.com/ollama/ollama/pull/15705) | model/parsers/qwen3coder: prevent tag regex from matching across newlines | [ollama-ollama-pr-15705.md](2026-W17/drip-29/ollama-ollama-pr-15705.md) |
 | [#15703](https://github.com/ollama/ollama/pull/15703) | model/renderers/gemma4: allow reserved JSON Schema keys as parameter names | [ollama-ollama-pr-15703.md](2026-W17/drip-29/ollama-ollama-pr-15703.md) |
+| [#15664](https://github.com/ollama/ollama/pull/15664) | openai: honor reasoning_effort in /v1/responses endpoint | [ollama-ollama-pr-15664.md](2026-W17/drip-54/ollama-ollama-pr-15664.md) |
+| [#15683](https://github.com/ollama/ollama/pull/15683) | server: preserve thinking in /api/generate; populate parameter_size in /api/tags | [ollama-ollama-pr-15683.md](2026-W17/drip-54/ollama-ollama-pr-15683.md) |
+| [#15691](https://github.com/ollama/ollama/pull/15691) | add token calculation support with UI display | [ollama-ollama-pr-15691.md](2026-W17/drip-54/ollama-ollama-pr-15691.md) |
+| [#15706](https://github.com/ollama/ollama/pull/15706) | Add LumaKit to Community Integrations | [ollama-ollama-pr-15706.md](2026-W17/drip-54/ollama-ollama-pr-15706.md) |
 
 ---
 
