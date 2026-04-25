@@ -1,6 +1,6 @@
 # Review Index
 
-173 + W17 drips (through drip-35) PR reviews across 10 OSS AI-coding-agent projects. Each review
+173 + W17 drips (through drip-36) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -875,6 +875,90 @@ section.
    render in full instead of being trimmed to `large`;
    updates one existing test and adds a `local/large`
    regression case (merge-as-is).
+- **W17 drip-36 (2026-04-25)**: eight reviews across
+   four repos. openai/codex #19506 refreshes AGENTS.md
+   per-turn against the effective cwd and emits a
+   diff-gated user-instructions ContextualUserFragment
+   carrying the new directory; the snapshot test locks
+   in that turn-2 carries both original and refreshed
+   blocks (merge-after-nits — equality check on
+   `Option<&Arc<String>>` may false-negative; per-turn
+   I/O cost worth a stat-cache). openai/codex #19495
+   pushes thread-resume/fork helpers to return
+   `Result<_, JSONRPCErrorError>` so `send_error` lives
+   only at the request boundary, hoists the
+   rollout-vs-history fork into a single match, and
+   preserves error-message strings verbatim
+   (merge-as-is, net -123 lines). openai/codex #19492
+   does the same for `thread/start`, wrapping
+   load-config + project-trust-derivation in a
+   `let result = async {…}.await?` and adding a
+   correct in-memory CLI-overrides fallback when
+   on-disk trust persistence fails so requested
+   sandbox isn't silently downgraded (merge-as-is;
+   note divergence between in-memory and on-disk trust
+   state in the failure-fallback path). BerriAI/litellm
+   #26489 closes a credential-disclosure bug where
+   `LiteLLM_ManagedVectorStore.litellm_params` (OpenAI
+   `api_key`, AWS keys, `vertex_credentials`, etc.)
+   was returned verbatim from `/vector_store/list`,
+   `/info`, and `/update`; redaction goes through a
+   new `_redact_sensitive_litellm_params` helper backed
+   by `SensitiveDataMasker` (which gains the plural
+   `"credentials"` key — without it Vertex would have
+   slipped past), and `update` now requires per-store
+   access via `_fetch_and_authorize_vector_store`
+   (merge-after-nits — confirm `REDACTED_BY_LITELM_STRING`
+   constant name, log on unexpected non-dict shape).
+   BerriAI/litellm #26486 closes three independent
+   privilege-escalation primitives in the key-mint /
+   pass-through-route paths: a non-admin can no longer
+   request `key_type='management'` (which expanded to
+   `allowed_routes=['management_routes']` *after* the
+   raw-field gate ran), can no longer set
+   `metadata.allowed_passthrough_routes` (which is
+   consumed by the route check *before* the role gate),
+   and the pass-through route check itself now requires
+   the route to be a registered pass-through endpoint
+   via `InitPassThroughEndpointHelpers.is_registered_pass_through_route`
+   — preventing internal admin routes like
+   `/cache/settings` from being smuggled in through
+   metadata. Docstrings explain *why* the prior gates
+   missed each case, which is unusually good for
+   maintainers (merge-after-nits — confirm both
+   `/key/generate` and `/key/regenerate` invoke the
+   new helpers; cache the lazy import). ollama/ollama
+   #15735 introduces a content-addressed `manifest-v2/`
+   layout where manifests are themselves blobs in
+   `blobs/sha256-<hex>` and named-tag paths become
+   relative symlinks (preferred), hardlinks, or
+   byte-copies depending on FS support;
+   `RemoveLayers` correctly extends the in-use map to
+   include other manifests' `BlobDigest()` so
+   multi-tag-to-one-manifest GC stays sound
+   (needs-discussion — rollback story across
+   binary downgrades, GC-vs-symlink invariant under
+   crash, and `x/imagegen/manifest/` duplication
+   deserve explicit answers). cline/cline #10396 makes
+   the model-config "Supports images" toggle gate
+   paste and drag-drop in `ChatTextArea.tsx` (not
+   just file-picker), preventing wasted 3-retry cycles
+   into text-only models; `useMemo` keyed correctly on
+   `[apiConfiguration, mode]` and the `useCallback`
+   deps array correctly adds `supportsImages`
+   (merge-as-is). cline/cline #10385 fixes the Claude
+   Code adapter for CLI v2.1+ which omits the `result`
+   string property on success and emits
+   `subtype: "error_max_turns"` for budget exhaustion;
+   the `"result" in chunk` guard is dropped, the
+   max-turns subtype is treated as normal end-of-turn
+   (not a hard error), and error fallback uses
+   `chunk.result ?? JSON.stringify(chunk)` for
+   diagnostic preservation; new `_runClaudeCode` test
+   injection seam typed via `Parameters<typeof …>`
+   (merge-after-nits — `_runClaudeCode` leaks into
+   public option type; confirm turn-loop expects a
+   silent return on max-turns).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -998,6 +1082,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26489](https://github.com/BerriAI/litellm/pull/26489) | chore(vector-stores): redact credentials in list/info/update; gate update by per-store access | [BerriAI-litellm-pr-26489.md](2026-W17/drip-36/BerriAI-litellm-pr-26489.md) |
+| [#26486](https://github.com/BerriAI/litellm/pull/26486) | chore(auth): admin-only gate on key_type, allowed_passthrough_routes, and key/regenerate grant fields | [BerriAI-litellm-pr-26486.md](2026-W17/drip-36/BerriAI-litellm-pr-26486.md) |
 | [#26485](https://github.com/BerriAI/litellm/pull/26485) | feat: add FuturMix as named OpenAI-compatible provider | [BerriAI-litellm-pr-26485.md](2026-W17/drip-34/BerriAI-litellm-pr-26485.md) |
 | [#26484](https://github.com/BerriAI/litellm/pull/26484) | chore(auth): substitute alias for master key on UserAPIKeyAuth | [BerriAI-litellm-pr-26484.md](2026-W17/drip-33/BerriAI-litellm-pr-26484.md) |
 | [#26474](https://github.com/BerriAI/litellm/pull/26474) | fix(bedrock guardrails): collapse duplicate INPUT/OUTPUT post-call passes | [BerriAI-litellm-pr-26474.md](2026-W17/drip-32/BerriAI-litellm-pr-26474.md) |
@@ -1117,6 +1203,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#10396](https://github.com/cline/cline/pull/10396) | fix: respect image support toggle for paste and drag-drop operations | [cline-cline-pr-10396.md](2026-W17/drip-36/cline-cline-pr-10396.md) |
+| [#10385](https://github.com/cline/cline/pull/10385) | fix(claude-code): handle CLI v2.1+ result chunks and error_max_turns | [cline-cline-pr-10385.md](2026-W17/drip-36/cline-cline-pr-10385.md) |
 | [#10210](https://github.com/cline/cline/pull/10210) | Remove `/deep-planning` built-in slash command | [PR-10210.md](cline-cline/PR-10210.md) |
 | [#10254](https://github.com/cline/cline/pull/10254) | fix: use deterministic keys for MCP server tool routing | [PR-10254.md](cline-cline/PR-10254.md) |
 | [#10266](https://github.com/cline/cline/pull/10266) | Fix cache reflection for Cline and Vercel handlers | [PR-10266.md](cline-cline/PR-10266.md) |
@@ -1156,6 +1244,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19506](https://github.com/openai/codex/pull/19506) | [codex] Refresh AGENTS.md on cwd changes | [openai-codex-pr-19506.md](2026-W17/drip-36/openai-codex-pr-19506.md) |
+| [#19495](https://github.com/openai/codex/pull/19495) | Streamline thread resume and fork handlers | [openai-codex-pr-19495.md](2026-W17/drip-36/openai-codex-pr-19495.md) |
+| [#19492](https://github.com/openai/codex/pull/19492) | Streamline thread start handler | [openai-codex-pr-19492.md](2026-W17/drip-36/openai-codex-pr-19492.md) |
 | [#19496](https://github.com/openai/codex/pull/19496) | Streamline MCP handlers | [openai-codex-pr-19496.md](2026-W17/drip-33/openai-codex-pr-19496.md) |
 | [#19493](https://github.com/openai/codex/pull/19493) | Streamline thread mutation handlers | [openai-codex-pr-19493.md](2026-W17/drip-33/openai-codex-pr-19493.md) |
 | [#19457](https://github.com/openai/codex/pull/19457) | Centralize thread git metadata overlays | [openai-codex-pr-19457.md](2026-W17/drip-34/openai-codex-pr-19457.md) |
@@ -1248,6 +1339,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15735](https://github.com/ollama/ollama/pull/15735) | server: add v2 manifest path | [ollama-ollama-pr-15735.md](2026-W17/drip-36/ollama-ollama-pr-15735.md) |
 | [#15805](https://github.com/ollama/ollama/pull/15805) | Add `ollama launch qwen` support for Qwen Code CLI | [ollama-ollama-pr-15805.md](2026-W17/drip-30/ollama-ollama-pr-15805.md) |
 | [#15713](https://github.com/ollama/ollama/pull/15713) | fix: use MemAvailable equivalent in cgroup memory check | [ollama-ollama-pr-15713.md](2026-W17/drip-34/ollama-ollama-pr-15713.md) |
 | [#15774](https://github.com/ollama/ollama/pull/15774) | Harden Qwen-family tool payload rendering and fix Qwen 3.5 tool-block truncation integrity | [ollama-ollama-pr-15774.md](2026-W17/drip-19/ollama-ollama-pr-15774.md) |
