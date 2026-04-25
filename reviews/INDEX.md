@@ -1,6 +1,6 @@
 # Review Index
 
-181 + W17 drips (through drip-42) PR reviews across 10 OSS AI-coding-agent projects. Each review
+181 + W17 drips (through drip-44) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1123,9 +1123,28 @@ section.
      which feeds Cline's cost panel as `$0.00` for
      uncached input — likely a billing-shock landmine
      and almost certainly not what DeepSeek publishes
-     (request-changes — cite the pricing source, fix
-     `inputPrice: 0`, narrow the type widening to
-     per-entry instead of map-wide).
+      (request-changes — cite the pricing source, fix
+      `inputPrice: 0`, narrow the type widening to
+      per-entry instead of map-wide).
+- **W17 drip-44 (2026-04-25)**: 8 more — sst/opencode
+      ecosystem-table addition (#24283) and a closed
+      11k-line "fix" PR that was actually a downstream
+      fork's compliance layer in disguise (#24277,
+      correctly auto-closed by `needs:title`/`needs:compliance`
+      bots); litellm two-clause OR fix for JSON-registered
+      OpenAI-compatible providers missing `extra_body`
+      wrapping (#26500), and an auth-fix PR scope-conflated
+      with a 700-line gpt-5.5 pricing-catalog churn that
+      needs splitting before promotion to main (#26499);
+      openai/codex one-word README grammar fast-track
+      (#19514, 1m open-to-merge); All-Hands V0→V1 cleanup
+      stack — architecture-doc deletion (#14120) and
+      third-party-runtime tree removal (#14119, with the
+      `_DEFAULT_` → `_ALL_` rename that does real semantic
+      work); and a browser-use "remove dead code" PR
+      whose deleted branch was actually defending against
+      `$ref`-inside-`type` schema shapes — closed correctly
+      (#4731).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -1154,6 +1173,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14120](https://github.com/All-Hands-AI/OpenHands/pull/14120) | Removed Architecture diagrams | [All-Hands-AI-OpenHands-pr-14120.md](2026-W17/drip-44/All-Hands-AI-OpenHands-pr-14120.md) |
+| [#14119](https://github.com/All-Hands-AI/OpenHands/pull/14119) | Removed V0 third party runtimes | [All-Hands-AI-OpenHands-pr-14119.md](2026-W17/drip-44/All-Hands-AI-OpenHands-pr-14119.md) |
 | [#14118](https://github.com/All-Hands-AI/OpenHands/pull/14118) | feat(enterprise): Add GitLab event forwarding to automation service | [All-Hands-AI-OpenHands-pr-14118.md](2026-W17/drip-43/All-Hands-AI-OpenHands-pr-14118.md) |
 | [#14122](https://github.com/All-Hands-AI/OpenHands/pull/14122) | feat: enable sub-agent delegation via TaskToolSet in app server | [All-Hands-AI-OpenHands-pr-14122.md](2026-W17/drip-42/All-Hands-AI-OpenHands-pr-14122.md) |
 | [#14128](https://github.com/All-Hands-AI/OpenHands/pull/14128) | Support pagination for branch search | [All-Hands-AI-OpenHands-pr-14128.md](2026-W17/drip-41/All-Hands-AI-OpenHands-pr-14128.md) |
@@ -1182,6 +1203,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24283](https://github.com/sst/opencode/pull/24283) | docs: add opencode-provider-alias to ecosystem | [sst-opencode-pr-24283.md](2026-W17/drip-44/sst-opencode-pr-24283.md) |
+| [#24277](https://github.com/sst/opencode/pull/24277) | [codex] Fix team run preflight aborts (closed; scope mismatch) | [sst-opencode-pr-24277.md](2026-W17/drip-44/sst-opencode-pr-24277.md) |
 | [#24285](https://github.com/anomalyco/opencode/pull/24285) | fix(tui): add copy action for native question prompts | [anomalyco-opencode-pr-24285.md](2026-W17/drip-43/anomalyco-opencode-pr-24285.md) |
 | [#24279](https://github.com/anomalyco/opencode/pull/24279) | fix(app): align usage chart with local timezone | [anomalyco-opencode-pr-24279.md](2026-W17/drip-43/anomalyco-opencode-pr-24279.md) |
 | [#24272](https://github.com/anomalyco/opencode/pull/24272) | docs: add Mongolian README documentation | [anomalyco-opencode-pr-24272.md](2026-W17/drip-42/anomalyco-opencode-pr-24272.md) |
@@ -1263,6 +1286,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26500](https://github.com/BerriAI/litellm/pull/26500) | [Fix] Wrap extra_body for JSON-configured OpenAI-compatible providers | [BerriAI-litellm-pr-26500.md](2026-W17/drip-44/BerriAI-litellm-pr-26500.md) |
+| [#26499](https://github.com/BerriAI/litellm/pull/26499) | fix(auth): join team-member budget so rpm/tpm limits are enforced | [BerriAI-litellm-pr-26499.md](2026-W17/drip-44/BerriAI-litellm-pr-26499.md) |
 | [#26455](https://github.com/BerriAI/litellm/pull/26455) | feat: per-model team member budgets (project routes + GPT-5.5 rebase) | [BerriAI-litellm-pr-26455.md](2026-W17/drip-43/BerriAI-litellm-pr-26455.md) |
 | [#26449](https://github.com/BerriAI/litellm/pull/26449) | [Feat] Day-0 support for GPT-5.5 and GPT-5.5 Pro | [BerriAI-litellm-pr-26449.md](2026-W17/drip-43/BerriAI-litellm-pr-26449.md) |
 | [#26498](https://github.com/BerriAI/litellm/pull/26498) | fix(auth): apply temp_budget_increase on cache-hit path | [BerriAI-litellm-pr-26498.md](2026-W17/drip-42/BerriAI-litellm-pr-26498.md) |
@@ -1341,6 +1366,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#4731](https://github.com/browser-use/browser-use/pull/4731) | fix: remove dead code in optimize_schema() (closed; not actually dead) | [browser-use-browser-use-pr-4731.md](2026-W17/drip-44/browser-use-browser-use-pr-4731.md) |
 | [#4728](https://github.com/browser-use/browser-use/pull/4728) | feat(cli): add --proxy-url flag for local Chromium sessions | [browser-use-browser-use-pr-4728.md](2026-W17/drip-43/browser-use-browser-use-pr-4728.md) |
 | [#4735](https://github.com/browser-use/browser-use/pull/4735) | Harden init template integrity and improve cloud tunnel recovery | [browser-use-browser-use-pr-4735.md](2026-W17/drip-42/browser-use-browser-use-pr-4735.md) |
 | [#4732](https://github.com/browser-use/browser-use/pull/4732) | feat: self-healing element recovery engine | [browser-use-browser-use-pr-4732.md](2026-W17/drip-42/browser-use-browser-use-pr-4732.md) |
@@ -1459,6 +1485,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19514](https://github.com/openai/codex/pull/19514) | Fix codex-rs README grammar | [openai-codex-pr-19514.md](2026-W17/drip-44/openai-codex-pr-19514.md) |
 | [#19491](https://github.com/openai/codex/pull/19491) | Streamline account and command handlers | [openai-codex-pr-19491.md](2026-W17/drip-43/openai-codex-pr-19491.md) |
 | [#19537](https://github.com/openai/codex/pull/19537) | Add plugin MCP policy persistence | [openai-codex-pr-19537.md](2026-W17/drip-41/openai-codex-pr-19537.md) |
 | [#19526](https://github.com/openai/codex/pull/19526) | [codex] Order codex-mcp items by visibility | [openai-codex-pr-19526.md](2026-W17/drip-40/openai-codex-pr-19526.md) |
