@@ -799,6 +799,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#26447](https://github.com/BerriAI/litellm/pull/26447) | New Relic AI Monitoring integration | [BerriAI-litellm-pr-26447.md](2026-W17/drip-27/BerriAI-litellm-pr-26447.md) |
 | [#26461](https://github.com/BerriAI/litellm/pull/26461) | fix(ci): support CircleCI rerun failed tests for local_testing jobs | [BerriAI-litellm-pr-26461.md](2026-W17/drip-28/BerriAI-litellm-pr-26461.md) |
 | [#26460](https://github.com/BerriAI/litellm/pull/26460) | feat(proxy): Add cleanup job for expired LiteLLM dashboard session keys | [BerriAI-litellm-pr-26460.md](2026-W17/drip-28/BerriAI-litellm-pr-26460.md) |
+| [#26466](https://github.com/BerriAI/litellm/pull/26466) | fix(guardrails): team-level guardrails auto-apply alongside global policy guardrails | [BerriAI-litellm-pr-26466.md](2026-W17/drip-29/BerriAI-litellm-pr-26466.md) |
+| [#26464](https://github.com/BerriAI/litellm/pull/26464) | Harden team metadata handling in /team/new and /team/update | [BerriAI-litellm-pr-26464.md](2026-W17/drip-29/BerriAI-litellm-pr-26464.md) |
+| [#26463](https://github.com/BerriAI/litellm/pull/26463) | fix(mcp): tighten public-route detection and OAuth2 fallback gating | [BerriAI-litellm-pr-26463.md](2026-W17/drip-29/BerriAI-litellm-pr-26463.md) |
 
 ## charmbracelet/crush
 
@@ -848,6 +851,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#2575](https://github.com/charmbracelet/crush/pull/2575) | fix: correctly identify context fate in mcp createSession | [charmbracelet-crush-pr-2575.md](2026-W17/drip-22/charmbracelet-crush-pr-2575.md) |
 | [#2656](https://github.com/charmbracelet/crush/pull/2656) | fix: use same chroma formatter as diffview for markdown | [charmbracelet-crush-pr-2656.md](2026-W17/drip-23/charmbracelet-crush-pr-2656.md) |
 | [#2555](https://github.com/charmbracelet/crush/pull/2555) | fix: use small model for task agent instead of large | [charmbracelet-crush-pr-2555.md](2026-W17/drip-27/charmbracelet-crush-pr-2555.md) |
+| [#2699](https://github.com/charmbracelet/crush/pull/2699) | fix(lsp): enforce workspace boundary for workspace edits | [charmbracelet-crush-pr-2699.md](2026-W17/drip-29/charmbracelet-crush-pr-2699.md) |
 
 ## cline/cline
 
@@ -956,6 +960,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#19462](https://github.com/openai/codex/pull/19462) | sdk/python: use standalone codex-app-server runtime | [openai-codex-pr-19462.md](2026-W17/drip-28/openai-codex-pr-19462.md) |
 | [#19461](https://github.com/openai/codex/pull/19461) | fix: Bedrock GPT-5.4 reasoning levels | [openai-codex-pr-19461.md](2026-W17/drip-28/openai-codex-pr-19461.md) |
 | [#19459](https://github.com/openai/codex/pull/19459) | Enable unavailable dummy tools by default | [openai-codex-pr-19459.md](2026-W17/drip-28/openai-codex-pr-19459.md) |
+| [#19474](https://github.com/openai/codex/pull/19474) | Make thread store process-scoped | [openai-codex-pr-19474.md](2026-W17/drip-29/openai-codex-pr-19474.md) |
+| [#19473](https://github.com/openai/codex/pull/19473) | Add turn start timestamp to turn metadata | [openai-codex-pr-19473.md](2026-W17/drip-29/openai-codex-pr-19473.md) |
 
 ## ollama/ollama
 
@@ -977,6 +983,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15760](https://github.com/ollama/ollama/pull/15760) | x/mlxrunner: apply config.json per-tensor quant overrides for mixed-precision MoE | [ollama-ollama-pr-15760.md](2026-W17/drip-27/ollama-ollama-pr-15760.md) |
 | [#15765](https://github.com/ollama/ollama/pull/15765) | docs: add HuggingFace Hub direct GGUF pull pattern to import guide | [ollama-ollama-pr-15765.md](2026-W17/drip-27/ollama-ollama-pr-15765.md) |
 | [#15759](https://github.com/ollama/ollama/pull/15759) | x/mlxrunner: recognise mlx-lm plural aux naming at load time | [ollama-ollama-pr-15759.md](2026-W17/drip-28/ollama-ollama-pr-15759.md) |
+| [#15705](https://github.com/ollama/ollama/pull/15705) | model/parsers/qwen3coder: prevent tag regex from matching across newlines | [ollama-ollama-pr-15705.md](2026-W17/drip-29/ollama-ollama-pr-15705.md) |
+| [#15703](https://github.com/ollama/ollama/pull/15703) | model/renderers/gemma4: allow reserved JSON Schema keys as parameter names | [ollama-ollama-pr-15703.md](2026-W17/drip-29/ollama-ollama-pr-15703.md) |
 
 ---
 
