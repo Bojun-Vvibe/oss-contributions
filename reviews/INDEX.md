@@ -1,6 +1,6 @@
 # Review Index
 
-181 + W17 drips (through drip-48) PR reviews across 10 OSS AI-coding-agent projects. Each review
+181 + W17 drips (through drip-49) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1145,6 +1145,35 @@ section.
       whose deleted branch was actually defending against
       `$ref`-inside-`type` schema shapes — closed correctly
       (#4731).
+- **W17 drip-49 (2026-04-25)**: 8 more across 4 repos —
+      sst/opencode large prompt-input "message
+      annotations" feature with a real text-selection UX
+      shift (#24311, needs-discussion) and the Effect
+      Schema dedup that flips config decode to
+      `propertyOrder: "original"` to keep
+      first-match-wins permission key order intact
+      (#24308); openai/codex final slice of the
+      JSON-RPC handler streamline series (review/feedback/
+      fuzzy-search/git-diff, #19498) and the
+      ghost-snapshot retirement that drops the
+      `GhostCommit`/`ghost_snapshot` variant from the
+      Responses API surface while keeping the legacy
+      `undo` features key parseable as `Stage::Removed`
+      (#19481); litellm arize/langfuse_otel `_safe_get`
+      fix for raw OpenAI Pydantic `CompletionUsage`
+      (no `.get`) closing 252-day-old #13672 (#26506,
+      bonus correctness on
+      `completion_tokens_details` reasoning-token path)
+      and a single-file FuturMix.ai provider registration
+      (#26504, with a `max_completion_tokens →
+      max_tokens` mapping to verify); browser-use new
+      Astraflow/UCloud provider with zero tests, an
+      orphan CN endpoint config, default
+      `max_retries=10`, and missing reasoning-token
+      accounting (#4726, request-changes), and a CDP
+      reconnect guard that's right but doesn't cover the
+      public `clear_cookies()` sibling (#4722,
+      merge-after-nits).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -1207,6 +1236,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24311](https://github.com/sst/opencode/pull/24311) | feat(app): support message annotations | [sst-opencode-pr-24311.md](2026-W17/drip-49/sst-opencode-pr-24311.md) |
+| [#24308](https://github.com/sst/opencode/pull/24308) | fix(config): preserve permission order with Effect decode | [sst-opencode-pr-24308.md](2026-W17/drip-49/sst-opencode-pr-24308.md) |
 | [#24297](https://github.com/sst/opencode/pull/24297) | fix(opencode): resolve heap unlimited + orphan processes on Linux | [sst-opencode-pr-24297.md](2026-W17/drip-47/sst-opencode-pr-24297.md) |
 | [#24296](https://github.com/sst/opencode/pull/24296) | docs: sync env vars with source code | [sst-opencode-pr-24296.md](2026-W17/drip-47/sst-opencode-pr-24296.md) |
 | [#24293](https://github.com/sst/opencode/pull/24293) | fix(task): propagate parent session permissions to sub-agents | [sst-opencode-pr-24293.md](2026-W17/drip-46/sst-opencode-pr-24293.md) |
@@ -1296,6 +1327,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26506](https://github.com/BerriAI/litellm/pull/26506) | fix(arize): _set_usage_outputs handles raw OpenAI Pydantic CompletionUsage | [BerriAI-litellm-pr-26506.md](2026-W17/drip-49/BerriAI-litellm-pr-26506.md) |
+| [#26504](https://github.com/BerriAI/litellm/pull/26504) | feat: add FuturMix as named OpenAI-compatible provider | [BerriAI-litellm-pr-26504.md](2026-W17/drip-49/BerriAI-litellm-pr-26504.md) |
 | [#26492](https://github.com/BerriAI/litellm/pull/26492) | [Fix] Tighten caller-permission checks on key route fields | [BerriAI-litellm-pr-26492.md](2026-W17/drip-48/BerriAI-litellm-pr-26492.md) |
 | [#26503](https://github.com/BerriAI/litellm/pull/26503) | [Fix] Enforce key.models / user.models on Bedrock passthrough routes | [BerriAI-litellm-pr-26503.md](2026-W17/drip-47/BerriAI-litellm-pr-26503.md) |
 | [#26468](https://github.com/BerriAI/litellm/pull/26468) | [WIP] Add endpoint for bulk key updates for team | [BerriAI-litellm-pr-26468.md](2026-W17/drip-46/BerriAI-litellm-pr-26468.md) |
@@ -1379,6 +1412,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#4726](https://github.com/browser-use/browser-use/pull/4726) | feat: add Astraflow provider support | [browser-use-browser-use-pr-4726.md](2026-W17/drip-49/browser-use-browser-use-pr-4726.md) |
+| [#4722](https://github.com/browser-use/browser-use/pull/4722) | Guard direct CDP helpers during reconnect | [browser-use-browser-use-pr-4722.md](2026-W17/drip-49/browser-use-browser-use-pr-4722.md) |
 | [#4734](https://github.com/browser-use/browser-use/pull/4734) | fix(schema): remove unreachable 'type' key from validation fields list | [browser-use-browser-use-pr-4734.md](2026-W17/drip-48/browser-use-browser-use-pr-4734.md) |
 | [#4723](https://github.com/browser-use/browser-use/pull/4723) | security: verify init template integrity | [browser-use-browser-use-pr-4723.md](2026-W17/drip-47/browser-use-browser-use-pr-4723.md) |
 | [#4724](https://github.com/browser-use/browser-use/pull/4724) | fix: implement retry logic for captureScreenshot to avoid timeouts | [browser-use-browser-use-pr-4724.md](2026-W17/drip-46/browser-use-browser-use-pr-4724.md) |
@@ -1512,6 +1547,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19498](https://github.com/openai/codex/pull/19498) | Streamline review and feedback handlers | [openai-codex-pr-19498.md](2026-W17/drip-49/openai-codex-pr-19498.md) |
+| [#19481](https://github.com/openai/codex/pull/19481) | Remove ghost snapshots | [openai-codex-pr-19481.md](2026-W17/drip-49/openai-codex-pr-19481.md) |
 | [#19470](https://github.com/openai/codex/pull/19470) | Add turn start timestamp to turn metadata | [openai-codex-pr-19470.md](2026-W17/drip-48/openai-codex-pr-19470.md) |
 | [#19468](https://github.com/openai/codex/pull/19468) | Fix Bazel cargo_bin runfiles paths | [openai-codex-pr-19468.md](2026-W17/drip-48/openai-codex-pr-19468.md) |
 | [#19442](https://github.com/openai/codex/pull/19442) | feat: apply provider capability disables through config layers | [openai-codex-pr-19442.md](2026-W17/drip-47/openai-codex-pr-19442.md) |
