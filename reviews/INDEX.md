@@ -1,6 +1,6 @@
 # Review Index
 
-165 + W17 drips (through drip-34) PR reviews across 9 OSS AI-coding-agent projects. Each review
+173 + W17 drips (through drip-35) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -816,6 +816,65 @@ section.
    applied" message was suppressed in exactly the
    cases it should have fired (merge-as-is — though a
    regression test would lock it down).
+- **W17 drip-35 (2026-04-25)**: eight reviews across
+   four repos — first appearance of continuedev/continue
+   in the index. Aider-AI/aider #5052 adds bash/shell
+   tree-sitter repomap support via a 6-line
+   `function_definition` capture query plus a fixture
+   covering both POSIX `name() {}` and `function name()
+   {}` styles (merge-after-nits — verify `.bash`/`.zsh`
+   actually route to the bash parser in the extension
+   map). Aider-AI/aider #5066 appends a polyglot-
+   leaderboard YAML row claiming new #1 at 93.3% on
+   Claude Opus 4.7 with adaptive thinking; arithmetic
+   on `pass_num/total_tests` checks out but
+   `total_cost: $26.27` is suspiciously low for ~3.9M
+   tokens at standard Bedrock pricing — flag for
+   author confirmation before merging as new top spot
+   (merge-after-nits). cline/cline #10376 closes a
+   serious path-traversal hole in `ClineIgnoreController.validateAccess`
+   (default no-`.clineignore` previously allowed
+   `../../etc/passwd`; catch block returned `true` on
+   `path.relative` errors with a literal "we are
+   allowing access to all files outside cwd" comment),
+   plus a companion fix to `readIncludedFile` for
+   `!include ../../etc/passwd`-style abuse, with four
+   new test cases including the no-clineignore default-
+   deny regression (merge-after-nits — defense-in-depth
+   `realpath` for symlinks; lockfile churn should be
+   split). cline/cline #10377 reshapes the Plan/Act
+   mode picker as a proper `role="radiogroup"` with
+   roving tabindex, Space/Enter/arrow handling, and a
+   webview test (merge-after-nits — note the switch→radio
+   semantic downgrade in release notes). cline/cline
+   #10384 adds `maxRetryAfter` (default 60s) to the
+   `withRetry` decorator so multi-hour Gemini quota
+   `retry-after` headers throw immediately instead of
+   silently waiting; updates the synthetic-timestamp
+   test to use `sinon.stub(Date, "now")` so the
+   pre-existing case still asserts header-takes-
+   precedence under the new default cap (merge-as-is;
+   nit: rename `maxRetryAfter` → `maxRetryAfterMs` for
+   unit clarity). cline/cline #10386 adds
+   `whitespace-normal` to the expanded `ThinkingRow`
+   button so multi-line reasoning content can wrap —
+   the inner span's `whitespace-pre-wrap` was being
+   defeated by the design-system button's default
+   `whitespace-nowrap`; targeted regression test asserts
+   both class presence and absence (merge-as-is).
+   continuedev/continue #12190 moves the Gemini
+   `fetchModels` API key from `?key=` URL query param
+   into the `x-goog-api-key` request header, closing a
+   key-in-access-logs / Referer leak primitive that
+   matches the auth pattern already used elsewhere in
+   the codebase, bundled with a CI-unblock model swap
+   from a deprecated Anthropic haiku ID (merge-as-is).
+   continuedev/continue #12198 removes
+   `model.name.split("/").pop()` from `IntroMessage`
+   so user-configured display names like `local/large`
+   render in full instead of being trimmed to `large`;
+   updates one existing test and adds a `local/large`
+   regression case (merge-as-is).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -825,6 +884,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | PR | Title | File |
 |---|---|---|
 | [#5024](https://github.com/Aider-AI/aider/pull/5024) | fix: check len(errors) before string conversion in udiff_coder.py | [Aider-AI-aider-pr-5024.md](2026-W17/drip-34/Aider-AI-aider-pr-5024.md) |
+| [#5066](https://github.com/Aider-AI/aider/pull/5066) | Polyglot benchmark: Claude Opus 4.7 new #1 at 93.3% | [Aider-AI-aider-pr-5066.md](2026-W17/drip-35/Aider-AI-aider-pr-5066.md) |
+| [#5052](https://github.com/Aider-AI/aider/pull/5052) | Add bash/shell repomap support | [Aider-AI-aider-pr-5052.md](2026-W17/drip-35/Aider-AI-aider-pr-5052.md) |
 | [#5033](https://github.com/Aider-AI/aider/pull/5033) | feat: skip auto-commit when LLM response is truncated | [Aider-AI-aider-pr-5033.md](2026-W17/drip-33/Aider-AI-aider-pr-5033.md) |
 | [#5065](https://github.com/Aider-AI/aider/pull/5065) | Fix prompt injection vulnerability in Architect mode (Issue #5058) | [Aider-AI-aider-pr-5065.md](2026-W17/drip-32/Aider-AI-aider-pr-5065.md) |
 | [#5031](https://github.com/Aider-AI/aider/pull/5031) | fix(io): tool_output falls back to ASCII on UnicodeEncodeError (#5029) | [Aider-AI-aider-pr-5031.md](2026-W17/drip-30/Aider-AI-aider-pr-5031.md) |
@@ -1065,6 +1126,17 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#10286](https://github.com/cline/cline/pull/10286) | feat(models): prepare Claude Opus 4.7 provider support | [PR-10286.md](cline-cline/PR-10286.md) |
 | [#10291](https://github.com/cline/cline/pull/10291) | fix: stabilize flaky Windows CI test paths | [PR-10291.md](cline-cline/PR-10291.md) |
 | [#10343](https://github.com/cline/cline/pull/10343) | feat(memory-observability): add periodic memory logging to cline-core | [PR-10343.md](cline-cline/PR-10343.md) |
+| [#10376](https://github.com/cline/cline/pull/10376) | fix: prevent path traversal in ClineIgnoreController.validateAccess | [cline-cline-pr-10376.md](2026-W17/drip-35/cline-cline-pr-10376.md) |
+| [#10377](https://github.com/cline/cline/pull/10377) | fix: expose Plan/Act mode as an accessible radio group | [cline-cline-pr-10377.md](2026-W17/drip-35/cline-cline-pr-10377.md) |
+| [#10384](https://github.com/cline/cline/pull/10384) | fix: cap retry-after delay to prevent silent multi-hour hangs | [cline-cline-pr-10384.md](2026-W17/drip-35/cline-cline-pr-10384.md) |
+| [#10386](https://github.com/cline/cline/pull/10386) | fix: preserve multiline thinking blocks | [cline-cline-pr-10386.md](2026-W17/drip-35/cline-cline-pr-10386.md) |
+
+## continuedev/continue
+
+| PR | Title | File |
+|---|---|---|
+| [#12190](https://github.com/continuedev/continue/pull/12190) | fix: use x-goog-api-key header instead of URL query param for Gemini API | [continuedev-continue-pr-12190.md](2026-W17/drip-35/continuedev-continue-pr-12190.md) |
+| [#12198](https://github.com/continuedev/continue/pull/12198) | fix(cli): display full model name in TUI without trimming at slash delimiter | [continuedev-continue-pr-12198.md](2026-W17/drip-35/continuedev-continue-pr-12198.md) |
 
 ## modelcontextprotocol/servers
 
