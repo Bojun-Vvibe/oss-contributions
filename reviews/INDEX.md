@@ -1975,6 +1975,21 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#15691](https://github.com/ollama/ollama/pull/15691) | add token calculation support with UI display | [ollama-ollama-pr-15691.md](2026-W17/drip-54/ollama-ollama-pr-15691.md) |
 | [#15706](https://github.com/ollama/ollama/pull/15706) | Add LumaKit to Community Integrations | [ollama-ollama-pr-15706.md](2026-W17/drip-54/ollama-ollama-pr-15706.md) |
 
+### W17 drip-60 (2026-04-26) — guardrail logging, provider-config preservation, schema-cleanup scope
+
+8-PR sweep covering: a regression fix that suppressed duplicate (Success+Failure) spend logs when a post-call guardrail blocks; provider-config plumbing for Azure Cognitive Services `api-version` and configured-output-token caps in opencode; a UI fix in crush so disabled skills stop rendering as "online"; and three larger PRs flagged for scope creep (a Vertex `output_config` sanitizer bundled with unrelated Arize and price-table churn; a CI-infra PR carrying production guardrail rewrites; and a "stabilize Windows path tests" PR that also renames a production sandbox helper).
+
+| PR | Title | Path |
+|---|---|---|
+| [#26528](https://github.com/BerriAI/litellm/pull/26528) | fix(proxy): suppress deferred success log when post-call guardrail blocks | [BerriAI-litellm/PR-26528.md](BerriAI-litellm/PR-26528.md) |
+| [#26530](https://github.com/BerriAI/litellm/pull/26530) | fix(adapters,vertex): pass Anthropic `output_config` through to backends that accept it | [BerriAI-litellm/PR-26530.md](BerriAI-litellm/PR-26530.md) |
+| [#26527](https://github.com/BerriAI/litellm/pull/26527) | test(ci): add dockerized E2E coverage for Anthropic-style client ↔ LiteLLM proxy | [BerriAI-litellm/PR-26527.md](BerriAI-litellm/PR-26527.md) |
+| [#19605](https://github.com/openai/codex/pull/19605) | Delete unused ResponseItem::Message.end_turn | [openai-codex/PR-19605-delete-end-turn.md](openai-codex/PR-19605-delete-end-turn.md) |
+| [#19604](https://github.com/openai/codex/pull/19604) | test: stabilize app-server path assertions on Windows | [openai-codex/PR-19604-windows-path-asserts.md](openai-codex/PR-19604-windows-path-asserts.md) |
+| [#2712](https://github.com/charmbracelet/crush/pull/2712) | fix(ui): Skill display as loaded despite being disabled in config | [charmbracelet-crush/PR-2712.md](charmbracelet-crush/PR-2712.md) |
+| [#24386](https://github.com/sst/opencode/pull/24386) | fix(provider): preserve Azure API version | [sst-opencode/PR-24386.md](sst-opencode/PR-24386.md) |
+| [#24384](https://github.com/sst/opencode/pull/24384) | fix(provider): respect configured output limit | [sst-opencode/PR-24384.md](sst-opencode/PR-24384.md) |
+
 ---
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
