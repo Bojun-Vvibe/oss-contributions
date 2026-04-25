@@ -1,6 +1,6 @@
 # Review Index
 
-189 + W17 drips (through drip-56) PR reviews across 10 OSS AI-coding-agent projects. Each review
+189 + W17 drips (through drip-59) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -1332,6 +1332,54 @@ section.
        frames in a tight Python loop and stalls the
        async event loop (#4717, request-changes,
        cap+test required).
+- **W17 drip-59 (2026-04-26)**: 8 more across 3 repos.
+       openai/codex contributes two CI-side merges:
+       #19578 bumps the Bazel job timeout from 30→45
+       minutes with an honest comment naming
+       BuildBuddy RBE as the eventual fix
+       (merge-as-is), and #19593 disables plugin
+       warmups in the
+       `thread_start_with_non_local_thread_store_does_not_create_local_persistence`
+       fixture so a stray top-level `.tmp` from
+       plugin startup stops tripping the
+       persistence-artifact assertion on Windows
+       (merge-as-is). BerriAI/litellm #26524 closes a
+       privilege gap where any valid API key could
+       `DELETE /v1/vector_stores/{id}` or
+       `DELETE /azure_ai/indexes/{name}` — the
+       OpenAI-shaped route had no role check and the
+       Azure pass-through fell through to the upstream
+       on a missing-from-registry index; the fix wires
+       `_is_proxy_admin` gates at all three sites with
+       403 responses, but the registry-miss tail path
+       lacks a regression test and the create/modify
+       paths weren't audited in the same PR
+       (merge-after-nits). anomalyco/opencode lands
+       five: #24395 introduces `agent_memory` (SQLite
+       table + Effect-based `AgentMemory.save/search/
+       consolidate` service) bundled with a brand-new
+       `packages/memory-tools` Supabase cloud-sync
+       plugin — the privacy/egress story isn't
+       discussed and the schema migration is
+       interleaved with the optional plugin, so this
+       wants to split (needs-discussion); #24382 adds
+       a vision-model fallback in `session/llm.ts`
+       that runs `generateText` through a
+       cross-provider vision model and replaces image
+       parts with a `[Image description by ${id}]:`
+       text block when the active model lacks vision
+       capability — fail-soft on errors, but silently
+       so, and multi-image positional grounding is
+       lost (merge-after-nits); #24378 syncs every
+       locale's env-var docs table with source —
+       structural sort + add-missing-rows, mostly a
+       generator output, native-speaker pass on the
+       new translated descriptions wanted
+       (merge-after-nits); and ecosystem-table
+       additions #24390 (`opencode-claude-code-plugin`,
+       merge-after-nits) and #24388
+       (`opencode-local-ollama`, merge-as-is, closes
+       #24389).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -1505,11 +1553,17 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | [#24222](https://github.com/anomalyco/opencode/pull/24222) | fix permission config order | [anomalyco-opencode-pr-24222.md](2026-W17/drip-26/anomalyco-opencode-pr-24222.md) |
 | [#24220](https://github.com/anomalyco/opencode/pull/24220) | Fix session event typechecks and shell cwd | [anomalyco-opencode-pr-24220.md](2026-W17/drip-27/anomalyco-opencode-pr-24220.md) |
 | [#24219](https://github.com/anomalyco/opencode/pull/24219) | docs(effect): add generated http route inventory | [anomalyco-opencode-pr-24219.md](2026-W17/drip-27/anomalyco-opencode-pr-24219.md) |
+| [#24395](https://github.com/anomalyco/opencode/pull/24395) | feat(memory): add agent_memory table and memory-tools plugin | [anomalyco-opencode-pr-24395.md](2026-W17/drip-59/anomalyco-opencode-pr-24395.md) |
+| [#24390](https://github.com/anomalyco/opencode/pull/24390) | docs: add opencode-claude-code-plugin to ecosystem plugins | [anomalyco-opencode-pr-24390.md](2026-W17/drip-59/anomalyco-opencode-pr-24390.md) |
+| [#24388](https://github.com/anomalyco/opencode/pull/24388) | docs: add opencode-local-ollama to ecosystem plugins | [anomalyco-opencode-pr-24388.md](2026-W17/drip-59/anomalyco-opencode-pr-24388.md) |
+| [#24382](https://github.com/anomalyco/opencode/pull/24382) | feat(llm): auto-describe images via vision fallback when active model lacks vision support | [anomalyco-opencode-pr-24382.md](2026-W17/drip-59/anomalyco-opencode-pr-24382.md) |
+| [#24378](https://github.com/anomalyco/opencode/pull/24378) | docs: sync env vars with source code | [anomalyco-opencode-pr-24378.md](2026-W17/drip-59/anomalyco-opencode-pr-24378.md) |
 
 ## BerriAI/litellm
 
 | PR | Title | File |
 |---|---|---|
+| [#26524](https://github.com/BerriAI/litellm/pull/26524) | fix(vector_stores): restrict vector store and index deletion to proxy admins | [BerriAI-litellm-pr-26524.md](2026-W17/drip-59/BerriAI-litellm-pr-26524.md) |
 | [#26525](https://github.com/BerriAI/litellm/pull/26525) | [Fix] broaden RAG ingestion credential cleanup to AWS endpoint/identity fields | [BerriAI-litellm-pr-26525.md](2026-W17/drip-58/BerriAI-litellm-pr-26525.md) |
 | [#26520](https://github.com/BerriAI/litellm/pull/26520) | [Feat] Add "My User" tab to team info page | [BerriAI-litellm-pr-26520.md](2026-W17/drip-58/BerriAI-litellm-pr-26520.md) |
 | [#26518](https://github.com/BerriAI/litellm/pull/26518) | chore(auth): tighten clientside api_base handling | [BerriAI-litellm-pr-26518.md](2026-W17/drip-57/BerriAI-litellm-pr-26518.md) |
@@ -1760,6 +1814,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19593](https://github.com/openai/codex/pull/19593) | test: isolate remote thread store regression from plugin warmups | [openai-codex-pr-19593.md](2026-W17/drip-59/openai-codex-pr-19593.md) |
+| [#19578](https://github.com/openai/codex/pull/19578) | fix: increase Bazel timeout to 45 minutes | [openai-codex-pr-19578.md](2026-W17/drip-59/openai-codex-pr-19578.md) |
 | [#19597](https://github.com/openai/codex/pull/19597) | Fix TUI attach fallback test stack overflow | [openai-codex-pr-19597.md](2026-W17/drip-57/openai-codex-pr-19597.md) |
 | [#19595](https://github.com/openai/codex/pull/19595) | [codex] Bypass managed network for escalated exec | [openai-codex-pr-19595.md](2026-W17/drip-57/openai-codex-pr-19595.md) |
 | [#19591](https://github.com/openai/codex/pull/19591) | Fix TUI resume performance regression | [openai-codex-pr-19591.md](2026-W17/drip-56/openai-codex-pr-19591.md) |
