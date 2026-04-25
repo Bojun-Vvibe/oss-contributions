@@ -1,6 +1,6 @@
 # Review Index
 
-165 + W17 drips (through drip-33) PR reviews across 9 OSS AI-coding-agent projects. Each review
+165 + W17 drips (through drip-34) PR reviews across 9 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -758,8 +758,65 @@ section.
    heuristic that skips auto-commit, but the 92%
    threshold is unjustified, the prefill-model
    exclusion is too broad, and the `auto_commit`
-   return-type change risks misinterpretation
-   downstream (request-changes).
+    return-type change risks misinterpretation
+    downstream (request-changes).
+- **W17 drip-34 (2026-04-25)**: eight reviews across
+   seven repos. openai/codex #19457 splits the thread-
+   list state-DB handle into a two-tier abstraction
+   (`completed` for paging, `exact_lookup` for per-id
+   overlay) so filesystem-discovered threads still get
+   git/branch/worktree fields populated when SQLite
+   backfill hasn't completed (merge-after-nits — rename
+   the lingering `fill_missing_*` test fn for grep
+   sanity). BerriAI/litellm #26485 onboards FuturMix as
+   a named OpenAI-compatible provider via a 9-line JSON
+   registry entry, but ships no model_prices rows and
+   no fixture, so budget tracking will silently log $0
+   on first use (merge-after-nits — flag the pricing
+   gap). anomalyco/opencode contributes two: #24250
+   completes the DeepSeek `reasoning_content` round-
+   trip by (a) defaulting `interleaved` to the field-
+   injection path for any model with `reasoning`,
+   (b) widening the deepseek sniff from `api.id` to
+   also match `model.id` so OpenRouter routing works,
+   and (c) running an unconditional second pass that
+   injects empty `reasoning_content` on historical
+   assistant turns loaded from the DB before reasoning
+   was enabled (merge-after-nits — comment the second-
+   pass override intent and add a snapshot test);
+   #24251 ships a project run-configs feature
+   (detect from package.json/Makefile/Cargo/Maven/
+   Gradle/Go markers, scope-prefix monorepo entries,
+   surface in session-header dialog), but the scan-
+   then-one-click-run flow is an arbitrary-command
+   surface against freshly-cloned untrusted repos and
+   needs a "scanned vs accepted" trust gate (needs-
+   discussion). charmbracelet/crush #2671 drops the
+   `fetch`/`view` tool ceilings from 1MB to 100KB via
+   six lines in `fetch.go`/`view.go` plus prose
+   updates and a 7600-line cassette regen (merge-as-is;
+   note that `fetch` lacks a pagination escape hatch
+   so a follow-up offset knob would help). ollama
+   #15713 fixes the cgroup v2 free-memory underestimate
+   by adding `inactive_file` from `memory.stat` as a
+   reclaimable adjustment (`FreeMemory = Total - used +
+   min(inactive_file, used)`), with a path-injectable
+   parser and three-row table test; v2-only and could
+   tighten further with `slab_reclaimable` (merge-
+   after-nits). All-Hands OpenHands #14104 restores the
+   localized `ACTION_MESSAGE$THINK` fallback by
+   detecting the SDK's default `think: {...}` summary
+   via a narrowly-scoped regex and returning `null` so
+   the upstream caller picks the localized label;
+   ships positive + negative tests and links the
+   tracking issue (merge-as-is). Aider-AI/aider #5024
+   captures the `len(errors) < len(uniq)` predicate
+   *before* joining `errors` to a string, fixing a
+   silent mutate-then-test bug where the "other hunks
+   applied" message was suppressed in exactly the
+   cases it should have fired (merge-as-is — though a
+   regression test would lock it down).
+
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
@@ -767,6 +824,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#5024](https://github.com/Aider-AI/aider/pull/5024) | fix: check len(errors) before string conversion in udiff_coder.py | [Aider-AI-aider-pr-5024.md](2026-W17/drip-34/Aider-AI-aider-pr-5024.md) |
 | [#5033](https://github.com/Aider-AI/aider/pull/5033) | feat: skip auto-commit when LLM response is truncated | [Aider-AI-aider-pr-5033.md](2026-W17/drip-33/Aider-AI-aider-pr-5033.md) |
 | [#5065](https://github.com/Aider-AI/aider/pull/5065) | Fix prompt injection vulnerability in Architect mode (Issue #5058) | [Aider-AI-aider-pr-5065.md](2026-W17/drip-32/Aider-AI-aider-pr-5065.md) |
 | [#5031](https://github.com/Aider-AI/aider/pull/5031) | fix(io): tool_output falls back to ASCII on UnicodeEncodeError (#5029) | [Aider-AI-aider-pr-5031.md](2026-W17/drip-30/Aider-AI-aider-pr-5031.md) |
@@ -784,6 +842,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14104](https://github.com/All-Hands-AI/OpenHands/pull/14104) | fix(frontend): restore think title fallback | [All-Hands-AI-OpenHands-pr-14104.md](2026-W17/drip-34/All-Hands-AI-OpenHands-pr-14104.md) |
 | [#14122](https://github.com/All-Hands-AI/OpenHands/pull/14122) | feat: enable sub-agent delegation via TaskToolSet in app server | [All-Hands-AI-OpenHands-pr-14122.md](2026-W17/drip-33/All-Hands-AI-OpenHands-pr-14122.md) |
 | [#14105](https://github.com/All-Hands-AI/OpenHands/pull/14105) | fix(frontend): allow send when only attachments are present | [All-Hands-AI-OpenHands-pr-14105.md](2026-W17/drip-33/All-Hands-AI-OpenHands-pr-14105.md) |
 | [#14127](https://github.com/All-Hands-AI/OpenHands/pull/14127) | Reduce GitHub resolver comment noise by editing acknowledgement comment | [All-Hands-AI-OpenHands-pr-14127.md](2026-W17/drip-32/All-Hands-AI-OpenHands-pr-14127.md) |
@@ -805,6 +864,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24251](https://github.com/anomalyco/opencode/pull/24251) | feat: add project run configs to the web app | [anomalyco-opencode-pr-24251.md](2026-W17/drip-34/anomalyco-opencode-pr-24251.md) |
+| [#24250](https://github.com/anomalyco/opencode/pull/24250) | fix(provider): complete DeepSeek reasoning_content round-trip for multi-turn conversations | [anomalyco-opencode-pr-24250.md](2026-W17/drip-34/anomalyco-opencode-pr-24250.md) |
 | [#24246](https://github.com/anomalyco/opencode/pull/24246) | fix: preserve nix/direnv PATH in login shell for ! commands | [anomalyco-opencode-pr-24246.md](2026-W17/drip-33/anomalyco-opencode-pr-24246.md) |
 | [#24244](https://github.com/anomalyco/opencode/pull/24244) | fix: remove top-level wildcard-first sort in permission config | [anomalyco-opencode-pr-24244.md](2026-W17/drip-33/anomalyco-opencode-pr-24244.md) |
 | [#24232](https://github.com/anomalyco/opencode/pull/24232) | fix(session): honor noCacheTokens in usage accounting | [anomalyco-opencode-pr-24232.md](2026-W17/drip-33/anomalyco-opencode-pr-24232.md) |
@@ -876,6 +937,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26485](https://github.com/BerriAI/litellm/pull/26485) | feat: add FuturMix as named OpenAI-compatible provider | [BerriAI-litellm-pr-26485.md](2026-W17/drip-34/BerriAI-litellm-pr-26485.md) |
 | [#26484](https://github.com/BerriAI/litellm/pull/26484) | chore(auth): substitute alias for master key on UserAPIKeyAuth | [BerriAI-litellm-pr-26484.md](2026-W17/drip-33/BerriAI-litellm-pr-26484.md) |
 | [#26474](https://github.com/BerriAI/litellm/pull/26474) | fix(bedrock guardrails): collapse duplicate INPUT/OUTPUT post-call passes | [BerriAI-litellm-pr-26474.md](2026-W17/drip-32/BerriAI-litellm-pr-26474.md) |
 | [#26471](https://github.com/BerriAI/litellm/pull/26471) | feat(teams): per-model team member budgets | [BerriAI-litellm-pr-26471.md](2026-W17/drip-32/BerriAI-litellm-pr-26471.md) |
@@ -943,6 +1005,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 |---|---|---|
 | [#2706](https://github.com/charmbracelet/crush/pull/2706) | docs(contributing): inline tooling notes for git/gh | [charmbracelet-crush-pr-2706.md](2026-W17/drip-30/charmbracelet-crush-pr-2706.md) |
 | [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [charmbracelet-crush-pr-2693.md](2026-W17/drip-30/charmbracelet-crush-pr-2693.md) |
+| [#2671](https://github.com/charmbracelet/crush/pull/2671) | fix: reduce `fetch` and `view` tools truncation size to 100KB | [charmbracelet-crush-pr-2671.md](2026-W17/drip-34/charmbracelet-crush-pr-2671.md) |
 | [#2579](https://github.com/charmbracelet/crush/pull/2579) | feat(tool): add `ask-user-questions` tool | [PR-2579.md](charmbracelet-crush/PR-2579.md) |
 | [#2613](https://github.com/charmbracelet/crush/pull/2613) | fix(agent): prune excess images from history to prevent session deadlock | [PR-2613.md](charmbracelet-crush/PR-2613.md) |
 | [#2615](https://github.com/charmbracelet/crush/pull/2615) | fix(agent): validate tool call/results + strip tags from titles | [PR-2615.md](charmbracelet-crush/PR-2615.md) |
@@ -1023,6 +1086,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 |---|---|---|
 | [#19496](https://github.com/openai/codex/pull/19496) | Streamline MCP handlers | [openai-codex-pr-19496.md](2026-W17/drip-33/openai-codex-pr-19496.md) |
 | [#19493](https://github.com/openai/codex/pull/19493) | Streamline thread mutation handlers | [openai-codex-pr-19493.md](2026-W17/drip-33/openai-codex-pr-19493.md) |
+| [#19457](https://github.com/openai/codex/pull/19457) | Centralize thread git metadata overlays | [openai-codex-pr-19457.md](2026-W17/drip-34/openai-codex-pr-19457.md) |
 | [#19498](https://github.com/openai/codex/pull/19498) | Streamline conversation init and resume handlers | [openai-codex-pr-19498.md](2026-W17/drip-32/openai-codex-pr-19498.md) |
 | [#19497](https://github.com/openai/codex/pull/19497) | Streamline turn and realtime handlers | [openai-codex-pr-19497.md](2026-W17/drip-32/openai-codex-pr-19497.md) |
 | [#19484](https://github.com/openai/codex/pull/19484) | Centralize JsonRpc error_code constructors and trim leaf handlers | [openai-codex-pr-19484.md](2026-W17/drip-32/openai-codex-pr-19484.md) |
@@ -1113,6 +1177,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | PR | Title | File |
 |---|---|---|
 | [#15805](https://github.com/ollama/ollama/pull/15805) | Add `ollama launch qwen` support for Qwen Code CLI | [ollama-ollama-pr-15805.md](2026-W17/drip-30/ollama-ollama-pr-15805.md) |
+| [#15713](https://github.com/ollama/ollama/pull/15713) | fix: use MemAvailable equivalent in cgroup memory check | [ollama-ollama-pr-15713.md](2026-W17/drip-34/ollama-ollama-pr-15713.md) |
 | [#15774](https://github.com/ollama/ollama/pull/15774) | Harden Qwen-family tool payload rendering and fix Qwen 3.5 tool-block truncation integrity | [ollama-ollama-pr-15774.md](2026-W17/drip-19/ollama-ollama-pr-15774.md) |
 | [#15755](https://github.com/ollama/ollama/pull/15755) | metal: harden for ggml initialization failures | [ollama-ollama-pr-15755.md](2026-W17/drip-19/ollama-ollama-pr-15755.md) |
 | [#15716](https://github.com/ollama/ollama/pull/15716) | server: fix download stall watchdog not firing when no bytes arrive | [ollama-ollama-pr-15716.md](2026-W17/drip-21/ollama-ollama-pr-15716.md) |
