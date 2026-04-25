@@ -1395,6 +1395,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24379](https://github.com/anomalyco/opencode/pull/24379) | fix(session): use transcript position instead of lexical ID compare in prompt loop | [anomalyco-opencode-pr-24379.md](2026-W17/drip-57/anomalyco-opencode-pr-24379.md) |
+| [#24369](https://github.com/anomalyco/opencode/pull/24369) | feat(processor): add model fallback chain when retries are exhausted | [anomalyco-opencode-pr-24369.md](2026-W17/drip-57/anomalyco-opencode-pr-24369.md) |
+| [#24367](https://github.com/anomalyco/opencode/pull/24367) | fix(zen): stop double-counting reasoning_tokens in oa-compat usage | [anomalyco-opencode-pr-24367.md](2026-W17/drip-57/anomalyco-opencode-pr-24367.md) |
 | [#24319](https://github.com/sst/opencode/pull/24319) | fix(file): show linked directories in file list | [sst-opencode-pr-24319.md](2026-W17/drip-55/sst-opencode-pr-24319.md) |
 | [#24330](https://github.com/sst/opencode/pull/24330) | fix: correct broken CI workflows and infra migration | [sst-opencode-pr-24330.md](2026-W17/drip-55/sst-opencode-pr-24330.md) |
 | [#24351](https://github.com/sst/opencode/pull/24351) | fix(app): keep question dock buttons visible on mobile | [sst-opencode-pr-24351.md](2026-W17/drip-55/sst-opencode-pr-24351.md) |
@@ -1502,6 +1505,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26518](https://github.com/BerriAI/litellm/pull/26518) | chore(auth): tighten clientside api_base handling | [BerriAI-litellm-pr-26518.md](2026-W17/drip-57/BerriAI-litellm-pr-26518.md) |
+| [#26498](https://github.com/BerriAI/litellm/pull/26498) | fix(auth): apply temp_budget_increase on cache-hit path | [BerriAI-litellm-pr-26498.md](2026-W17/drip-57/BerriAI-litellm-pr-26498.md) |
 | [#26517](https://github.com/BerriAI/litellm/pull/26517) | feat(mcp): non-admin MCP self-service (disconnect, approval filter, BYOK admin guard) | [BerriAI-litellm-pr-26517.md](2026-W17/drip-56/BerriAI-litellm-pr-26517.md) |
 | [#26515](https://github.com/BerriAI/litellm/pull/26515) | fix(ui): render dict-shaped fallback entries in router settings | [BerriAI-litellm-pr-26515.md](2026-W17/drip-56/BerriAI-litellm-pr-26515.md) |
 | [#26499](https://github.com/BerriAI/litellm/pull/26499) | fix(auth): join team-member budget so rpm/tpm limits are enforced | [BerriAI-litellm-pr-26499.md](2026-W17/drip-56/BerriAI-litellm-pr-26499.md) |
@@ -1624,6 +1629,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#2711](https://github.com/charmbracelet/crush/pull/2711) | fix(ui): refresh todo pills on every session update | [charmbracelet-crush-pr-2711.md](2026-W17/drip-57/charmbracelet-crush-pr-2711.md) |
 | [#2710](https://github.com/charmbracelet/crush/pull/2710) | fix(agent): pass max output tokens to summary stream | [charmbracelet-crush-pr-2710.md](2026-W17/drip-56/charmbracelet-crush-pr-2710.md) |
 | [#2709](https://github.com/charmbracelet/crush/pull/2709) | fix(agent,ui): persist terminal finish for Run and Summarize + scoped spinner stall-guard | [charmbracelet-crush-pr-2709.md](2026-W17/drip-56/charmbracelet-crush-pr-2709.md) |
 | [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [charmbracelet-crush-pr-2693.md](2026-W17/drip-40/charmbracelet-crush-pr-2693.md) |
@@ -1746,6 +1752,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19597](https://github.com/openai/codex/pull/19597) | Fix TUI attach fallback test stack overflow | [openai-codex-pr-19597.md](2026-W17/drip-57/openai-codex-pr-19597.md) |
+| [#19595](https://github.com/openai/codex/pull/19595) | [codex] Bypass managed network for escalated exec | [openai-codex-pr-19595.md](2026-W17/drip-57/openai-codex-pr-19595.md) |
 | [#19591](https://github.com/openai/codex/pull/19591) | Fix TUI resume performance regression | [openai-codex-pr-19591.md](2026-W17/drip-56/openai-codex-pr-19591.md) |
 | [#19589](https://github.com/openai/codex/pull/19589) | Fix request_permissions tool flake in core tests | [openai-codex-pr-19589.md](2026-W17/drip-56/openai-codex-pr-19589.md) |
 | [#18901](https://github.com/openai/codex/pull/18901) | Install standalone archives with checksum verification | [openai-codex-pr-18901.md](2026-W17/drip-52/openai-codex-pr-18901.md) |
