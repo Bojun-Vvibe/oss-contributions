@@ -1,6 +1,6 @@
 # Review Index
 
-173 + W17 drips (through drip-36) PR reviews across 10 OSS AI-coding-agent projects. Each review
+173 + W17 drips (through drip-37) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -957,8 +957,86 @@ section.
    diagnostic preservation; new `_runClaudeCode` test
    injection seam typed via `Parameters<typeof …>`
    (merge-after-nits — `_runClaudeCode` leaks into
-   public option type; confirm turn-loop expects a
-   silent return on max-turns).
+    public option type; confirm turn-loop expects a
+    silent return on max-turns).
+ - **W17 drip-37 (2026-04-25)**: eight reviews across
+    four repos. openai/codex #19510 gates the rewind
+    transcript overlay on a new `has_backtrack_target`
+    predicate (cells must contain at least one
+    `UserHistoryCell`) so a fresh-session double-`Esc`
+    no longer opens an empty header-only view; the
+    composer hint `show_esc_backtrack_hint` is
+    suppressed in the same case and an info-event
+    `No previous message to edit.` snapshots the
+    user-visible signal (merge-as-is). openai/codex
+    #19509 introduces a server→client MCP telemetry
+    side-channel via `CallToolResult.meta["codex/telemetry"]["span"]`,
+    allowlisting `target_id` (truncated to 256 chars
+    via `truncate_str_to_char_boundary`) and
+    `did_trigger_user_flow` (strict `as_bool`); the
+    instrument-then-record pattern hands the span to
+    `instrument(span.clone())` then calls
+    `span.record(...)` after the future resolves
+    (merge-after-nits — wire-format docs and a debug
+    log on type-mismatch fall-throughs). openai/codex
+    #19494 continues the
+    `Result<_, JSONRPCErrorError>`-returning helper
+    refactor for thread read/list/turn-list/summary
+    handlers, collapsing per-error-arm `send_*` +
+    `return` into a single `send_result` at the request
+    boundary plus a `thread_read_view_error` mapper;
+    net -44 LOC, no behavior diff (merge-as-is).
+    BerriAI/litellm #26493 closes the residual surface
+    on the `key_type='management'` escalation by
+    flipping `_check_allowed_routes_caller_permission`
+    to strict-by-default and threading
+    `allow_safe_presets=True` only at the *post*-
+    `handle_key_type` call site; also adds the missing
+    `_check_allowed_routes_caller_permission` +
+    `_check_passthrough_routes_caller_permission` pair
+    to `/key/service-account/generate` and mirrors the
+    post-handle re-check into `/key/regenerate` as
+    defense-in-depth (merge-as-is). BerriAI/litellm
+    #26490 drops `global_spend_tracking_routes` from
+    `internal_user_routes` and
+    `internal_user_view_only_routes` in `_types.py`
+    to close a cross-tenant disclosure where
+    `internal_user` keys could read proxy-wide spend;
+    the test matrix is parametrized off
+    `LiteLLMRoutes.global_spend_tracking_routes.value`
+    so future additions are auto-covered, and three
+    pre-existing tests that asserted the leak (the
+    `True` expectation on `/global/spend/logs` for
+    `internal_user`) are flipped to `False`
+    (merge-as-is — flag as breaking access-control
+    tightening with `permissions={"get_spend_routes": true}`
+    as the documented opt-in). BerriAI/litellm #26488
+    extends `/spend/logs/ui` `sort_by` whitelist with
+    `model` and `ttft_ms`, with `ttft_ms` computed
+    inline as
+    `EXTRACT(EPOCH FROM (completionStartTime - startTime)) * 1000`
+    and `NULLS LAST` so non-streaming rows always sink
+    to the bottom regardless of direction; tests
+    assert SQL contains `model` *and* does not contain
+    `NULLS LAST` to guard the narrow special case
+    (merge-after-nits — `# safe: order_column gated by
+    valid_sort_fields` comment near the f-string).
+    ollama/ollama #15790 is a one-line README
+    integrations-list addition for Atlarix; positional
+    slot is correct, marketing tone is restrained
+    (merge-after-nits — verify link-liveness and
+    consider deeper-link to an Ollama-setup docs page
+    if available). cline/cline #10369 fixes the Ollama
+    image transform in `ollama-format.ts` by stripping
+    the `^data:[^;]+;base64,` prefix from
+    Anthropic-style image blocks and pushing the bare
+    base64 into a parallel `images: string[]` field on
+    the Ollama message instead of inlining the data
+    URI into `content` (merge-after-nits — confirm the
+    tool-result branch's `toolResultImages` collector
+    is actually attached to the outgoing wire message,
+    tighten regex to `^data:image\/[^;]+;base64,`, and
+    add a unit test pinning the wire shape).
 
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
@@ -1082,6 +1160,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26493](https://github.com/BerriAI/litellm/pull/26493) | [Fix] Extend caller-permission checks to service-account + tighten raw-body acceptance | [BerriAI-litellm-pr-26493.md](2026-W17/drip-37/BerriAI-litellm-pr-26493.md) |
+| [#26490](https://github.com/BerriAI/litellm/pull/26490) | [Fix] Restrict /global/spend/* routes to admin roles | [BerriAI-litellm-pr-26490.md](2026-W17/drip-37/BerriAI-litellm-pr-26490.md) |
+| [#26488](https://github.com/BerriAI/litellm/pull/26488) | [Feature] UI - Spend Logs: sortable Model and TTFT columns | [BerriAI-litellm-pr-26488.md](2026-W17/drip-37/BerriAI-litellm-pr-26488.md) |
 | [#26489](https://github.com/BerriAI/litellm/pull/26489) | chore(vector-stores): redact credentials in list/info/update; gate update by per-store access | [BerriAI-litellm-pr-26489.md](2026-W17/drip-36/BerriAI-litellm-pr-26489.md) |
 | [#26486](https://github.com/BerriAI/litellm/pull/26486) | chore(auth): admin-only gate on key_type, allowed_passthrough_routes, and key/regenerate grant fields | [BerriAI-litellm-pr-26486.md](2026-W17/drip-36/BerriAI-litellm-pr-26486.md) |
 | [#26485](https://github.com/BerriAI/litellm/pull/26485) | feat: add FuturMix as named OpenAI-compatible provider | [BerriAI-litellm-pr-26485.md](2026-W17/drip-34/BerriAI-litellm-pr-26485.md) |
@@ -1203,6 +1284,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#10369](https://github.com/cline/cline/pull/10369) | fix(ollama): strip data URI prefix from images for Ollama API compatibility | [cline-cline-pr-10369.md](2026-W17/drip-37/cline-cline-pr-10369.md) |
 | [#10396](https://github.com/cline/cline/pull/10396) | fix: respect image support toggle for paste and drag-drop operations | [cline-cline-pr-10396.md](2026-W17/drip-36/cline-cline-pr-10396.md) |
 | [#10385](https://github.com/cline/cline/pull/10385) | fix(claude-code): handle CLI v2.1+ result chunks and error_max_turns | [cline-cline-pr-10385.md](2026-W17/drip-36/cline-cline-pr-10385.md) |
 | [#10210](https://github.com/cline/cline/pull/10210) | Remove `/deep-planning` built-in slash command | [PR-10210.md](cline-cline/PR-10210.md) |
@@ -1244,6 +1326,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19510](https://github.com/openai/codex/pull/19510) | Hide rewind preview when no user message exists | [openai-codex-pr-19510.md](2026-W17/drip-37/openai-codex-pr-19510.md) |
+| [#19509](https://github.com/openai/codex/pull/19509) | Record MCP tool result telemetry on spans | [openai-codex-pr-19509.md](2026-W17/drip-37/openai-codex-pr-19509.md) |
+| [#19494](https://github.com/openai/codex/pull/19494) | Streamline thread read handlers | [openai-codex-pr-19494.md](2026-W17/drip-37/openai-codex-pr-19494.md) |
 | [#19506](https://github.com/openai/codex/pull/19506) | [codex] Refresh AGENTS.md on cwd changes | [openai-codex-pr-19506.md](2026-W17/drip-36/openai-codex-pr-19506.md) |
 | [#19495](https://github.com/openai/codex/pull/19495) | Streamline thread resume and fork handlers | [openai-codex-pr-19495.md](2026-W17/drip-36/openai-codex-pr-19495.md) |
 | [#19492](https://github.com/openai/codex/pull/19492) | Streamline thread start handler | [openai-codex-pr-19492.md](2026-W17/drip-36/openai-codex-pr-19492.md) |
@@ -1339,6 +1424,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15790](https://github.com/ollama/ollama/pull/15790) | Add Atlarix to Code Editors & Development integrations | [ollama-ollama-pr-15790.md](2026-W17/drip-37/ollama-ollama-pr-15790.md) |
 | [#15735](https://github.com/ollama/ollama/pull/15735) | server: add v2 manifest path | [ollama-ollama-pr-15735.md](2026-W17/drip-36/ollama-ollama-pr-15735.md) |
 | [#15805](https://github.com/ollama/ollama/pull/15805) | Add `ollama launch qwen` support for Qwen Code CLI | [ollama-ollama-pr-15805.md](2026-W17/drip-30/ollama-ollama-pr-15805.md) |
 | [#15713](https://github.com/ollama/ollama/pull/15713) | fix: use MemAvailable equivalent in cgroup memory check | [ollama-ollama-pr-15713.md](2026-W17/drip-34/ollama-ollama-pr-15713.md) |
