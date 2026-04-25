@@ -1394,6 +1394,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24319](https://github.com/sst/opencode/pull/24319) | fix(file): show linked directories in file list | [sst-opencode-pr-24319.md](2026-W17/drip-55/sst-opencode-pr-24319.md) |
+| [#24330](https://github.com/sst/opencode/pull/24330) | fix: correct broken CI workflows and infra migration | [sst-opencode-pr-24330.md](2026-W17/drip-55/sst-opencode-pr-24330.md) |
+| [#24351](https://github.com/sst/opencode/pull/24351) | fix(app): keep question dock buttons visible on mobile | [sst-opencode-pr-24351.md](2026-W17/drip-55/sst-opencode-pr-24351.md) |
 | [#24363](https://github.com/sst/opencode/pull/24363) | fix(agent): accept common color names | [sst-opencode-pr-24363.md](2026-W17/drip-53/sst-opencode-pr-24363.md) |
 | [#24350](https://github.com/sst/opencode/pull/24350) | fix: deepseek when using messages api | [sst-opencode-pr-24350.md](2026-W17/drip-53/sst-opencode-pr-24350.md) |
 | [#24340](https://github.com/sst/opencode/pull/24340) | fix(acp): expose variant config option | [sst-opencode-pr-24340.md](2026-W17/drip-53/sst-opencode-pr-24340.md) |
@@ -1498,6 +1501,9 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26513](https://github.com/BerriAI/litellm/pull/26513) | [Fix] Harden /model/info redaction for plural credential field names | [BerriAI-litellm-pr-26513.md](2026-W17/drip-55/BerriAI-litellm-pr-26513.md) |
+| [#26512](https://github.com/BerriAI/litellm/pull/26512) | [Fix] bind RAG ingestion config to stored credential values | [BerriAI-litellm-pr-26512.md](2026-W17/drip-55/BerriAI-litellm-pr-26512.md) |
+| [#26373](https://github.com/BerriAI/litellm/pull/26373) | fix(azure): propagate llm_provider- response headers on Responses API cancel | [BerriAI-litellm-pr-26373.md](2026-W17/drip-55/BerriAI-litellm-pr-26373.md) |
 | [#26508](https://github.com/BerriAI/litellm/pull/26508) | Litellm oss staging 04 25 2026 (Cloudflare response_text + Z.AI provider) | [BerriAI-litellm-pr-26508.md](2026-W17/drip-53/BerriAI-litellm-pr-26508.md) |
 | [#26374](https://github.com/BerriAI/litellm/pull/26374) | fix(mcp): do not prefix tool names when listing via scoped /mcp/{server_name} | [BerriAI-litellm-pr-26374.md](2026-W17/drip-53/BerriAI-litellm-pr-26374.md) |
 | [#26243](https://github.com/BerriAI/litellm/pull/26243) | fix: respect drop_params when mapping metadata.user_id to user in Responses adapter | [BerriAI-litellm-pr-26243.md](2026-W17/drip-52/BerriAI-litellm-pr-26243.md) |
@@ -1851,6 +1857,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15717](https://github.com/ollama/ollama/pull/15717) | Add Spring AI Playground to Chat Interfaces (Desktop) | [ollama-ollama-pr-15717.md](2026-W17/drip-55/ollama-ollama-pr-15717.md) |
+| [#15581](https://github.com/ollama/ollama/pull/15581) | ggml-metal: fix mixed bf16/f16 cooperative tensor operand order | [ollama-ollama-pr-15581.md](2026-W17/drip-55/ollama-ollama-pr-15581.md) |
 | [#15814](https://github.com/ollama/ollama/pull/15814) | Model support for batching | [ollama-ollama-pr-15814.md](2026-W17/drip-53/ollama-ollama-pr-15814.md) |
 | [#15726](https://github.com/ollama/ollama/pull/15726) | fix: resolve gateway launch timeout on Windows | [ollama-ollama-pr-15726.md](2026-W17/drip-53/ollama-ollama-pr-15726.md) |
 | [#15787](https://github.com/ollama/ollama/pull/15787) | api: accept "max" as a think value | [ollama-ollama-pr-15787.md](2026-W17/drip-48/ollama-ollama-pr-15787.md) |
