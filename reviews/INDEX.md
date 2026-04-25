@@ -690,6 +690,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#5031](https://github.com/Aider-AI/aider/pull/5031) | fix(io): tool_output falls back to ASCII on UnicodeEncodeError (#5029) | [Aider-AI-aider-pr-5031.md](2026-W17/drip-30/Aider-AI-aider-pr-5031.md) |
 | [#4748](https://github.com/Aider-AI/aider/pull/4748) | Fix regression in the LiteLLM exception list | [PR-4748.md](Aider-AI-aider/PR-4748.md) |
 | [#4830](https://github.com/Aider-AI/aider/pull/4830) | Allow adding files outside repo when git commits off | [PR-4830.md](Aider-AI-aider/PR-4830.md) |
 | [#4838](https://github.com/Aider-AI/aider/pull/4838) | fix: handle symlink loops in safe_abs_path() | [PR-4838.md](Aider-AI-aider/PR-4838.md) |
@@ -704,6 +705,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#14114](https://github.com/All-Hands-AI/OpenHands/pull/14114) | fix(runtime): shrink BashSession tmux pane from 1000x1000 to 256x50 | [All-Hands-AI-OpenHands-pr-14114.md](2026-W17/drip-30/All-Hands-AI-OpenHands-pr-14114.md) |
 | [#13977](https://github.com/All-Hands-AI/OpenHands/pull/13977) | Warn before resetting hidden SDK settings | [PR-13977.md](All-Hands-AI-OpenHands/PR-13977.md) |
 | [#13983](https://github.com/All-Hands-AI/OpenHands/pull/13983) | feat(app-server): route ACP agents to the ACP conversation endpoint | [PR-13983.md](All-Hands-AI-OpenHands/PR-13983.md) |
 | [#13994](https://github.com/All-Hands-AI/OpenHands/pull/13994) | feat(frontend): render ACPToolCallEvent in conversation viewer | [PR-13994.md](All-Hands-AI-OpenHands/PR-13994.md) |
@@ -720,6 +722,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#24241](https://github.com/anomalyco/opencode/pull/24241) | fix(tui): clean zero-width agent display labels | [anomalyco-opencode-pr-24241.md](2026-W17/drip-30/anomalyco-opencode-pr-24241.md) |
 | [#24234](https://github.com/anomalyco/opencode/pull/24234) | fix(agent): detect non-object frontmatter from gray-matter | [anomalyco-opencode-pr-24234.md](2026-W17/drip-30/anomalyco-opencode-pr-24234.md) |
 | [#24233](https://github.com/anomalyco/opencode/pull/24233) | fix(provider): honor per-model reasoning token pricing | [anomalyco-opencode-pr-24233.md](2026-W17/drip-30/anomalyco-opencode-pr-24233.md) |
 | [#24229](https://github.com/anomalyco/opencode/pull/24229) | fix(session): lazy session error schema via Schema.suspend | [anomalyco-opencode-pr-24229.md](2026-W17/drip-30/anomalyco-opencode-pr-24229.md) |
@@ -787,6 +790,8 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#26472](https://github.com/BerriAI/litellm/pull/26472) | fix(bedrock): avoid duplicate post-call guardrail logs on streaming | [BerriAI-litellm-pr-26472.md](2026-W17/drip-30/BerriAI-litellm-pr-26472.md) |
+| [#26470](https://github.com/BerriAI/litellm/pull/26470) | [Fix] Prevent atexit flush hangs and guard proxy_server_request header lookup | [BerriAI-litellm-pr-26470.md](2026-W17/drip-30/BerriAI-litellm-pr-26470.md) |
 | [#26467](https://github.com/BerriAI/litellm/pull/26467) | fix(pass-through): harden target URL construction | [BerriAI-litellm-pr-26467.md](2026-W17/drip-30/BerriAI-litellm-pr-26467.md) |
 | [#26456](https://github.com/BerriAI/litellm/pull/26456) | feat(models): gpt-5.5 reasoning_effort flags + supports_low_reasoning_effort | [BerriAI-litellm-pr-26456.md](2026-W17/drip-30/BerriAI-litellm-pr-26456.md) |
 | [#26219](https://github.com/BerriAI/litellm/pull/26219) | fix: ChatGPT responses bridge recovery | [PR-26219.md](BerriAI-litellm/PR-26219.md) |
@@ -848,6 +853,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 | PR | Title | File |
 |---|---|---|
 | [#2706](https://github.com/charmbracelet/crush/pull/2706) | docs(contributing): inline tooling notes for git/gh | [charmbracelet-crush-pr-2706.md](2026-W17/drip-30/charmbracelet-crush-pr-2706.md) |
+| [#2693](https://github.com/charmbracelet/crush/pull/2693) | fix(mcp): expand environment variables in stdio MCP server args | [charmbracelet-crush-pr-2693.md](2026-W17/drip-30/charmbracelet-crush-pr-2693.md) |
 | [#2579](https://github.com/charmbracelet/crush/pull/2579) | feat(tool): add `ask-user-questions` tool | [PR-2579.md](charmbracelet-crush/PR-2579.md) |
 | [#2613](https://github.com/charmbracelet/crush/pull/2613) | fix(agent): prune excess images from history to prevent session deadlock | [PR-2613.md](charmbracelet-crush/PR-2613.md) |
 | [#2615](https://github.com/charmbracelet/crush/pull/2615) | fix(agent): validate tool call/results + strip tags from titles | [PR-2615.md](charmbracelet-crush/PR-2615.md) |
@@ -926,6 +932,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#19487](https://github.com/openai/codex/pull/19487) | [codex] Move config loading into codex-config | [openai-codex-pr-19487.md](2026-W17/drip-30/openai-codex-pr-19487.md) |
 | [#19481](https://github.com/openai/codex/pull/19481) | Remove ghost reasoning snapshots from Responses API turns | [openai-codex-pr-19481.md](2026-W17/drip-30/openai-codex-pr-19481.md) |
 | [#19471](https://github.com/openai/codex/pull/19471) | test: gate Windows sandbox tests behind serial_test | [openai-codex-pr-19471.md](2026-W17/drip-30/openai-codex-pr-19471.md) |
 | [#19458](https://github.com/openai/codex/pull/19458) | feat(chatgpt-library): file upload/download hooks | [openai-codex-pr-19458.md](2026-W17/drip-30/openai-codex-pr-19458.md) |
@@ -1011,6 +1018,7 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 | PR | Title | File |
 |---|---|---|
+| [#15805](https://github.com/ollama/ollama/pull/15805) | Add `ollama launch qwen` support for Qwen Code CLI | [ollama-ollama-pr-15805.md](2026-W17/drip-30/ollama-ollama-pr-15805.md) |
 | [#15774](https://github.com/ollama/ollama/pull/15774) | Harden Qwen-family tool payload rendering and fix Qwen 3.5 tool-block truncation integrity | [ollama-ollama-pr-15774.md](2026-W17/drip-19/ollama-ollama-pr-15774.md) |
 | [#15755](https://github.com/ollama/ollama/pull/15755) | metal: harden for ggml initialization failures | [ollama-ollama-pr-15755.md](2026-W17/drip-19/ollama-ollama-pr-15755.md) |
 | [#15716](https://github.com/ollama/ollama/pull/15716) | server: fix download stall watchdog not firing when no bytes arrive | [ollama-ollama-pr-15716.md](2026-W17/drip-21/ollama-ollama-pr-15716.md) |
