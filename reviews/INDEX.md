@@ -1,6 +1,6 @@
 # Review Index
 
-197 + W17 drips (through drip-72) PR reviews across 10 OSS AI-coding-agent projects. Each review
+197 + W17 drips (through drip-73) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -2212,6 +2212,23 @@ Verdict mix: 3 merge-as-is (sst/opencode#24320 project-relative permission patte
 | [#10384](https://github.com/cline/cline/pull/10384) | fix: cap retry-after delay to prevent silent multi-hour hangs | [cline-cline/PR-10384-cap-retry-after-delay.md](cline-cline/PR-10384-cap-retry-after-delay.md) |
 
 Verdict mix: 4 merge-as-is (sst#24411 structured-vs-string `reasoning_details` split + drop-on-empty merge; codex#19620 `AsciiJsonFormatter` + ASCII-bytes/UTF-8-semantics dual assertion; codex#19589 register-notify-before-check + drop-lock-before-notify; cline#10384 throw-original-error on overlong retry-after with a 60s default ceiling), 2 merge-after-nits (sst#24412 startup-stdin buffer with explicit-prompt-precedence + drain-once + Ctrl+C verification still needed; litellm#26538 fireworks refresh — confirm `tool_choice="required"` passthrough + always-pass `reasoning_effort`), 1 request-changes (litellm#26498 — auth fix is right shape but split the 620-line model-catalog dump into its own PR), 1 needs-discussion (goose#8842 lifecycle hooks — trust model for hook config, `tool_result` actually flowing into AfterToolCall, execution timeout, error-code taxonomy).
+
+### W17 drip-73 (2026-04-26)
+
+8 fresh PRs across 7 repos — session-archive confirmation dialog buried under 6k lines of personal-tooling cruft (sst/opencode), AgentIdentity JWT verification with JWKS rotation (codex), a 0.x→2.x rubato dependency jump (goose), per-provider request-concurrency cap with FIFO semaphore + env fallback (qwen-code), interactive API-Key option in `qwen auth` (qwen-code), uuid 11→14 ESM-only major bump (cline), V0-era validator/MCP-route/utils removal (OpenHands), and bash repomap support (aider).
+
+| PR | Title | File |
+| --- | --- | --- |
+| [#24354](https://github.com/sst/opencode/pull/24354) | feat(app): add confirmation dialog before archiving session | [2026-W17/drip-73/sst-opencode-pr-24354.md](2026-W17/drip-73/sst-opencode-pr-24354.md) |
+| [#19650](https://github.com/openai/codex/pull/19650) | feat: verify agent identity JWTs | [2026-W17/drip-73/openai-codex-pr-19650.md](2026-W17/drip-73/openai-codex-pr-19650.md) |
+| [#8826](https://github.com/block/goose/pull/8826) | chore(deps): bump rubato from 0.16.2 to 2.0.0 | [2026-W17/drip-73/block-goose-pr-8826.md](2026-W17/drip-73/block-goose-pr-8826.md) |
+| [#3636](https://github.com/QwenLM/qwen-code/pull/3636) | feat(generationConfig): cap concurrent in-flight requests per provider (#3409) | [2026-W17/drip-73/QwenLM-qwen-code-pr-3636.md](2026-W17/drip-73/QwenLM-qwen-code-pr-3636.md) |
+| [#3624](https://github.com/QwenLM/qwen-code/pull/3624) | fix(cli): add API Key option to `qwen auth` interactive menu | [2026-W17/drip-73/QwenLM-qwen-code-pr-3624.md](2026-W17/drip-73/QwenLM-qwen-code-pr-3624.md) |
+| [#10367](https://github.com/cline/cline/pull/10367) | chore(deps): bump uuid from 11.1.0 to 14.0.0 | [2026-W17/drip-73/cline-cline-pr-10367.md](2026-W17/drip-73/cline-cline-pr-10367.md) |
+| [#14135](https://github.com/All-Hands-AI/OpenHands/pull/14135) | V0 Code Removals: Conversation Validator, MCP Updates, and Cleanup | [2026-W17/drip-73/All-Hands-AI-OpenHands-pr-14135.md](2026-W17/drip-73/All-Hands-AI-OpenHands-pr-14135.md) |
+| [#5052](https://github.com/Aider-AI/aider/pull/5052) | Add bash/shell repomap support | [2026-W17/drip-73/Aider-AI-aider-pr-5052.md](2026-W17/drip-73/Aider-AI-aider-pr-5052.md) |
+
+Verdict mix: 1 merge-as-is (aider#5052 — strictly additive bash tree-sitter tags following established language-extension pattern), 4 merge-after-nits (codex#19650 — JWKS URL hardening, caching policy, `nbf`/max-lifetime/`typ` claim checks, typed init error; qwen#3636 — streaming-cancellation slot release test, FIFO ordering test, float env-var case, override-env-to-unlimited docs; qwen#3624 — masked password input, `0600` perms, `OPENAI_BASE_URL`-aware probe, accept-with-warning on transient failures; OpenHands#14135 — cross-repo grep, MCP route auth/error-shape diff, human end-to-end test, split into 2-3 commits, deprecation cycle for validator classes), 2 needs-discussion (goose#8826 — `cargo tree -i rubato` to confirm direct vs. transitive consumer + duplicated-graph check before merging an 0.x→2.x bump; cline#10367 — VSIX runtime load test for `ERR_REQUIRE_ESM`, `uuid` CLI binary callers, and whether the dep is still earning its keep vs. `crypto.randomUUID()`), 1 request-changes (sst/opencode#24354 — drop 6k lines of `.atl/`/`.claude/memory/`/`.playwright-mcp/`/`.sisyphus/`/`.tmp-*` author-machine cruft, split out the unrelated `pty.created` + auto-open-terminal drive-bys, deduplicate the two `DialogArchiveSession` copies into one shared component, verify i18n key coverage, add a smoke test).
 
 ---
 
