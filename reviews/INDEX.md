@@ -1,6 +1,6 @@
 # Review Index
 
-189 + W17 drips (through drip-59) PR reviews across 10 OSS AI-coding-agent projects. Each review
+189 + W17 drips (through drip-64) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -2040,6 +2040,23 @@ Verdict mix: 3 merge-as-is (opencode#24374, goose#8843, goose#8814), 3 merge-aft
 | [#8839](https://github.com/block/goose/pull/8839) | fix(oidc-proxy): enforce exp independently of MAX_TOKEN_AGE_SECONDS | [2026-W17/block-goose-pr-8839.md](2026-W17/block-goose-pr-8839.md) |
 
 Verdict mix: 3 merge-as-is (opencode#24401-style — wait, this batch: goose#8851, goose#8847, no third), 5 merge-after-nits (opencode#24412, opencode#24411, opencode#24407, codex#19618, codex#19617, goose#8839). Actual: 2 merge-as-is (goose#8847, goose#8851), 6 merge-after-nits.
+
+### W17 drip-64 (2026-04-26) — ASCII-escaped headers, Prisma `Json?` jsonification, OAuth2 self-service auth, ACP+ system/git migrations, lifecycle hooks, SSE reconnect cap removal, Windows dev loop
+
+8-PR sweep across three repos (codex × 1, litellm × 2, goose × 5). Themes: a custom `serde_json::Formatter` (`AsciiJsonFormatter` overriding only `write_string_fragment`) that escapes non-ASCII as `\uXXXX` so turn-metadata HTTP headers stay parseable JSON without dropping unicode workspace paths or values; a `_serialize_metadata_for_prisma` helper that unconditionally `json.dumps`-encodes `metadata` payloads (dict/list/scalar) on `/v1/memory` to work around prisma-client-python's `DataError` on `Json?` columns, with the `metadata: null` semantics flipped from "clear column" to "no-op" to match the rest of the proxy and a new 400 when `null` is the only field; an MCP OAuth2 self-service feature that extends `has_user_credential` resolution to `auth_type == "oauth2"` and adds a header-OR-cookie `_authorize_user_auth` fallback to support browser redirects (with cookie-CSRF threat-modeling open as a discussion item); a 7-RPC `_goose/system/*` ACP+ namespace covering home_dir, path_exists, list_directory_entries, inspect_attachment_paths, list_files_for_mentions, read_image_attachment, write_file (replacing equivalent Tauri commands); a 9-RPC `_goose/git/*` ACP+ migration covering state, changed_files, switch_branch, stash, init, fetch (--prune), pull (--ff-only), create_branch, create_worktree, with mutating ops returning `EmptyResponse` and forcing a follow-up state-read round-trip; a config-driven 6-event lifecycle hooks system (`before_tool_call`/`after_tool_call`/`before_reply` etc.) with regex matchers and command/url handlers — `block: true` short-circuits tool dispatch, but `after_tool_call` is documented as fire-and-forget while actually being awaited, `tool_result` is never populated, and zero tests ship for what is a security-sensitive subsystem; a SSE reconnect-cap removal that drops `MAX_CONSECUTIVE_ERRORS = 10` and the synthetic terminal `Error` broadcast, replacing it with infinite reconnect-with-backoff (correct because `Last-Event-ID` replay protocol handles recovery, the cap was conflating transport failure with protocol-fatal); and a Windows dev-loop fix bundling UTF-8 console reconfig, a `_resolve_goose_cmd()` that picks `$GOOSE_BIN` → prebuilt → `cargo run`, `stderr=DEVNULL` to avoid `cargo run` chatter deadlocking the JSON-RPC stdio loop, and Tauri `beforeDevCommand` rewrites that drop `&&`/`exec` and add `--host 127.0.0.1` for Vite 7's IPv6-only-on-Windows default.
+
+| PR | Title | Path |
+|---|---|---|
+| [#19620](https://github.com/openai/codex/pull/19620) | Escape turn metadata headers as ASCII JSON | [2026-W17/openai-codex-pr-19620.md](2026-W17/openai-codex-pr-19620.md) |
+| [#26536](https://github.com/BerriAI/litellm/pull/26536) | fix(memory): jsonify metadata before Prisma writes on /v1/memory | [2026-W17/BerriAI-litellm-pr-26536.md](2026-W17/BerriAI-litellm-pr-26536.md) |
+| [#26531](https://github.com/BerriAI/litellm/pull/26531) | feat(mcp): OAuth2 self-service for internal users (LIT-2503) | [2026-W17/BerriAI-litellm-pr-26531.md](2026-W17/BerriAI-litellm-pr-26531.md) |
+| [#8849](https://github.com/block/goose/pull/8849) | feat(acp): migrate system/file Tauri commands to ACP+ | [2026-W17/block-goose-pr-8849.md](2026-W17/block-goose-pr-8849.md) |
+| [#8848](https://github.com/block/goose/pull/8848) | feat(goose2): migrate git commands from Tauri to ACP+ (#8698) | [2026-W17/block-goose-pr-8848.md](2026-W17/block-goose-pr-8848.md) |
+| [#8846](https://github.com/block/goose/pull/8846) | fix(ui): keep SSE reconnect loop alive on long disconnects (#8717) | [2026-W17/block-goose-pr-8846.md](2026-W17/block-goose-pr-8846.md) |
+| [#8842](https://github.com/block/goose/pull/8842) | feat: lifecycle hooks system | [2026-W17/block-goose-pr-8842.md](2026-W17/block-goose-pr-8842.md) |
+| [#8834](https://github.com/block/goose/pull/8834) | Fix Windows dev loop: beforeDevCommand script + Vite IPv4 bind + test_acp_client.py stdin-flush | [2026-W17/block-goose-pr-8834.md](2026-W17/block-goose-pr-8834.md) |
+
+Verdict mix: 1 merge-as-is (goose#8846), 6 merge-after-nits (codex#19620, litellm#26536, goose#8849, goose#8848, goose#8834 — and goose#8842 elevated below), 1 needs-discussion (litellm#26531 — cookie-fallback CSRF/SameSite story on a redirect endpoint), 1 request-changes (goose#8842 — `after_tool_call` docstring/impl disagreement, `tool_result` never populated, `command`/`url` mutual-exclusivity unenforced, zero tests for a security-sensitive subsystem).
 
 ---
 
