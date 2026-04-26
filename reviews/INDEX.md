@@ -2024,6 +2024,23 @@ Verdict mix: 4 merge-as-is, 3 merge-after-nits, 1 request-changes (codex#19610 �
 
 Verdict mix: 3 merge-as-is (opencode#24374, goose#8843, goose#8814), 3 merge-after-nits (litellm#26526, goose#8813, crush#2642), 1 request-changes (opencode#24406 — Spanish strings + unhashed lockfile + scope), 1 needs-discussion (codex#19606 — `Disabled` rename + `compatibility_*` helper deprecation horizon).
 
+### W17 drip-63 (2026-04-26) — startup stdin buffering, Kilo reasoning_details typing, exp/iat double-gate, codex shell history + logo
+
+8-PR sweep across three repos (opencode × 3, codex × 2, goose × 3). Themes: a TUI fix that buffers `process.stdin` between launch and React mount via a disposable factory plumbed through `PromptRefProvider`, with priority-ordering `route.prompt > args.prompt > buffered`; a provider-options branch in `normalizeMessages` that stops synthesizing string `reasoning_details` from concatenated `part.text` for openaiCompatible reasoning models (Kimi K2.6) and instead forwards the structured per-part array; a typed-HttpApi bridge for `POST /experimental/console/switch` and `GET /experimental/tool` that maps `account.use` failures to `BadRequest` and produces JSON-schema parameters via `EffectZod.toJsonSchema`; an OIDC-proxy security fix that flips `if/else if` to two independent gates so configuring `MAX_TOKEN_AGE_SECONDS` no longer disables `exp` enforcement (with 530 lines of new gate tests covering all four corner cases); a codex TUI feature that adds an 8-line ASCII codex logo with light/dark gradient adaptation, gated on terminal width with graceful fallback to the 56-column text-only header; a one-line moim whitelist addition for "Trimmed trailing whitespace from assistant message"; a context-window indicator that tiers Info → Warning → Error at 75% / 90% fill; and a codex shell-history persistence fix that emits `Op::AddToHistory` only on `QueueDrain::Stop` and renames "Bash mode" → "Shell mode" across the composer.
+
+| PR | Title | Path |
+|---|---|---|
+| [#24412](https://github.com/sst/opencode/pull/24412) | fix: Buffer stdin before prompt UI appears | [2026-W17/sst-opencode-pr-24412.md](2026-W17/sst-opencode-pr-24412.md) |
+| [#24411](https://github.com/sst/opencode/pull/24411) | fix(opencode): avoid invalid Kilo reasoning details | [2026-W17/sst-opencode-pr-24411.md](2026-W17/sst-opencode-pr-24411.md) |
+| [#24407](https://github.com/sst/opencode/pull/24407) | feat(httpapi): bridge experimental tool routes | [2026-W17/sst-opencode-pr-24407.md](2026-W17/sst-opencode-pr-24407.md) |
+| [#19618](https://github.com/openai/codex/pull/19618) | Persist shell mode commands in prompt history | [2026-W17/openai-codex-pr-19618.md](2026-W17/openai-codex-pr-19618.md) |
+| [#19617](https://github.com/openai/codex/pull/19617) | feat(tui): add codex logo to session header | [2026-W17/openai-codex-pr-19617.md](2026-W17/openai-codex-pr-19617.md) |
+| [#8851](https://github.com/block/goose/pull/8851) | colorize context window indicator | [2026-W17/block-goose-pr-8851.md](2026-W17/block-goose-pr-8851.md) |
+| [#8847](https://github.com/block/goose/pull/8847) | Add "Trimmed trailing whitespace" message to moim whitelist | [2026-W17/block-goose-pr-8847.md](2026-W17/block-goose-pr-8847.md) |
+| [#8839](https://github.com/block/goose/pull/8839) | fix(oidc-proxy): enforce exp independently of MAX_TOKEN_AGE_SECONDS | [2026-W17/block-goose-pr-8839.md](2026-W17/block-goose-pr-8839.md) |
+
+Verdict mix: 3 merge-as-is (opencode#24401-style — wait, this batch: goose#8851, goose#8847, no third), 5 merge-after-nits (opencode#24412, opencode#24411, opencode#24407, codex#19618, codex#19617, goose#8839). Actual: 2 merge-as-is (goose#8847, goose#8851), 6 merge-after-nits.
+
 ---
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
