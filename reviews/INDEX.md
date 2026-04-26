@@ -1,6 +1,6 @@
 # Review Index
 
-197 + W17 drips (through drip-65) PR reviews across 10 OSS AI-coding-agent projects. Each review
+197 + W17 drips (through drip-72) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -2195,6 +2195,23 @@ unreachable abort path for aider --exit batch mode.
 | [#4977](https://github.com/Aider-AI/aider/pull/4977) | fix: abort cleanly in batch mode (--exit) when Ollama is unreachable | [2026-W17/drip-71/Aider-AI-aider-pr-4977.md](2026-W17/drip-71/Aider-AI-aider-pr-4977.md) |
 
 Verdict mix: 3 merge-as-is (sst/opencode#24320 project-relative permission patterns; OpenHands#14029 Gemini `:generateContent` URL marker detection; goose#8804 `process-wrap`/`ProcessSession` setsid fix for SIGTTIN suspension), 5 merge-after-nits (sst/opencode#24443 — hoist `sdkKey` + scope catch-all to deepseek + replay regression test; goose#8810 — log discarded `InvalidHeaderValue` + config-load validation + 400 regression test; OpenHands#14084 — upgrade `remote_runtime` regex redactor to schema-aware `sanitize_config` + secret-leak regression test per call site; qwen#3600 — double-quote continuation test + `consumeLineContinuation` helper; aider#4977 — replace `str(ex).startswith("OllamaError:")` with `isinstance` + audit `.get(...)` callers of `get_model_info`).
+
+### W17 drip-72 (2026-04-26)
+
+8 more across 5 repos — second-pass reasoning preservation in normalize transforms (Kilo `reasoning_details` array vs DeepSeek `reasoning_content` string), startup-stdin side-buffer drain into TUI prompt, ASCII-escape JSON for HTTP turn-metadata headers, `Notify`-based race-free test wait, `tool_choice="required"` semantics + always-pass `reasoning_effort` in fireworks chat-transform refresh, `temp_budget_increase` cache-hit overlay (with PR-scope concern over a piggybacked model-catalog dump), upper bound on `retry-after` to prevent multi-hour silent hangs, and a lifecycle-hooks system whose security model needs more shape before merge.
+
+| PR | Title | File |
+| --- | --- | --- |
+| [#24412](https://github.com/sst/opencode/pull/24412) | fix: Buffer stdin before prompt UI appears | [sst-opencode/PR-24412-buffer-stdin-before-prompt.md](sst-opencode/PR-24412-buffer-stdin-before-prompt.md) |
+| [#24411](https://github.com/sst/opencode/pull/24411) | fix(opencode): avoid invalid Kilo reasoning details | [sst-opencode/PR-24411-avoid-invalid-kilo-reasoning-details.md](sst-opencode/PR-24411-avoid-invalid-kilo-reasoning-details.md) |
+| [#19620](https://github.com/openai/codex/pull/19620) | Escape turn metadata headers as ASCII JSON | [openai-codex/PR-19620-escape-turn-metadata-ascii-json.md](openai-codex/PR-19620-escape-turn-metadata-ascii-json.md) |
+| [#19589](https://github.com/openai/codex/pull/19589) | Fix request_permissions tool flake in core tests | [openai-codex/PR-19589-fix-request-permissions-tool-flake.md](openai-codex/PR-19589-fix-request-permissions-tool-flake.md) |
+| [#26538](https://github.com/BerriAI/litellm/pull/26538) | fix(fireworks_ai): modernize chat transforms, add Messages + Responses configs | [BerriAI-litellm/PR-26538-fireworks-modernize-chat-add-messages-responses.md](BerriAI-litellm/PR-26538-fireworks-modernize-chat-add-messages-responses.md) |
+| [#26498](https://github.com/BerriAI/litellm/pull/26498) | fix(auth): apply temp_budget_increase on cache-hit path | [BerriAI-litellm/PR-26498-temp-budget-increase-cache-hit.md](BerriAI-litellm/PR-26498-temp-budget-increase-cache-hit.md) |
+| [#8842](https://github.com/block/goose/pull/8842) | feat: lifecycle hooks system | [block-goose/PR-8842-lifecycle-hooks-system.md](block-goose/PR-8842-lifecycle-hooks-system.md) |
+| [#10384](https://github.com/cline/cline/pull/10384) | fix: cap retry-after delay to prevent silent multi-hour hangs | [cline-cline/PR-10384-cap-retry-after-delay.md](cline-cline/PR-10384-cap-retry-after-delay.md) |
+
+Verdict mix: 4 merge-as-is (sst#24411 structured-vs-string `reasoning_details` split + drop-on-empty merge; codex#19620 `AsciiJsonFormatter` + ASCII-bytes/UTF-8-semantics dual assertion; codex#19589 register-notify-before-check + drop-lock-before-notify; cline#10384 throw-original-error on overlong retry-after with a 60s default ceiling), 2 merge-after-nits (sst#24412 startup-stdin buffer with explicit-prompt-precedence + drain-once + Ctrl+C verification still needed; litellm#26538 fireworks refresh — confirm `tool_choice="required"` passthrough + always-pass `reasoning_effort`), 1 request-changes (litellm#26498 — auth fix is right shape but split the 620-line model-catalog dump into its own PR), 1 needs-discussion (goose#8842 lifecycle hooks — trust model for hook config, `tool_result` actually flowing into AfterToolCall, execution timeout, error-code taxonomy).
 
 ---
 
