@@ -2172,6 +2172,30 @@ feature with scope-creep (QwenLM/qwen-code), a new SAST workflow
 
 Verdict mix: 2 merge-as-is (codex#19640, cline#10389), 5 merge-after-nits (sst/opencode#24441 — parity check with native OpenAI helper + no-reasoning baseline test; goose#8829 — explain `itertools` rider; codex#19635 — split into 4 commits + add env-override test; aider#5073 — Semgrep `--baseline-ref` + EOF newline + `concurrency:` group; OpenHands#14138 — visual screenshot pair + `className`/`spinnerClassName` doc), 2 needs-discussion (qwen#3631 — split out unrelated `QWEN_CODE_API_TIMEOUT_MS` resolver changes + acknowledge cache-read pricing limitation; goose#8827 — rcgen 0.13→0.14 backend swap needs human-tested CI confirmation).
 
+### W17 drip-71 (2026-04-26)
+
+8 fresh PRs across five repos — DeepSeek reasoning_content second-pass
+preservation (sst/opencode), project-relative permission matching in
+Read tool (sst/opencode), two job-control / robustness fixes in
+goose-server (login-shell PATH probe SIGTTIN suspension, CSP
+`.unwrap()` panic → 400), two security/correctness fixes in OpenHands
+(MCP config secret redaction, Gemini full-URL doubled-path 404),
+shell line-continuation handling in qwen-code splitter, and an Ollama
+unreachable abort path for aider --exit batch mode.
+
+| PR | Title | File |
+| --- | --- | --- |
+| [#24443](https://github.com/sst/opencode/pull/24443) | fix(provider): preserve reasoning_content on second interleaved pass (#24146 follow-up) | [2026-W17/drip-71/sst-opencode-pr-24443.md](2026-W17/drip-71/sst-opencode-pr-24443.md) |
+| [#24320](https://github.com/sst/opencode/pull/24320) | fix(read): match project-relative permissions | [2026-W17/drip-71/sst-opencode-pr-24320.md](2026-W17/drip-71/sst-opencode-pr-24320.md) |
+| [#8804](https://github.com/block/goose/pull/8804) | fix(shell): prevent login-shell PATH probe from suspending goose on startup | [2026-W17/drip-71/block-goose-pr-8804.md](2026-W17/drip-71/block-goose-pr-8804.md) |
+| [#8810](https://github.com/block/goose/pull/8810) | fix: return 400 instead of panicking on invalid CSP header value | [2026-W17/drip-71/block-goose-pr-8810.md](2026-W17/drip-71/block-goose-pr-8810.md) |
+| [#14084](https://github.com/All-Hands-AI/OpenHands/pull/14084) | fix(security): redact API keys from MCP config logging | [2026-W17/drip-71/All-Hands-AI-OpenHands-pr-14084.md](2026-W17/drip-71/All-Hands-AI-OpenHands-pr-14084.md) |
+| [#14029](https://github.com/All-Hands-AI/OpenHands/pull/14029) | fix(llm): skip Gemini full endpoint URL as base_url to prevent doubled path 404 | [2026-W17/drip-71/All-Hands-AI-OpenHands-pr-14029.md](2026-W17/drip-71/All-Hands-AI-OpenHands-pr-14029.md) |
+| [#3600](https://github.com/QwenLM/qwen-code/pull/3600) | fix(core): handle shell line continuations in command splitting | [2026-W17/drip-71/QwenLM-qwen-code-pr-3600.md](2026-W17/drip-71/QwenLM-qwen-code-pr-3600.md) |
+| [#4977](https://github.com/Aider-AI/aider/pull/4977) | fix: abort cleanly in batch mode (--exit) when Ollama is unreachable | [2026-W17/drip-71/Aider-AI-aider-pr-4977.md](2026-W17/drip-71/Aider-AI-aider-pr-4977.md) |
+
+Verdict mix: 3 merge-as-is (sst/opencode#24320 project-relative permission patterns; OpenHands#14029 Gemini `:generateContent` URL marker detection; goose#8804 `process-wrap`/`ProcessSession` setsid fix for SIGTTIN suspension), 5 merge-after-nits (sst/opencode#24443 — hoist `sdkKey` + scope catch-all to deepseek + replay regression test; goose#8810 — log discarded `InvalidHeaderValue` + config-load validation + 400 regression test; OpenHands#14084 — upgrade `remote_runtime` regex redactor to schema-aware `sanitize_config` + secret-leak regression test per call site; qwen#3600 — double-quote continuation test + `consumeLineContinuation` helper; aider#4977 — replace `str(ex).startswith("OllamaError:")` with `isinstance` + audit `.get(...)` callers of `get_model_info`).
+
 ---
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
