@@ -2147,6 +2147,31 @@ round it out.
 
 Verdict mix: 1 merge-as-is (qwen#3630), 5 merge-after-nits (qwen#3620 substring-match comment; qwen#3604 path-source in activation reminder; qwen#3618 demo recording + `/login` changelog; qwen#3629 warn-on-bad-env; opencode#24359 consumer audit + layout call-site doc), 1 needs-discussion (qwen#3617 — flip-default vs per-provider flag), 1 request-changes (cline#10414 — missing comma syntax error + diff doesn't match described scope).
 
+### W17 drip-70 (2026-04-26)
+
+8 fresh PRs across six repos — billing-correctness fix in OAI-compat usage
+normalization (sst/opencode), dead-subcommand removal + agent-identity
+runtime auth fix (openai/codex × 2), two dependabot bumps with mixed
+risk profiles (block/goose × 2 — winreg patch + rcgen minor with backend
+swap), one lockfile-only patch bump (cline/cline), opt-in cost-estimation
+feature with scope-creep (QwenLM/qwen-code), a new SAST workflow
+(Aider-AI/aider), and a frontend spinner consolidation with a11y upgrade
+(All-Hands-AI/OpenHands).
+
+| PR | Title | File |
+| --- | --- | --- |
+| [#24441](https://github.com/sst/opencode/pull/24441) | fix(zen): stop double-counting reasoning_tokens in oa-compat usage | [2026-W17/drip-70/sst-opencode-pr-24441.md](2026-W17/drip-70/sst-opencode-pr-24441.md) |
+| [#19640](https://github.com/openai/codex/pull/19640) | [codex] remove responses command | [2026-W17/drip-70/openai-codex-pr-19640.md](2026-W17/drip-70/openai-codex-pr-19640.md) |
+| [#19635](https://github.com/openai/codex/pull/19635) | Fix agent identity runtime auth flow | [2026-W17/drip-70/openai-codex-pr-19635.md](2026-W17/drip-70/openai-codex-pr-19635.md) |
+| [#8829](https://github.com/block/goose/pull/8829) | chore(deps): bump winreg from 0.55.0 to 0.56.0 | [2026-W17/drip-70/block-goose-pr-8829.md](2026-W17/drip-70/block-goose-pr-8829.md) |
+| [#8827](https://github.com/block/goose/pull/8827) | chore(deps): bump rcgen from 0.13.2 to 0.14.7 | [2026-W17/drip-70/block-goose-pr-8827.md](2026-W17/drip-70/block-goose-pr-8827.md) |
+| [#10389](https://github.com/cline/cline/pull/10389) | chore(deps): bump hono from 4.12.9 to 4.12.15 | [2026-W17/drip-70/cline-cline-pr-10389.md](2026-W17/drip-70/cline-cline-pr-10389.md) |
+| [#3631](https://github.com/QwenLM/qwen-code/pull/3631) | Feat/stats model cost estimation | [2026-W17/drip-70/QwenLM-qwen-code-pr-3631.md](2026-W17/drip-70/QwenLM-qwen-code-pr-3631.md) |
+| [#5073](https://github.com/Aider-AI/aider/pull/5073) | feat: add SAST scanning workflow with Semgrep and OSV-Scanner | [2026-W17/drip-70/Aider-AI-aider-pr-5073.md](2026-W17/drip-70/Aider-AI-aider-pr-5073.md) |
+| [#14138](https://github.com/All-Hands-AI/OpenHands/pull/14138) | refactor(frontend): consolidate loading states around shared spinner | [2026-W17/drip-70/All-Hands-AI-OpenHands-pr-14138.md](2026-W17/drip-70/All-Hands-AI-OpenHands-pr-14138.md) |
+
+Verdict mix: 2 merge-as-is (codex#19640, cline#10389), 5 merge-after-nits (sst/opencode#24441 — parity check with native OpenAI helper + no-reasoning baseline test; goose#8829 — explain `itertools` rider; codex#19635 — split into 4 commits + add env-override test; aider#5073 — Semgrep `--baseline-ref` + EOF newline + `concurrency:` group; OpenHands#14138 — visual screenshot pair + `className`/`spinnerClassName` doc), 2 needs-discussion (qwen#3631 — split out unrelated `QWEN_CODE_API_TIMEOUT_MS` resolver changes + acknowledge cache-read pricing limitation; goose#8827 — rcgen 0.13→0.14 backend swap needs human-tested CI confirmation).
+
 ---
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
