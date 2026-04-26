@@ -1,6 +1,6 @@
 # Review Index
 
-189 + W17 drips (through drip-64) PR reviews across 10 OSS AI-coding-agent projects. Each review
+197 + W17 drips (through drip-65) PR reviews across 10 OSS AI-coding-agent projects. Each review
 contains: context, problem, design analysis with quoted snippets
 where useful, risks, suggestions, verdict, and a "what I learned"
 section.
@@ -2057,6 +2057,23 @@ Verdict mix: 3 merge-as-is (opencode#24401-style — wait, this batch: goose#885
 | [#8834](https://github.com/block/goose/pull/8834) | Fix Windows dev loop: beforeDevCommand script + Vite IPv4 bind + test_acp_client.py stdin-flush | [2026-W17/block-goose-pr-8834.md](2026-W17/block-goose-pr-8834.md) |
 
 Verdict mix: 1 merge-as-is (goose#8846), 6 merge-after-nits (codex#19620, litellm#26536, goose#8849, goose#8848, goose#8834 — and goose#8842 elevated below), 1 needs-discussion (litellm#26531 — cookie-fallback CSRF/SameSite story on a redirect endpoint), 1 request-changes (goose#8842 — `after_tool_call` docstring/impl disagreement, `tool_result` never populated, `command`/`url` mutual-exclusivity unenforced, zero tests for a security-sensitive subsystem).
+
+### W17 drip-65 (2026-04-26) — Fireworks chat-transform deletions risk, MCP suffix-match symmetry, Arize observability rebuild w/ no tests, Bun ESM cross-spawn require, YAML quoted-numeric coercion, Bedrock ReasoningContent replay fidelity, TUI exit-time keyboard reset triad, codex `end_turn` Option-typed signal w/ author FIXME
+
+8-PR sweep across four repos (litellm × 3, sst/opencode × 1, goose × 2, codex × 2). Themes: a Fireworks chat-completions modernization that bundles three undocumented `map_openai_params` deletions (the `tool_choice="required"→"any"` workaround from #4416, the `response_format`+`tools` coexistence carve-out, and the `max_completion_tokens→max_tokens` rewrite) with a legitimately-improved `get_models` that paginates and a pair of new Anthropic-Messages and OpenAI-Responses subclasses — request-changes for the bundle-and-no-justification shape; a symmetric suffix-match branch in `SemanticMCPToolFilter._name_matches_canonical` that recognises LibreChat's `<canonical><sep><uid>` pattern alongside opencode's prefix `<alias><sep><canonical>`, with the spurious-match guard "remainder contains no further separator" exhaustively pinned by 6 behavioral + 1 contract-level test; a ~640-line Arize/Phoenix rebuild that fixes Pydantic response coercion, the IMAGE_URL-key path Phoenix actually renders against, a 32 KB inline cap with sha256 omission notice, dict-shaped Responses-API `output[]` items, parent-vs-child token double-counting, and SDK-mode guardrail-span orphaning — but ships with **zero tests** for any of it; the `cross-spawn` CJS-default-under-Bun-ESM fix using `createRequire(import.meta.url)` with `import type` sidecar; a `Config::get_param` typed-coercion fallback that routes through the existing `parse_env_value` helper so `OLLAMA_TIMEOUT: '1200'` (quoted YAML string) deserialises into `u64`, with a four-test matrix covering the bug, the no-regression-on-string-consumers, and the failure path; a Bedrock `ReasoningContent` replay-fidelity rewrite that turns the catch-all `bail!` into a typed `Result<Option<MessageContent>>` (Err for known-but-unsupported, None for SDK `non_exhaustive::Unknown`), preserves `Thinking` text+signature on outbound, base64-decodes `RedactedThinking` with warn-and-drop fallback for cross-provider conversation histories — but no tests; a TUI exit-path triad (`PopKeyboardEnhancementFlags` + `ResetKeyboardEnhancementFlags` + `DisableModifyOtherKeys`) gated behind a new `restore_after_exit()` helper, with the keyboard module split out cleanly and the `restore_common` interior refactored to a two-axis `RawModeRestore × KeyboardRestore` enum; and the `end_turn: Option<bool>` plumbing through SSE → event enum → channel → turn loop with `needs_follow_up |= !end_turn` composition (don't override existing follow-up requests) — but with the author's own literal `FIXME(andrey): Make this actually work + test it, before merging` left in `responses_cmd.rs:81`, an unambiguous "do not merge" signal.
+
+| PR | Title | Path |
+|---|---|---|
+| [#26538](https://github.com/BerriAI/litellm/pull/26538) | fix(fireworks_ai): modernize chat transforms, add Messages + Responses | [2026-W17/BerriAI-litellm-pr-26538.md](2026-W17/BerriAI-litellm-pr-26538.md) |
+| [#26533](https://github.com/BerriAI/litellm/pull/26533) | fix(proxy): handle client-side unique-ID suffixes in MCP semantic tool filter | [2026-W17/BerriAI-litellm-pr-26533.md](2026-W17/BerriAI-litellm-pr-26533.md) |
+| [#26526](https://github.com/BerriAI/litellm/pull/26526) | fix arize observability bugs | [2026-W17/BerriAI-litellm-pr-26526.md](2026-W17/BerriAI-litellm-pr-26526.md) |
+| [#24374](https://github.com/sst/opencode/pull/24374) | fix(sdk): load cross-spawn through require | [2026-W17/sst-opencode-pr-24374.md](2026-W17/sst-opencode-pr-24374.md) |
+| [#8844](https://github.com/block/goose/pull/8844) | fix: convert quoted numeric config values to numbers if needed | [2026-W17/block-goose-pr-8844.md](2026-W17/block-goose-pr-8844.md) |
+| [#8843](https://github.com/block/goose/pull/8843) | fix(bedrock): handle ReasoningContent blocks gracefully | [2026-W17/block-goose-pr-8843.md](2026-W17/block-goose-pr-8843.md) |
+| [#19625](https://github.com/openai/codex/pull/19625) | Reset TUI keyboard reporting on exit | [2026-W17/openai-codex-pr-19625.md](2026-W17/openai-codex-pr-19625.md) |
+| [#19610](https://github.com/openai/codex/pull/19610) | Support end_turn in response.completed | [2026-W17/openai-codex-pr-19610.md](2026-W17/openai-codex-pr-19610.md) |
+
+Verdict mix: 2 merge-as-is (sst/opencode#24374, goose#8844), 3 merge-after-nits (litellm#26533, goose#8843, codex#19625), 3 request-changes (litellm#26538 — bundles three undocumented Fireworks param-mapping deletions with a legitimate refactor; litellm#26526 — ~640 lines of new observability code with zero tests; codex#19610 — author's own FIXME marker in `responses_cmd.rs:81` is an unambiguous do-not-merge).
 
 ---
 
