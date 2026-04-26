@@ -2007,6 +2007,23 @@ See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
 
 Verdict mix: 4 merge-as-is, 3 merge-after-nits, 1 request-changes (codex#19610 — author FIXME blocking).
 
+### W17 drip-62 (2026-04-26) — Pydantic-coerced span attrs, Bedrock reasoning round-trip, panic→error in local-inference, profile-backed sandbox refactor
+
+8-PR sweep across five repos (litellm × 1, opencode × 2, goose × 3, crush × 1, codex × 1). Themes: an Arize observability rewrite that fixes two real bugs (Pydantic responses being skipped; dict-shaped Responses-API output items silently dropped) but bundles them with a +500-line image-rendering rewrite worth splitting; a 2-line SDK fix that swaps `import default` for `createRequire` to survive Bun's no-default-interop ESM loader for `cross-spawn`; a TUI feature PR that ships Spanish strings and an unhashed lockfile entry alongside legitimate reconnecting-state plumbing; a careful Bedrock `ReasoningContent` round-trip that preserves the SDK's `non_exhaustive` boundary as a hard error rather than silent truncation; a panic→error refactor on the corrupted-permission-config path that still leaves an `expect()` on the directory-create branch and silently revokes prior tool approvals; a one-call-site `Result` propagation that removes a `panic!` from goose-server startup; an OAuth dialog clipboard delegation to a shared `CopyToClipboard` helper for non-OSC52 terminals; and a +1383/-655 codex permission-profile consolidation that's directionally right but renames `DangerFullAccess → Disabled` (telemetry-visible) and introduces a `compatibility_*` helper without a deprecation horizon.
+
+| PR | Title | Path |
+|---|---|---|
+| [#26526](https://github.com/BerriAI/litellm/pull/26526) | fix arize observability bugs | [BerriAI-litellm/PR-26526.md](BerriAI-litellm/PR-26526.md) |
+| [#24374](https://github.com/sst/opencode/pull/24374) | fix(sdk): load cross-spawn through require | [sst-opencode/PR-24374.md](sst-opencode/PR-24374.md) |
+| [#24406](https://github.com/sst/opencode/pull/24406) | feat(tui): add unified task state color convention with icons | [sst-opencode/PR-24406.md](sst-opencode/PR-24406.md) |
+| [#8843](https://github.com/block/goose/pull/8843) | fix(bedrock): handle ReasoningContent blocks gracefully | [block-goose/PR-8843.md](block-goose/PR-8843.md) |
+| [#8813](https://github.com/block/goose/pull/8813) | fix: gracefully handle corrupted permission config instead of panicking | [block-goose/PR-8813.md](block-goose/PR-8813.md) |
+| [#8814](https://github.com/block/goose/pull/8814) | fix: return error instead of panicking on llama backend init failure | [block-goose/PR-8814.md](block-goose/PR-8814.md) |
+| [#2642](https://github.com/charmbracelet/crush/pull/2642) | fix(oauth): fix copy to clipboard on terminals that don't support osc52 | [charmbracelet-crush/PR-2642.md](charmbracelet-crush/PR-2642.md) |
+| [#19606](https://github.com/openai/codex/pull/19606) | permissions: make runtime config profile-backed | [openai-codex/PR-19606-permissions-profile-backed.md](openai-codex/PR-19606-permissions-profile-backed.md) |
+
+Verdict mix: 3 merge-as-is (opencode#24374, goose#8843, goose#8814), 3 merge-after-nits (litellm#26526, goose#8813, crush#2642), 1 request-changes (opencode#24406 — Spanish strings + unhashed lockfile + scope), 1 needs-discussion (codex#19606 — `Disabled` rename + `compatibility_*` helper deprecation horizon).
+
 ---
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
