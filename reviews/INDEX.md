@@ -2126,6 +2126,27 @@ Verdict mix: 3 merge-as-is (codex#19630, sst/opencode#24379, goose#8814), 4 merg
 
 Verdict mix: 3 merge-as-is (litellm#26540, litellm#26539, codex#19605), 3 merge-after-nits (sst/opencode#24434 — formatter inconsistency + cache-reads-as-input release-note nit; anomalyco/opencode#24364 — missing positive-case test + MIME-case lowercasing inconsistency; goose#8836 — `-l`-only PATH sourcing may regress `~/.zshrc`-only users), 1 needs-discussion (litellm#26530 — Vertex `output_format` passthrough flipped on one data point with author's own live-endpoint validation gate still open), 1 request-changes (goose#8840 — `base_url` likely double-appends `/chat/completions` under the OpenAI-engine convention + docs link points to wrong fork).
 
+### W17 drip-69 (2026-04-26)
+
+8 fresh PRs across four repos — heavy DeepSeek-family theme (cline v4-pro,
+opencode openrouter SDK bump, qwen-code sglang/vllm gate, qwen-code strict
+OpenAI-compat tool-media split). Telemetry, skills lazy-load, slash-command
+input handling, env-var timeout override, and worktree-wide session listing
+round it out.
+
+| PR | Title | File |
+| --- | --- | --- |
+| [#3630](https://github.com/QwenLM/qwen-code/pull/3630) | fix(telemetry): use safeJsonStringify in FileExporter to avoid circular reference crash | [2026-W17/drip-69/QwenLM-qwen-code-pr-3630.md](2026-W17/drip-69/QwenLM-qwen-code-pr-3630.md) |
+| [#3620](https://github.com/QwenLM/qwen-code/pull/3620) | fix(core): match DeepSeek provider by model name for sglang/vllm (#3613) | [2026-W17/drip-69/QwenLM-qwen-code-pr-3620.md](2026-W17/drip-69/QwenLM-qwen-code-pr-3620.md) |
+| [#3617](https://github.com/QwenLM/qwen-code/pull/3617) | fix(core): split tool-result media into follow-up user message for strict OpenAI compat | [2026-W17/drip-69/QwenLM-qwen-code-pr-3617.md](2026-W17/drip-69/QwenLM-qwen-code-pr-3617.md) |
+| [#3604](https://github.com/QwenLM/qwen-code/pull/3604) | feat(skills): parallelize loading + add path-conditional activation | [2026-W17/drip-69/QwenLM-qwen-code-pr-3604.md](2026-W17/drip-69/QwenLM-qwen-code-pr-3604.md) |
+| [#3618](https://github.com/QwenLM/qwen-code/pull/3618) | fix(vscode-companion): fill slash commands into input on Enter instead of auto-submitting | [2026-W17/drip-69/QwenLM-qwen-code-pr-3618.md](2026-W17/drip-69/QwenLM-qwen-code-pr-3618.md) |
+| [#3629](https://github.com/QwenLM/qwen-code/pull/3629) | feat(config): support API timeout env override | [2026-W17/drip-69/QwenLM-qwen-code-pr-3629.md](2026-W17/drip-69/QwenLM-qwen-code-pr-3629.md) |
+| [#10414](https://github.com/cline/cline/pull/10414) | Update: Deepseek reasoner check to include v4-pro | [2026-W17/drip-69/cline-cline-pr-10414.md](2026-W17/drip-69/cline-cline-pr-10414.md) |
+| [#24359](https://github.com/sst/opencode/pull/24359) | fix(app): show project sessions across worktrees | [2026-W17/drip-69/sst-opencode-pr-24359.md](2026-W17/drip-69/sst-opencode-pr-24359.md) |
+
+Verdict mix: 1 merge-as-is (qwen#3630), 5 merge-after-nits (qwen#3620 substring-match comment; qwen#3604 path-source in activation reminder; qwen#3618 demo recording + `/login` changelog; qwen#3629 warn-on-bad-env; opencode#24359 consumer audit + layout call-site doc), 1 needs-discussion (qwen#3617 — flip-default vs per-provider flag), 1 request-changes (cline#10414 — missing comma syntax error + diff doesn't match described scope).
+
 ---
 
 See [INSIGHTS.md](INSIGHTS.md) for cross-cutting themes.
