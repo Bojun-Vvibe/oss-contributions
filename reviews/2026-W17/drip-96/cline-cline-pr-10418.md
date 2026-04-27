@@ -1,0 +1,29 @@
+# cline/cline #10418 — add deepseek-v4 models (in deepseek API provider)
+
+- Author: Jabca
+- Head SHA: `809dcc4e3111db72ee38b70fdfeabdc4e681a131`
+- +25 / −2 across `src/core/api/providers/deepseek.ts` (+3/-2), `src/shared/api.ts` (+22)
+- PR link: <https://github.com/cline/cline/pull/10418>
+
+## Specifics
+
+- Two new model entries in `deepSeekModels` at `src/shared/api.ts:+2104-2125`:
+  - `"deepseek-v4-pro"`: `maxTokens: 384_000`, `contextWindow: 1_000_000`, `supportsImages: false`, `supportsPromptCache: true`, `supportsReasoning: true`, `inputPrice: 0` (with the comment "technically there is no input price, it's all either a cache hit or miss"), `outputPrice: 3.48`, `cacheWritesPrice: 1.74`, `cacheReadsPrice: 0.145`.
+  - `"deepseek-v4-flash"`: same shape, `outputPrice: 0.28`, `cacheWritesPrice: 0.14`, `cacheReadsPrice: 0.028`.
+- Provider behavior change at `src/core/api/providers/deepseek.ts:84-99`: a new `isDeepseekV4 = model.id.includes("deepseek-v4")` flag is added next to the existing `isDeepseekReasoner = model.id.includes("deepseek-reasoner")`, and the `temperature: 0` default is now suppressed when *either* is true (`...(isDeepseekV4 || isDeepseekReasoner ? {} : { temperature: 0 })`). The inline comment "V4 models have thinking on by default" justifies the suppression — reasoning models that internally do CoT tend to reject or ignore explicit `temperature` overrides, and forcing `temperature: 0` on a thinking model can degrade the reasoning chain.
+- The `convertToOpenAiMessages` branching at `:88-91` is unchanged — V4 models go through the *non-reasoner* path (`messages: openAiMessages`, not the reasoner-specific message conversion). This is consistent with the v4-flash/v4-pro both being labeled `supportsReasoning: true` *but* still using the standard OpenAI message format with implicit thinking, rather than the explicit `reasoning_content` channel the reasoner uses.
+- The `isDeepseekReasoner` strict-equality check at the old `:97` (`model.id === "deepseek-reasoner"`) is also broadened from `===` to the local `isDeepseekReasoner` variable (which is `model.id.includes("deepseek-reasoner")`). This is a strict relaxation — `deepseek-reasoner-v2` would now also skip `temperature: 0` whereas before it would have set it. Probably correct, but worth noting it's an *unrelated* widening sneaking into this PR.
+
+## Concerns
+
+- **No source link for V4 models or pricing.** The PR body says "Issue: #XXXX" (literal placeholder) and "Related Issue" is blank. The `inputPrice/outputPrice/cacheWritesPrice/cacheReadsPrice` numbers (3.48 / 1.74 / 0.145 for pro; 0.28 / 0.14 / 0.028 for flash) need a citation to the upstream DeepSeek pricing page or a release announcement. Without a source link, this is unreviewable for correctness. There's also a *separate* PR #10401 from a different author titled "feat(deepseek): Add deepseek-v4-flash、deepseek-v4-pro support" — the existence of two parallel PRs for the same model addition is itself a coordination smell that needs resolution.
+- **`maxTokens: 384_000` and `contextWindow: 1_000_000` need verification.** A 1M-token context window for a DeepSeek model would be a notable jump (current `deepseek-chat` is 128K per the same file `:2127`). If accurate, fine; if speculative, it'll mislead the UI's context-pressure indicators and cost-estimation. Maintainer needs to verify against the upstream announcement.
+- **`inputPrice: 0` is documented in-comment as "technically there is no input price, it's all either a cache hit or miss"** — this is plausible for a cache-mandatory pricing scheme, but the comment glosses over what happens when a request *can't* hit the cache (cold prompt, novel content). If the real billing is "cache-write rate applies to all uncached input tokens," then `inputPrice: 0` will silently under-report cost in the UI for cold sessions. A `cacheWritesPrice` covering the cold path would be more honest. Worth confirming with upstream.
+- **The `isDeepseekReasoner` widening** (`===` → `.includes(...)`) is an unrelated change that should be either pulled into a separate PR with its own justification or explicitly called out in the PR body. Right now it's a silent semantic shift that a future bisect would attribute to "deepseek-v4 model addition."
+- **`supportsReasoning: true` + non-reasoner message format** is an interesting combination — most reasoning-flagged models in this codebase route through a reasoner-specific message converter to surface `reasoning_content` separately. If V4 thinking is purely internal (no separate channel), the UI's reasoning-content panel will be empty for V4 sessions despite the flag being true. Whether that's correct depends on the V4 API contract — needs a docs link.
+- **No tests added.** The model registry is data, so unit-test value is low, but the temperature-suppression branching in `deepseek.ts:97` could use a quick assertion that V4 model IDs route through the no-temperature branch.
+- **PR body has the literal `Issue: #XXXX` placeholder** — the author didn't fill in the related issue. Maintainer should request a real issue link before merge so the V4 model spec/pricing has provenance.
+
+## Verdict
+
+`needs-discussion` — the diff is mechanically correct and small, but the substantive content (model existence, context window, max output, four pricing values, reasoning semantics) is entirely unsourced. There's also a parallel PR #10401 from a different author for the same models that needs deduplication, an unsigned `isDeepseekReasoner` semantic widening, and a literal `#XXXX` placeholder for the related issue. All of these block confident merge until upstream documentation links are provided and the duplicate PR is reconciled. Once those land, this can drop to `merge-after-nits` (just split the `isDeepseekReasoner` widening into its own PR).
