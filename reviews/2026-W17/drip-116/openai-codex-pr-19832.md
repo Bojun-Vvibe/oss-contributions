@@ -1,0 +1,28 @@
+# openai/codex#19832 — Preserve assistant phase for replayed messages
+
+- PR: https://github.com/openai/codex/pull/19832
+- Head SHA: `d4904308`
+- Diff: +64 / -5 across `codex-rs/protocol/src/models.rs` (+27/-3), `codex-rs/protocol/src/protocol.rs` (+1), `codex-rs/core/src/codex_thread.rs` (+7/-1), `codex-rs/core/src/session/mod.rs` (+2), `codex-rs/core/src/session/handlers.rs` (+1), `codex-rs/core/src/session/tests.rs` (+8/-1), `codex-rs/core/src/tasks/user_shell.rs` (+10/-1), `codex-rs/core/src/goals.rs` (+2)
+
+## What it does
+Adds a `phase: Option<MessagePhase>` field to the `ResponseInputItem::Message` variant (`protocol/src/models.rs:677-679`) with `#[serde(default, skip_serializing_if = "Option::is_none")]` so the wire format is backwards-compatible (the new field is omitted when `None`, deserialized as `None` when absent). Then threads `phase` through the `From<ResponseInputItem> for ResponseItem` conversion at `:1109-1119` so it's preserved (instead of being hard-coded to `None` as before), and updates every constructor of `ResponseInputItem::Message` across `core/` and `protocol/` to pass `phase: None` explicitly (or `Some(MessagePhase::Commentary)` for inter-agent communication at `protocol.rs:858-862`).
+
+The motivation, per the PR description, is that the OpenAI deployment checklist requires preserving assistant `phase` on follow-up requests, and the prior bug surfaced when forked-agent prompt caching replayed inter-agent mailbox items: those crossed the `ResponseInputItem::Message` → `ResponseItem::Message` boundary losing their phase, so the same assistant history replayed with *different* phases across resumed/forked sessions, defeating prompt caching.
+
+## Strengths
+- The serde additions (`#[serde(default, skip_serializing_if = "Option::is_none")]` + `#[ts(optional)]` for the TypeScript bindings) are exactly right for a backwards-compatible protocol extension. Old clients sending payloads without `phase` continue to work; new clients sending `phase: null` round-trip correctly; storage formats (rollouts, snapshots) don't need migration.
+- The targeted regression test at `protocol/src/models.rs:1663-1684` (`response_input_message_conversion_preserves_phase`) pins the *exact* invariant the bug violated: round-trip through `ResponseItem::from(ResponseInputItem::Message { phase: Some(Commentary), ... })` produces a `ResponseItem::Message` with `phase: Some(Commentary)` (not `None`). That test is the regression gate.
+- Marking `InterAgentCommunication::to_response_input_item()` as `phase: Some(MessagePhase::Commentary)` (`protocol.rs:861`) at the source means the phase contract for inter-agent traffic is centralized — every other constructor stays at `phase: None` (correct for user/developer-injected steering messages), and only the inter-agent surface flips it. That's the right placement.
+- The test fixtures in `core/src/session/tests.rs` got the `phase: None` field added consistently across all 6 callers (`:6253, 6499, 6506, 6513, 6544, 6571, 6591`), and the `[ResponseInputItem::Message { role, content }]` destructure at `:6797` got widened to `{ role, content, .. }` — those edits demonstrate the PR was actually compiled and tested, not just rebased.
+
+## Concerns
+- The `phase: None` boilerplate is now repeated at 7+ construction sites across `core/`. A cleaner API would be a `ResponseInputItem::message(role, content)` constructor that defaults `phase: None`, plus a `with_phase(phase)` builder for the rare case (inter-agent). That would reduce the surface area where a future contributor copy-pastes the constructor and forgets the field. Not blocking, but worth a follow-up.
+- The PR description mentions the *prior* fork-based PR included unrelated Bazel workflow edits and that this PR intentionally contains only the response-phase change — good discipline. But the validation list (`cargo test -p codex-protocol`, `just fix -p codex-core`, `just argument-comment-lint`) doesn't mention `cargo test -p codex-core`, which is where the session test fixtures live. Likely fine because `just fix` includes `cargo check`, but explicit `cargo test -p codex-core` confirmation in the description would close that loop.
+- The `From` impl drops the `id: None` for the conversion (`protocol/src/models.rs:1115`) — which matches the previous behavior, but is worth a one-line comment: `ResponseInputItem` doesn't carry an `id` field, so the resulting `ResponseItem` has none until the storage layer assigns one. That's correct, but a reader unfamiliar with the boundary might wonder if the `id` should also round-trip.
+- No integration test that actually exercises the prompt-caching scenario the bug came from (replay an inter-agent message, then check the request to OpenAI carries the correct `phase`). The unit test pins the conversion invariant; an integration test would pin the *observable* effect on the wire. Given the diff size, the unit test is probably sufficient — but worth noting.
+
+## Verdict
+**merge-as-is** — surgical protocol extension with the right serde defaults, the right test, and consistent fixture updates across all callers. The "consider a builder" suggestion is a follow-up, not a blocker.
+
+## What I learned
+Protocol extensions that add a new optional field need three things to be backwards-compatible: `#[serde(default)]` so missing-on-input deserializes to the default, `skip_serializing_if = "Option::is_none"` so absent-on-output doesn't bloat payloads, and a regression test that round-trips the *Some* case (because it's easy to silently default to `None` somewhere in a `From` impl). This PR gets all three right.
