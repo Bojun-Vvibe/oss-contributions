@@ -1,0 +1,32 @@
+# block/goose PR #8843 — fix(bedrock): handle ReasoningContent blocks gracefully
+
+- Link: https://github.com/block/goose/pull/8843
+- Head SHA: `0a00fa9fff733e590b59bc5cd8787695e1288a64`
+- Size: +413 / -13 in `crates/goose/src/providers/formats/bedrock.rs` (plus tests)
+
+## Summary
+
+Three coupled correctness fixes to the Bedrock content-block round-trip in `crates/goose/src/providers/formats/bedrock.rs`. (1) `to_bedrock_message_content` for `MessageContent::Thinking` and `RedactedThinking` no longer silently maps to empty `Text("")` — it constructs proper `ReasoningContent::ReasoningText` (with the original text + signature) and `ReasoningContent::RedactedContent` (base64-decoded blob) blocks, which Bedrock reasoning models (`Claude` reasoning, `openai.gpt-oss-*`) require to be replayed unmodified across turns. (2) `from_bedrock_content_block` gains a new arm for `ReasoningContent` returning `Some(MessageContent::Thinking)` / `Some(MessageContent::RedactedThinking)`, so reasoning content received from Bedrock survives the round-trip. (3) The function signature changes to `Result<Option<MessageContent>>` so the SDK's `non_exhaustive` `Unknown` variant returns `Ok(None)` (filtered by the new `.filter_map(|r| r.transpose())` in `from_bedrock_message`) while *known* unsupported variants (Audio, CitationsContent, Document, GuardContent, Image, SearchResult, Video) are explicitly listed and produce a typed error rather than being silently dropped.
+
+## Specific-line citations
+
+- `bedrock.rs:58-71`: `MessageContent::Thinking(thinking)` arm uses `bedrock::ReasoningTextBlock::builder().text(...).signature(...)` with the conditional `if !thinking.signature.is_empty() { builder = builder.signature(...) }` — the empty-signature branch is correct because Bedrock's `signature` is `Option<String>` and the SDK builder treats omitted vs. empty-string differently.
+- `bedrock.rs:72-95`: `MessageContent::RedactedThinking(redacted)` arm calls `BASE64_STANDARD.decode(&redacted.data)` and on error logs a warning and falls back to `ContentBlock::Text("")`. The fallback rationale is documented in a 6-line comment: "RedactedThinking is also produced by other providers (e.g. the Anthropic API) which treat `data` as an opaque payload rather than guaranteed base64". This is the right asymmetry — Bedrock-sourced redacted content is always base64 (we encoded it in `from_bedrock_reasoning_content_block`), but cross-provider conversation history might not be, and dropping silently matches the pre-existing skip behavior rather than aborting an entire request.
+- `bedrock.rs:303-356`: `from_bedrock_message` adds `.filter_map(|result| result.transpose())` between `.map(from_bedrock_content_block)` and `.collect::<Result<Vec<_>>>()`. This correctly handles the `Result<Option<_>>` shape: `Ok(None)` → filtered out, `Ok(Some(x))` → kept as `Ok(x)`, `Err(e)` → propagated.
+- `bedrock.rs:339-356`: `from_bedrock_content_block` now explicitly enumerates `Audio | CitationsContent | Document | GuardContent | Image | SearchResult | Video` arms that all `bail!("Unsupported Bedrock content block type: {}", bedrock_content_block_kind(block))`. The `other => bail!(...)` catch-all at `:347-356` carries a comment explicitly distinguishing it from the named arms: it covers the SDK's `non_exhaustive` `Unknown` *and* future variants the SDK adds before this match is updated. This is the correct defensive shape — silent drop is the failure mode that hides truncated assistant output, and the explicit enumeration means adding a new known-unsupported variant requires touching this match.
+- `bedrock.rs:381-411`: `from_bedrock_reasoning_content_block` returns `Option<MessageContent>` (not `Result`) and the unknown-variant arm `tracing::warn!` + `None` is intentional — the parent function will filter the `None` out, which is the right policy for *future* reasoning subtypes (the parent logs at `warn` so visibility is preserved without bailing).
+- `bedrock.rs:413-431`: `bedrock_content_block_kind` is a stable-string mapper for logging that explicitly does *not* include the block contents — comment calls this out as a privacy choice ("avoid leaking model output into logs"), which is the right default for guardrail / multimodal payloads.
+- `bedrock.rs:665+`: round-trip test coverage is dense. `test_from_bedrock_content_block_reasoning_text` pins the signature-present case, `_without_signature` pins the optional-signature case, `_unsupported_type_errors` pins that `Image` produces a typed error (not silent drop), `_citations_content_errors` pins the same for `CitationsContent`, and `_reasoning_redacted_content` pins base64 round-trip. `test_to_bedrock_message_content_thinking` pins the *outbound* direction.
+
+## Verdict
+
+**merge-as-is**
+
+## Rationale
+
+This is a model example of fixing a "silent data loss" bug class properly. The original `MessageContent::Thinking(_) => Text("")` was actively wrong for Bedrock reasoning models — the model contract requires the reasoning block to be replayed *unmodified* with its signature in subsequent Converse calls, and silently empty-stringing it would cause subtle reasoning-quality degradation that's near-impossible to debug from the user side. The fix replays correctly in both directions, with the signature handled exactly as Bedrock expects (omitted vs. empty distinction respected).
+
+The signature change to `Result<Option<MessageContent>>` is the right shape because it forces the caller to make an explicit decision about each kind of "non-content" response (unknown future variant → filter, known unsupported → bail, content-bearing → keep). The named-arm enumeration is the part I most want to highlight: this is the correct defensive coding pattern for `non_exhaustive` SDK enums — it makes "we forgot to handle this variant when the SDK added it" a *visible* failure (the catch-all `bail!`) rather than a silent truncation, while also making "this variant is intentionally unsupported, here's the error message" explicit.
+
+Test coverage hits all five interesting branches: signature-present round-trip, signature-absent round-trip, redacted base64 round-trip, known-unsupported (`Image`) → typed error, additional known-unsupported (`CitationsContent`) → typed error. The base64-decode-failure fallback at `:91` is the one place where the design accepts silent loss, but it's consciously scoped (foreign-provider RedactedThinking only) and carries a tracing warning, which is the right tradeoff for cross-provider conversation history.
+
