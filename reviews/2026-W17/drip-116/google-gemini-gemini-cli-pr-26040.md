@@ -1,0 +1,31 @@
+# google-gemini/gemini-cli#26040 — fix: auto-detect windows native sandbox and disable input blocker by default
+
+- PR: https://github.com/google-gemini/gemini-cli/pull/26040
+- Head SHA: `3184b993`
+- Diff: +42 / -5 across `packages/cli/src/config/sandboxConfig.ts` (+2), `packages/cli/src/config/sandboxConfig.test.ts` (+13), `packages/cli/src/config/settingsSchema.ts` (-1/+1), `packages/core/src/agents/browser/browserManager.ts` (+1), `packages/core/src/agents/browser/browserManager.test.ts` (+20), `packages/core/src/agents/registry.ts` (+1), `packages/core/src/config/config.ts` (-3/+3)
+
+## What it does
+Two related Windows-platform changes bundled in one PR:
+
+1. **Auto-detect `windows-native` sandbox on win32** at `sandboxConfig.ts:104-107`: when `os.platform() === 'win32'`, return `'windows-native'` from `getSandboxCommand` ahead of the docker/podman fallbacks. Previously Windows users had to specify the sandbox command explicitly because the auto-detection chain only handled `sandbox-exec` (darwin) and container runtimes. Adds a corresponding test at `sandboxConfig.test.ts:157-168` asserting `loadSandboxConfig({}, { sandbox: true })` on win32 returns `command: 'windows-native'`.
+2. **Treat `windows-native` as a non-container sandbox** at `browserManager.ts:590` and `registry.ts:280` — adds `sandboxType !== 'windows-native'` to the `isContainerSandbox` predicate so the browser-agent path doesn't try to use container-specific networking (resolved IPs, `host.docker.internal`) for the Windows native case. New regression test at `browserManager.test.ts:1346-1365` pins that `--autoConnect` is preserved (not overridden to `--isolated` or `--headless`) when `SANDBOX=windows-native` and session mode is `existing`.
+3. **Flip `disableUserInput` default from `true` to `false`** at `settingsSchema.ts:1320` and `config.ts:3620` — and inverts the predicate at `:3620` from `!== false` (default-on) to `=== true` (default-off). PR description framing: "disable input blocker by default."
+
+## Strengths
+- The auto-detection change is structurally correct: `'windows-native'` is the right peer to `'sandbox-exec'` (both are OS-provided, non-container), and inserting it before the docker/podman fallback matches the existing precedence pattern. The added test pins the win32 branch.
+- The container-sandbox carve-outs at `browserManager.ts:590` and `registry.ts:280` are paired correctly — both predicates need to agree on what "container" means, and both got the same `windows-native` exclusion. The browser-manager test specifically pins the `existing` session mode + `windows-native` interaction, which is the regression scenario from the bug.
+- The `'sandbox-exec'` → "Seatbelt sandbox" comment update at `browserManager.ts:597` (`seatbelt restrictions` → `sandbox restrictions`) is a small accuracy fix that comes naturally with broadening the non-container category.
+- Sandbox auto-detection on Windows has been a long-standing UX papercut (users have to read docs or guess), so a one-line auto-detect with a test is a clean fix.
+
+## Concerns
+- **The `disableUserInput` default flip is a behavior change for all platforms, not just Windows.** The PR title says "auto-detect windows native sandbox **and disable input blocker by default**" — but the default flip at `settingsSchema.ts:1320` and the predicate inversion at `config.ts:3620` apply universally. macOS/Linux users currently relying on `disableUserInput: true` (the previous default) to prevent the model from interfering with their browser session will silently lose that behavior on upgrade. This deserves either (a) a per-platform default (default-on except win32) or (b) a release-notes call-out so upgraders know to set `disableUserInput: true` explicitly if they want the old behavior.
+- The PR description body is the *unfilled template* — `## Summary`, `## Details`, `## Related Issues`, `## How to Validate`, `## Pre-Merge Checklist` are all blank with placeholder comments. None of the platform/method validation checkboxes (MacOS/Windows/Linux × npm/npx/Docker/Podman/Seatbelt) are checked. For a sandbox-related change that touches three platforms' worth of behavior, the empty validation matrix is a real gap — at minimum, the author should fill in what they actually tested on win32 and confirm macOS/Linux behavior is unchanged.
+- The browser-manager comment update at `:597` says "sandbox restrictions" but the surrounding code is still inside the `if (isSeatbeltSandbox)` block (`:599`). The comment is now slightly misleading because the branch is still seatbelt-specific — only the *category name* in the explanatory prose was generalized. Either update the comment to stay seatbelt-specific or actually generalize the branch.
+- No test for the `disableUserInput` default flip itself — the existing test surface in `config.test.ts` would benefit from a `should_default_disableUserInput_to_false` case.
+- The `isContainerSandbox` predicate is duplicated at `browserManager.ts:589-591` and `registry.ts:278-280`. Both got updated correctly here, but a shared `isContainerSandbox(sandboxType: string | undefined): boolean` helper would prevent the next platform addition from being a two-edit chore.
+
+## Verdict
+**merge-after-nits** — the win32 auto-detect and the container-carve-out are correct and well-tested. But (a) the empty PR description template is a blocker for review (we don't know what was tested), (b) the cross-platform default flip needs an explicit release-notes call-out so non-Windows users aren't silently degraded, and (c) the duplicated `isContainerSandbox` predicate should be DRY'd up — or at minimum noted for follow-up. After the description is filled in and the default-flip side-effect is acknowledged, this is mergeable.
+
+## What I learned
+"Auto-detect X" PRs that bundle a default-flip almost always degrade some platform silently. The pattern to watch is: a PR titled for one platform (Windows) that touches a settings default whose predicate runs on all platforms. The fix is either to scope the default per-platform or to call out the cross-platform behavior change explicitly in release notes — never both flipping the default and only mentioning the platform in the title.
