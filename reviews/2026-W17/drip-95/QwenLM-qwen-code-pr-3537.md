@@ -1,0 +1,27 @@
+# QwenLM/qwen-code #3537 — feat(core): route web-fetch processing to fastModel when configured
+
+- Author: wenshao
+- Head SHA: `b98c96c828c1ff1bf480759ae7596f89aff8255a`
+- +63 / −4 across `packages/core/src/tools/web-fetch.ts`, `packages/core/src/tools/web-fetch.test.ts`, `docs/developers/tools/web-fetch.md`, `docs/users/configuration/settings.md`
+- PR link: <https://github.com/QwenLM/qwen-code/pull/3537>
+
+## Specifics
+
+- Core change at `packages/core/src/tools/web-fetch.ts:156-168` introduces a single line of model resolution: `const model = this.config.getFastModel() ?? (this.config.getModel() || DEFAULT_QWEN_MODEL);`. The `??` (nullish coalesce) means an empty string `""` would short-circuit to `getModel()` only if `getFastModel()` returned `null`/`undefined` — but the fastModel docs at `settings.md:210` say the empty string default means "use main model". So if `getFastModel()` returns `""` (literal empty string from settings.json default), the new code routes through the empty string instead of falling back. This is a real bug — the comparison should be `?? undefined` only after a `?: undefined` coercion, or use `||` instead of `??`.
+- Wait — re-reading `web-fetch.test.ts:41`: the mock has `getFastModel: vi.fn(() => undefined)` for the unconfigured case. So the implementation contract is that `getFastModel()` returns `undefined` when not set, not `""`. If the `Config` accessor normalizes the empty-string default to `undefined`, the `??` is correct. Worth verifying against `Config.getFastModel`'s implementation — not in the diff.
+- Single passthrough at `web-fetch.ts:171`: previously the model arg was `this.config.getModel() || DEFAULT_QWEN_MODEL`; now it's the resolved `model` variable. Behavior-preserving when `getFastModel()` returns `undefined`; routes through `fastModel` otherwise.
+- New debug log at `web-fetch.ts:159-161`: `[WebFetchTool] Processing content with model: ${model}` — useful for diagnosing "why is my web-fetch slow" when the user expects fastModel to be hitting.
+- Two new tests at `web-fetch.test.ts:246-294`: (1) "should use fastModel when configured" creates a per-test `testConfig` with `getFastModel: vi.fn(() => 'qwen-fast')` and asserts `mockGenerateContent.toHaveBeenCalledWith(..., 'qwen-fast')`. (2) "should fall back to main model when fastModel is not configured" uses the default `mockConfig` (with `getFastModel: () => undefined` from `:41`) and asserts the fallback to `'qwen-coder'`. Both tests assert via `toHaveBeenCalledWith(expect.anything(), expect.anything(), expect.anything(), 'qwen-fast')` — model is the 4th argument, matches `web-fetch.ts:166-172`'s call shape. Tests are tight and hit the right surface.
+- Docs update at `web-fetch.md:77` explains the routing: "uses the configured `fastModel` when available, falling back to the main session model. Because the work is a compression/extraction task rather than deep reasoning, routing through a smaller model reduces latency and cost when `fastModel` is configured." Concise and correct rationale.
+- Settings doc update at `settings.md:210` expands the `fastModel` description from "prompt suggestions and speculative execution" to "prompt suggestions, speculative execution, session recap, forked side-queries (auto-memory, auto-dream, `/btw`), and web-fetch content processing". Good — this is a single config that fans out to many surfaces and the doc was previously underselling its scope.
+
+## Concerns
+
+- The empty-string-vs-undefined contract above is the main risk. If a user sets `"fastModel": ""` explicitly in settings.json (which is the documented "use main model" sentinel), and `Config.getFastModel()` returns the literal `""` rather than normalizing to `undefined`, the `??` will pass `""` through as the model name and the underlying `generateContent` call will fail in a confusing way. The PR author should either (a) confirm `Config.getFastModel` normalizes `""` → `undefined`, or (b) defensively use `this.config.getFastModel() || this.config.getModel() || DEFAULT_QWEN_MODEL` (single `||` chain handles both `undefined` and `""`).
+- No test for the "user-set `fastModel` but model lookup fails / model rejected by provider" path. Web-fetch processing already runs against a possibly-empty `textContent` so a model error here is recoverable, but the new debug log at `:159-161` won't help diagnose that case if no response-quality test exists.
+- Docs update at `settings.md:210` is good but the table-cell width has ballooned (the line is now ~600 characters). Markdown tables with very wide cells render poorly in some IDEs; consider a trailing footnote-style breakout for the surface enumeration.
+- Out-of-scope nit: the call site at `web-fetch.ts:166-172` passes the model name as the 4th positional argument to `generateContent`. The other auxiliary-task call sites in the codebase (followup-suggestions, session-recap, etc., per the docs) presumably have similar `getFastModel ?? getModel ?? DEFAULT` plumbing — this PR consolidates the policy at the call sites rather than in `Config` itself. A future cleanup could move the resolution into `Config.getAuxModel()` or similar.
+
+## Verdict
+
+`merge-after-nits` — correct intent, well-tested, well-documented. The single must-resolve issue is the empty-string-vs-undefined contract on `getFastModel()`; if that's safe (Config normalizes), this is `merge-as-is`. If not, swap `??` for `||` defensively. Either way, the docs update at `settings.md:210` and the new debug log at `web-fetch.ts:159-161` are both nets-positive on their own.
