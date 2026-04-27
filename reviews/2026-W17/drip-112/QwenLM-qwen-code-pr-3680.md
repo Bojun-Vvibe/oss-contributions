@@ -1,0 +1,38 @@
+# QwenLM/qwen-code PR #3680 — feat(cli): expand TUI markdown rendering
+
+- **PR**: https://github.com/QwenLM/qwen-code/pull/3680
+- **Author**: @chiga0
+- **Head SHA**: `5b220a520a872fe4a2a260d440ff0adc7016da82`
+- **Size**: +2610 / −12 across 9 files
+- **Files**: `docs/design/markdown-syntax-extension.md`, `packages/cli/src/ui/utils/InlineMarkdownRenderer.tsx`, `packages/cli/src/ui/utils/MarkdownDisplay.{tsx,test.tsx}`, `packages/cli/src/ui/utils/MermaidDiagram.tsx`, `packages/cli/src/ui/utils/latexRenderer.ts`, `packages/cli/src/ui/utils/mermaidImageRenderer.{ts,test.ts}`, `packages/cli/src/ui/utils/mermaidVisualRenderer.ts`
+
+## Summary
+
+Large feature PR that extends the TUI Markdown renderer beyond the existing table/code paths to include: (1) Mermaid code-blocks rendered as terminal images (Kitty/iTerm2 protocols, with `chafa` ANSI fallback) when `mmdc` is available, (2) text-based wireframe fallback for `flowchart` / `graph` / `sequenceDiagram` Mermaid types, (3) task-list checkboxes, (4) blockquotes with a quote bar, (5) inline `$...$` and block `$$...$$` math via Unicode substitution, all behind capability gates and opt-in env vars (`QWEN_CODE_MERMAID_MMD_CLI`, `QWEN_CODE_MERMAID_ALLOW_NPX`, `QWEN_CODE_MERMAID_IMAGE_PROTOCOL`).
+
+## Verdict: `needs-discussion`
+
+The implementation is thoughtful — capability detection, async-safe scheduling around Ink's append-only `<Static>`, PNG cache decoupled from terminal placement — but the surface area is large for one PR (5 distinct rendering features in one commit) and the design doc itself acknowledges that the long-term path is a different architecture (AST parser, block/token caching, stable-prefix streaming). I'd push to (a) split this into 2–3 PRs along feature lines so each can be reviewed and reverted independently, and (b) lock in the capability-gating contract before merge to prevent regressions when the AST refactor lands.
+
+## Specific references
+
+- `docs/design/markdown-syntax-extension.md:30-49` — the PR scope is enumerated as a single "integrated PR" rather than separate feature PRs. The design doc explicitly says: *"This PR treats Markdown syntax expansion as one coherent renderer improvement, not separate feature PRs."* I'd push back on this framing. Mermaid, LaTeX, task lists, and blockquotes have completely independent failure modes and rollback profiles. If the Mermaid image path turns out to be flaky on user terminals, you don't want to revert the blockquote rendering with it.
+- `docs/design/markdown-syntax-extension.md:52-79` — the Mermaid image pipeline is `Mermaid source → mmdc → PNG → Kitty/iTerm2 terminal image`, with `chafa` as ANSI fallback and a synchronous text wireframe as last resort. The capability gating via `QWEN_CODE_MERMAID_MMD_CLI` env var, `QWEN_CODE_MERMAID_ALLOW_NPX=1` opt-in, and `QWEN_CODE_MERMAID_IMAGE_PROTOCOL=kitty|iterm2|off` is the right approach — Puppeteer/Chromium cannot be in the hot CLI path. This needs explicit doc on what happens when `mmdc` is on PATH but produces an error mid-render (does the wireframe replace it? does the user see a partial image?).
+- `docs/design/markdown-syntax-extension.md:81-92` — Kitty Unicode placeholders (`U+10EEEE` with explicit row/column diacritics, APC payload via raw stdout in `q=2`/`U=1` quiet mode) are the *correct* way to do this in Ink — direct payload injection into Ink text would be wrapped/escaped and break. This is a non-trivial detail and the implementation deserves a focused review pass on its own.
+- `docs/design/markdown-syntax-extension.md:94-118` — the wireframe fallback's design choices (rank by horizontal layers for top-down, vertical columns for L-to-R, fork-with-bracketed-edge-labels like `[Yes]`/`[No]`/`[是]`/`[否]`, cycle summary with `↩ to <node>`) are well thought through, especially the explicit acknowledgement that long cross-diagram routes are unstable in terminal fonts and were intentionally avoided.
+- `packages/cli/src/ui/utils/MarkdownDisplay.tsx` (per the file list, not pasted in this review) — this is the dispatcher between the new feature paths. With +2610 lines across 9 files, the dispatcher is where regressions in existing table/code rendering would surface. Reviewers should run the existing `MarkdownDisplay.test.tsx` suite under both terminal-with-image-support and terminal-without-image-support fixtures to confirm the existing paths still hit the existing renderers.
+- `packages/cli/src/ui/utils/mermaidImageRenderer.test.ts` — exists, which is good. With ~250+ lines of new image-path code, the test should at minimum cover: (a) `mmdc` not on PATH → wireframe fallback, (b) `mmdc` exits non-zero → wireframe fallback (not blank), (c) PNG cache hit on resize, (d) protocol forced to `off` → wireframe fallback. Verify all four are present.
+- LaTeX rendering via Unicode substitution (`packages/cli/src/ui/utils/latexRenderer.ts`) — the design doc mentions "common Unicode substitutions" without enumerating the substitution table. This is the correctness-sensitive part: `\alpha → α` is fine, but `\frac{a}{b}` has no honest single-line Unicode rendering. Either the renderer is honest about "we render a subset, raw source for the rest" or it produces misleading output. Worth pinning the substitution set in tests.
+
+## Nits / requests
+
+1. **Split this PR.** Mermaid (image + wireframe + Unicode placeholders) is one PR. Task lists + blockquotes + LaTeX is another. The dispatcher refactor is a third. Each one is large but reviewable; the combined diff at +2610 / −12 is not.
+2. **Document the LaTeX substitution table.** Either inline in `markdown-syntax-extension.md` or as a comment in `latexRenderer.ts`. Users will need to know what's supported.
+3. **Mermaid `mmdc` error path** — when `mmdc` is on PATH but exits non-zero (bad syntax in user's Mermaid block, missing fonts, etc.), the renderer should fall back to the wireframe + a one-line note ("Mermaid render failed: <stderr first line>"), not silently render nothing. Verify the test suite covers this.
+4. **`QWEN_CODE_MERMAID_ALLOW_NPX=1`** — opt-in is right, but the first-run cost (Puppeteer + Chromium download, ~150MB) should be loudly logged when this is set. Otherwise users will see a 30-second hang and assume the CLI is broken.
+5. **Cycle detection in `flowchart`/`graph`** — the design says `↩ to <node>` markers in a `Cycles:` section, which is good. Verify the test covers diamond-with-back-edge (the simplest non-trivial cycle case).
+6. **Streaming behavior** — Ink's `<Static>` is append-only and the design correctly schedules the image render after first paint. What happens when the model is *streaming* a Mermaid block character-by-character? The wireframe would re-render on each token until the closing fence. That's expensive. Consider buffering until the closing ``` before any rendering work.
+
+## What I learned
+
+Rendering Mermaid in a terminal is surprisingly subtle, and this PR's design has the right shape: **terminal-image protocol when available, declarative wireframe when not, never silently blank, never block on first paint**. The Kitty Unicode-placeholder trick (`U+10EEEE` + diacritics, raw stdout in `q=2 U=1`) is the production-correct way to integrate terminal images with React-based TUIs (Ink/Bubbletea/etc.) — direct APC payload injection into the layout layer corrupts the framework's own render. The other pattern worth stealing: **PNG cache decoupled from terminal placement** so a resize is cheap (recomputes geometry, not the diagram). The architectural critique stands though — five rendering features in one PR, with a design doc that already plans an AST-based v2, is the kind of in-place feature growth that creates a thicket the v2 has to migrate through. Splitting now saves rework later.
