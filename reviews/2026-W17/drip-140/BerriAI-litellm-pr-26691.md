@@ -1,0 +1,29 @@
+# BerriAI/litellm #26691 — feat(proxy): add team-level search provider credentials
+
+- PR: https://github.com/BerriAI/litellm/pull/26691
+- Author: Sameerlite
+- Head SHA: `2d2f540480d3`
+- Diff: 638+/10- across 9 files (proxy `_types.py`, `team_endpoints.py`, `search_endpoints/endpoints.py`, `router_utils/search_api_router.py`, dashboard UI components, two new docs pages, one test file)
+
+## Verdict: merge-after-nits
+
+## Rationale
+
+- **Correct precedence ladder, named explicitly in `docs/my-website/docs/proxy/search.md:38-44`:** request metadata → team DB metadata → YAML `default_team_settings` → search-tool YAML config → provider env fallback. This is the right ordering — most-specific-wins, with env fallback at the end so single-tenant deployments stay zero-config.
+- **`litellm/proxy/_types.py:1698-1717` adds typed `SearchProviderCredentials` + `TeamSearchProviderConfig` Pydantic models** with explicit `tavily/perplexity/brave/exa/serper` slots rather than a free-form `dict`. The closed-set design means an operator typo on provider name (e.g. `tavilly`) gets a Pydantic validation error instead of silently being stored and never resolved. Good shape — but locks the file to the five providers (see nit below).
+- **`team_endpoints.py:1857-1962` adds `/team/search_provider_config/update` POST endpoint** that takes `team_id + provider + api_key + api_base` and writes to `metadata.search_provider_config.<provider>` rather than asking operators to PATCH the whole `metadata` dict. This is the right ergonomics — a partial-credential update is the dominant use case and exposing the granular endpoint avoids the read-modify-write race that the full-metadata-PATCH path has when two admins update different providers simultaneously.
+- **`router_utils/search_api_router.py:23-115` adds `_get_team_config_from_default_settings(team_id)` helper** doing the YAML-team-settings lookup symmetrically with how completion paths use `ProxyConfig.load_team_config()`. Surface parity with the completion path means search inherits the existing operator mental model rather than introducing a new one.
+- **133-line test file `tests/test_litellm/proxy/search_endpoints/test_team_search_credentials.py`** covers the precedence ladder cells. Worth checking that all five precedence levels have a positive cell (request-metadata wins over team-metadata wins over YAML wins over tool-params wins over env) and at least one negative cell per level (e.g. team-metadata empty → falls through to YAML).
+- **Two new docs pages** (`proxy/search.md` 92 lines, `proxy/team_budgets.md` 58 lines) — search.md names the precedence and gives a copy-paste curl/YAML; team_budgets.md names the cost-attribution invariant (`metadata.user_api_key_team_id` + `LiteLLM_SpendLogs.team_id`) which is the load-bearing reason teams want per-team keys (provider-side billing isolation, not just LiteLLM-side spend tagging).
+
+## Nits / follow-ups
+
+- **Closed-set provider list in `TeamSearchProviderConfig` at `_types.py:1707-1717`** means adding a sixth provider (e.g. you/searx/jina) requires editing this file. The dominant pattern in litellm is open-ended provider configuration. Consider `Dict[str, SearchProviderCredentials]` keyed by provider name with a runtime validator against the registered-provider set rather than an enumerated Pydantic model. This also unblocks community-contributed search providers without a core-types PR.
+- **No precedence test for the "request metadata + team metadata both set" cell.** The docs say request-metadata wins but I didn't see an assertion pinning that — easy to flip silently if the resolution order in `search_api_router.py` regresses. A test cell `req_meta=A, team_meta=B → A used` is the load-bearing invariant.
+- **`api_key` lives in team metadata as plaintext.** That's the existing pattern in litellm so this PR isn't introducing the issue, but the new dashboard UI components (`networking.tsx:34+`, `TeamInfo.tsx:51+`) likely render the key — worth a follow-up to mask all but last-4 in the UI display path. The endpoint accepts `api_key: Optional[str] = None` but no test that `None` clears an existing key vs leaves it (semantic ambiguity at `_types.py:1851`).
+- **`/team/search_provider_config/update` endpoint takes one `provider` per call**, so updating Tavily + Perplexity for the same team is two RPCs. Either accept a list of `{provider, api_key, api_base}` tuples or document that this is intentional (atomic per-provider semantics so partial failure is unambiguous).
+- **`docs/my-website/docs/proxy/team_budgets.md:42-58` SQL example reads `LiteLLM_SpendLogs` directly** — fine for spec, but linking to the existing prometheus/openmeter cost-attribution surfaces (which most operators actually use) would prevent the docs becoming the primary source of "I'll roll my own SQL" patterns.
+
+## What I learned
+
+Per-team credential resolution is a worked example of the precedence-ladder pattern showing up in two contexts in the same codebase (completion routing + search routing). The right move when adding the second context is to *match* the first context's ladder (request → team-DB → YAML → tool → env) rather than invent a new ordering, even if the new ordering would be locally cleaner — operator mental model uniformity is worth more than per-feature elegance. The closed-vs-open-set Pydantic decision is a recurring tension: closed sets give you cheap typo detection at validation time but block extension; open sets need a runtime registry check to recover the typo detection. For a system where providers are added monthly, open + registry is the right call. The cost-attribution rationale (provider-side billing isolation, not just LiteLLM-side spend tagging) is the real reason teams care about this — a docs page that names that explicitly is doing more work than the feature itself, because it tells finance teams *why* they need to push for per-team keys.
