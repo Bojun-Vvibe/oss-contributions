@@ -1,0 +1,25 @@
+# QwenLM/qwen-code #3693 — fix(core): set DeepSeek V4 context to 1M and output to 384K
+
+- PR: https://github.com/QwenLM/qwen-code/pull/3693
+- Head SHA: `7416af9c84a8`
+- Diff: 10+/0- across 2 files (`packages/core/src/core/tokenLimits.test.ts`, `packages/core/src/core/tokenLimits.ts`)
+- Base: `main`
+
+## Verdict: merge-as-is
+
+## Rationale
+
+- **Fixes a silent token-limit undercount for DeepSeek V4 models.** Today, `tokenLimit('deepseek-v4-flash')` and `tokenLimit('deepseek-v4-pro')` both fall through to the catchall `[/^deepseek/, LIMITS['128k']]` pattern at `tokenLimits.ts:130`, returning 131072. DeepSeek V4's actual published context window is 1M tokens (input) with 384K (output); without these patterns, the CLI's compaction triggers, summarization heuristics, and "near-limit" warnings all fire ~7.6× too early. The fix is a two-line additive — one `LIMITS['384k']` constant at `:35`, one new pattern at `:129` for input limits, one new pattern at `:181` for output limits — all of which are placed *before* the catchall fallback in their respective `PATTERNS` arrays so the V4 pattern wins specificity.
+- **Pattern ordering is correct.** Both `PATTERNS` and `OUTPUT_PATTERNS` are evaluated in declaration order with first-match-wins semantics (the standard `Array<[RegExp, TokenCount]>` pattern in this file). The new `[/^deepseek-v4/, LIMITS['1m']]` at `:129` lands above `[/^deepseek/, LIMITS['128k']]` at `:130`, so V4 model strings hit the V4 pattern first; non-V4 DeepSeek strings (`deepseek-r1`, `deepseek-v3`, `deepseek-chat`) still fall through to the 128k catchall. Same shape for the output side at `:181-184` — V4 lands above the existing `deepseek-reasoner` / `deepseek-r1` / `deepseek-chat` patterns, and the V4 regex `/^deepseek-v4/` is anchored to the start so it doesn't accidentally match (e.g.) `deepseek-v4-r1` if such a variant ever ships.
+- **Test coverage is the right shape.** `tokenLimits.test.ts:175-179` adds two positive assertions for input limits (`deepseek-v4-flash` → 1000000, `deepseek-v4-pro` → 1000000); `:304-305` adds the matching pair for output limits (→ 384000). The `'should return 128K for DeepSeek models'` test below at `:181` is unchanged and still passes — confirming the catchall continues to handle non-V4 DeepSeek IDs. That positive-then-negative-fallthrough pair is exactly what locks the priority ordering.
+- **`LIMITS['384k']: 384_000` follows the existing convention.** The vendor-declared decimal vs binary-power distinction is documented inline at `:32-37` (`'200k': 200_000` "vendor-declared decimal" vs `'256k': 262_144` binary power). The new `'384k': 384_000` correctly follows the vendor-declared decimal convention since DeepSeek's published 384K is a round-decimal vendor number, not a binary power. The inline comment at `:35` (`vendor-declared decimal, DeepSeek V4 max output`) makes the choice explicit.
+
+## Nits / follow-ups
+
+- **The regex `/^deepseek-v4/` will match any future `deepseek-v4-*` variant, including ones with different limits.** If DeepSeek later ships a `deepseek-v4-mini` with a smaller context (say 256k), this pattern will silently mis-classify it. Worth a follow-up to either narrow to `/^deepseek-v4-(flash|pro)\b/` for current-known variants only, or document the assumption that all V4 family members share the 1M/384K envelope. Low-priority — the "future variant might differ" case is hypothetical and the current shape matches the file's existing widening pattern (e.g. `/^deepseek-r1/` matches both `r1` and `r1-0528`).
+- **No assertion that an *unknown* DeepSeek variant** (e.g. `deepseek-v5-foo`) **continues to fall through to the 128k catchall** after the V4 addition. The existing `'should return 128K for DeepSeek models'` test only covers `deepseek-r1`, `deepseek-v3`, `deepseek-chat`. A one-line `expect(tokenLimit('deepseek-v5-foo')).toBe(131072)` (or `deepseek-future`) would lock the catchall is still reachable. Minor.
+- **PR body is empty / no source citation for the 1M/384K numbers.** A link to DeepSeek's published V4 docs / model card in the commit message would help future maintainers verify the limits if/when they need re-confirmation. The numbers do match DeepSeek's public V4 announcements but external sourcing in-repo is hygiene.
+
+## What I learned
+
+Token-limit pattern files are a quiet load-bearing surface — they govern compaction, summarization, and warning thresholds across the CLI. A missing pattern doesn't error; it silently misroutes to the catchall, and the only symptom is "the CLI compacts too eagerly on this model". The two-line additive shape (one input pattern, one output pattern, both placed above the family catchall) is the canonical migration for adding a new model variant to a regex-pattern table, and the matching positive-input + positive-output test pair locks the contract. Worth noting that the file's `LIMITS` table convention of distinguishing vendor-declared decimal (`200_000`) from binary powers (`262_144`) is exactly the kind of detail that prevents off-by-2.4% drift across the codebase — the inline comments at `:32-37` are good operator UX.
