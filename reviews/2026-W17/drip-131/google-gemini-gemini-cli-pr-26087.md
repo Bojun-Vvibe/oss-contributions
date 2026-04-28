@@ -1,0 +1,25 @@
+# Review — google-gemini/gemini-cli #26087
+
+- **Title**: fix: resolve global configuration persistence and OAuth URL display (#12137)
+- **Author**: Ultron09 (Suryaansh Prithvijit Singh)
+- **Head**: `530ec448efdf03d420286e41b4ffc8d92c72cdc8`
+- **Verdict**: request-changes
+
+## Summary
+
+Bundles two ostensibly-orthogonal fixes: (1) **Settings persistence** — adds a `skipSave` option to `LoadedSettings.setValue()` at `packages/cli/src/config/settings.ts:447-486`, refactors `migrateDeprecatedSettings()` to return `LoadableSettingScope[]` instead of a `boolean`, batches per-scope saves at the end of `_doLoadSettings()`, and adds resilient JSON writing for empty/malformed files; (2) **OAuth URL display** — disables alternate-screen-buffer + ANSI screen-clearing during OAuth flow so the login URL survives in scrollback for SSH/narrow-terminal users. Replacement for closed #26043, claiming unrelated `node20/` directory and UI glyph changes were removed.
+
+## Findings
+
+- **Two unrelated bug fixes bundled in one PR** — settings persistence and OAuth URL display have no shared root cause, no shared touched files (settings is `config/settings.ts`, OAuth would be `auth/`-area code not visible in the diff slice fetched), and reference different upstream issues (#12137 is OAuth-only). The PR's own structure (`### 1. Settings Persistence` + `### 2. OAuth Login URL Truncation`) admits this. Split into two PRs — bundling forces reviewers to understand both surfaces simultaneously and a request-changes on either blocks both.
+- **`migrateDeprecatedSettings` return-type change is breaking** — public function signature went from `boolean` to `LoadableSettingScope[]`. Even though it's an internal-ish helper, any external code or test calling it (test file at `:2108-2329` shows it has at least its own test surface) breaks the build. Should be a deprecation cycle or a renamed-new-function pattern (`migrateDeprecatedSettingsScopes()`) keeping the old `boolean` returner as a thin shim.
+- **`originalSettings` vs `settings` swap at `:914`** changes which object the migration reads from — was `settingsFile.settings` (resolved/env-substituted), now `settingsFile.originalSettings` (raw user-typed). This is *probably* the right call (you want to migrate raw user config, not resolved values, otherwise `${VAR}` references get baked in), but it's a subtle behavior change with no test pinning the new invariant. A user who had `${ENV_OVERRIDE}` resolving to a deprecated value would previously have had it migrated; now it's preserved as-is. Document and test.
+- **`resolveEnvVarsInObject(valueToSet)` added at `:464-469`** in the runtime-settings update path resolves env vars on every `setValue` call — was previously only resolved at load time. If a user `setValue`s a value containing `${VAR}` they may now expect literal-passthrough (it's a settings *value* they explicitly wrote) but get env substitution. Behavior change without explicit acknowledgment in the PR body.
+- **`save(scope)` public method at `:485-491`** is added but the only caller is `_doLoadSettings` itself — should be `private` or carry a docstring naming external use cases. As written it's an unannotated new public surface.
+- **Eight test sites updated only by adding `expect.anything()` as the new fourth arg** at `:2108-2329` — passes the type checker but doesn't actually validate the new `options.skipSave` parameter behavior. Add at least one test that asserts `setValue` with `{skipSave: true}` does *not* call the save side-effect (mock `saveSettings`, assert call count) and one that asserts the migration batches correctly via the new `modifiedScopes` set.
+- **Unicode glyph change at `:973`** comment-only (`→` → `￫`) is the kind of "removed unrelated change" the PR body claims to have eliminated. Revert; `→` is the correct arrow and `￫` (U+FFEB HALFWIDTH RIGHTWARDS ARROW) is a CJK halfwidth variant — likely an editor encoding artifact.
+- **OAuth URL fix is not in the visible diff slice** — the first 250 lines are all settings-related. Without seeing the OAuth changes I can't review them concretely; if they're as small as the PR body suggests (disable altscreen, remove ANSI clears, update tests) that's plausibly merge-as-is, but again — split the PR.
+
+## Recommendation
+
+Request changes. Split into two PRs (settings-persistence + OAuth-URL); preserve `migrateDeprecatedSettings`'s `boolean` return as a shim or rename the new shape; add tests that actually exercise `{skipSave: true}` rather than just `expect.anything()`; revert the U+FFEB Unicode artifact at `:973`; and document/test the `originalSettings`-read and `resolveEnvVarsInObject`-on-setValue behavior changes. The settings-persistence intent is sound (batching saves through migration is a real perf and atomicity win) but the bundling and the silent breaking changes block merge as it stands.
