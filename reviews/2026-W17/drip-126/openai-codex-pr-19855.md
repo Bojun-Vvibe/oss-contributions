@@ -1,0 +1,12 @@
+# openai/codex #19855 — Continue sampling after assistant chunks
+
+- URL: https://github.com/openai/codex/pull/19855
+- Head SHA: `fa64a935c9583bdd53e7376fd3031ab3fb98a3ac`
+- Verdict: **merge-after-nits**
+
+## Review
+
+- 10/-1 line surgical fix at `codex-rs/core/src/session/turn.rs:1899-2157` adds a new `should_continue_sampling_assistant: bool` flag carried alongside `needs_follow_up`, set per-output-item based on item kind (`Reasoning` always continues, `Message{role: assistant, phase: Some(Commentary)}` continues, everything else doesn't), and OR'd into `needs_follow_up` at the break point at `:2157`. Closes the gap where the model emits a Commentary-phase assistant message or a Reasoning item without immediately producing tool calls — prior code would terminate the sampling loop early because `needs_follow_up` only flipped on tool-call items.
+- Per-iteration assignment at `:2032` (`should_continue_sampling_assistant = output_item_should_continue_sampling_assistant`) is **last-write-wins**, not OR-accumulating. This is a subtle policy choice: if a turn produces `[Reasoning, Message{phase: Commentary}, Message{phase: Final}]` the final iteration sets the flag to `false` (Final-phase assistant message doesn't continue), suppressing continue. That's probably the right semantic (Final-phase is terminal even after Commentary) but it's not commented and the variable name doesn't hint at "last item only" — a comment naming the intent would prevent a future "fix" that changes it to `|=`.
+- `MessagePhase::Commentary` match guard at `:2011` is the load-bearing classifier — anything that produces a Commentary-phase assistant message in the wild (analysis turns, intermediate planning) now correctly triggers a follow-up sampling round. Worth confirming that the model server-side never produces a *runaway* Commentary loop (Commentary → Commentary → ... without ever emitting a Final or tool call); if it can, this change introduces a new infinite-loop risk at the sampler level. A test that exercises a `[Commentary, Commentary, Final]` sequence and asserts termination after the Final would close that contract.
+- No test added for the new flag. The change is small but it touches the sampling termination condition — a regression where Commentary stops continuing again would be silent (model just looks "stuck" or "didn't think"). At minimum a unit test feeding a single Reasoning item and asserting `needs_follow_up == true` on the result would pin the new behavior.
