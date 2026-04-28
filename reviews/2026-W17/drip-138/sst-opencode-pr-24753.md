@@ -1,0 +1,27 @@
+# sst/opencode #24753 — feat(tui): implement model and provider theme auto-selection
+
+- PR: https://github.com/sst/opencode/pull/24753
+- Author: zxmpg41 (Kevin Kellenberger)
+- Head SHA: `7176f336a8a4`
+- Base: `dev` · Closes #6631
+- Diff: 154+/1- across 6 files (`packages/opencode/src/cli/cmd/tui/context/local.tsx`, `packages/opencode/src/config/provider.ts`, `packages/opencode/src/provider/provider.ts`, `packages/opencode/test/cli/tui/local.test.ts`, `packages/opencode/test/provider/provider.test.ts`, `packages/sdk/js/src/v2/gen/types.gen.ts`)
+
+## Verdict: merge-after-nits
+
+## Rationale
+
+- **Clean four-tier fallback ladder.** `local.tsx:25-35`'s `resolveThemeFallback` walks `model.theme → provider.theme → tuiTheme → "opencode"` with explicit short-circuits at each rung. The structure mirrors the natural UI specificity hierarchy (most-specific-wins) and avoids the common bug of "provider theme silently overrides user's explicit TUI theme." The seven-cell test matrix at `local.test.ts:23-55` covers every transition — including the load-bearing `unknown providerID` → `tuiTheme` cell at `:53` which would be the most likely silent-fallthrough bug if `find()` returned `undefined` and then a downstream `provider.theme` access blew up.
+- **Schema additions land in three places consistently.** `config/provider.ts:10` adds `theme?: string` to `Model`, `:74` adds it to `Info` (provider-level), and `provider/provider.ts:887` and `:900` add it to the runtime schemas, with the SDK type regen at `types.gen.ts:1300-1303` and `:1336-1339` matching. That symmetry is the right move — anything else would surface as a Schema-validates-but-runtime-loses-the-field bug at one of the layers. The `provider.theme ?? existing?.theme` merge at `provider.ts:1136` and the per-model equivalent at `:1210` correctly preserve already-resolved theme values across multi-source merges.
+- **The `createEffect` wiring at `local.tsx:435-441` is the right structural choice for reactive theme switching.** Solid's `createEffect` re-runs whenever any of `model.current()`, `sync.data.provider`, or `tuiConfig.theme` changes, so model switches via menu *or* via config reload both re-trigger. The `themeApi.has(targetTheme)` guard at `:438` is load-bearing — without it a typo'd theme name in user config would crash `themeApi.set()`; with it, the config silently falls through to the next rung. The downside: silent fallthrough also means a typo'd theme name produces no warning. Worth a `console.warn`-or-toast on `!themeApi.has(targetTheme)` to surface the misconfig.
+- **Provider-level test pins the cascade path end-to-end.** `provider.test.ts:1760-1812` writes a real `opencode.json` with provider-level `theme: "provider-theme"` and one model with override `theme: "model-theme"`, then asserts via `list()` that the runtime `Provider`/`Model` objects expose the resolved `theme` field correctly (`provider.theme === "provider-theme"`, `sonnet.theme === "model-theme"`, `opus.theme === undefined` and the UI layer handles the cascade, second provider with no theme is `undefined`). This is the right place to test the *config-to-runtime* shape — `local.test.ts` then tests *runtime-to-resolved-theme*, and the two together pin the full path.
+
+## Nits / follow-ups
+
+- `local.tsx:25` types `providers: any[]` — the schema is right there in `provider.ts`'s `Provider` export. Worth `providers: ReadonlyArray<{ id: string; theme?: string; models: Record<string, { theme?: string }> }>` to lock in the shape so a future refactor that drops `provider.theme` from the schema gets caught at the call site, not at runtime.
+- Silent `themeApi.has()`-falsy fallthrough at `:438` should at minimum log a one-time `console.warn(\`theme "${targetTheme}" not found, keeping current theme\`)` so a misconfig isn't a black hole. Ideally a transient toast.
+- `local.test.ts:42` has duplicate `test("returns model theme when available", ...)` — the second one (at `:43`) tests `openai/gpt-4.1` which is the same case but with a different fixture path. Title should differentiate (`"returns model theme on second provider when available"`) so a single failed test name doesn't confuse triage.
+- The `provider.ts:1204` change `input: model.limit?.input ?? existingModel?.limit?.input ?? 0` is an unrelated drive-by — the previous expression intentionally left `input` as `undefined` when neither source set it. Adding a `?? 0` default may quietly enable some downstream consumer that was checking `input != null`. Not necessarily wrong but should be split into its own PR or at minimum called out in the body.
+
+## What I learned
+
+Reactive UI theme cascades are a near-perfect application of `createEffect` — the source-of-truth is the *user's current model*, the derived state is the *theme*, and the mapping is a pure function of `(model, providers, userPref) → string`. The four-tier fallback chain is the canonical shape (specific override → group default → user pref → builtin default) and worth replicating for any other "per-model UX setting" that follows. The duplicated-coercion-test naming nit and the missing observability for invalid theme names are exactly the kind of things that don't matter for the first user but bite at scale when a config typo silently does nothing. Worth landing the warn-on-fallthrough as a follow-up before this becomes the standard "I configured my theme but it's not switching" support thread.
