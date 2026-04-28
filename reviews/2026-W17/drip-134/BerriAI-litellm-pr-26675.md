@@ -1,0 +1,20 @@
+# BerriAI/litellm #26675 — fix(vertex): preserve items on array branches in anyOf with null + de-flake test
+
+- PR: https://github.com/BerriAI/litellm/pull/26675
+- Head SHA: `3ca985451e5a416b33595a0031187cc7aa629fd0`
+- Files changed: 3 (`+74/-12`) — `litellm/llms/vertex_ai/common_utils.py` (+3/-7), `tests/local_testing/test_amazing_vertex_completion.py` (+66/-4), `tests/test_litellm/llms/vertex_ai/test_vertex_ai_common_utils.py` (+5/-1)
+
+## Verdict: merge-as-is
+
+## Rationale
+
+- **Production fix is a 7-line deletion that strictly broadens the surviving schema.** `common_utils.py:710-716` removed the block that stripped `items` from `anyOf` array branches whose `items` was the empty dict `{}`, leaving only `atype["nullable"] = True` in the loop. The PR body's identification of the downstream invariant — "downstream `process_items()` step already converts empty `items: {}` → `items: {"type": "object"}`" — is the right load-bearing observation: the previous code was redundantly trying to "clean up" what was already going to be normalized correctly by the next pipeline stage, and in doing so was producing a schema (`{"type": "array", "nullable": true}` with no `items`) that Vertex hard-rejects with `INVALID_ARGUMENT` even inside an `anyOf`.
+- **The unit-test snapshot update is the strongest possible regression anchor.** `test_vertex_ai_common_utils.py:225-232` changes the expected schema in `test_build_vertex_schema` from `{"type": "array", "nullable": True}` to `{"type": "array", "items": {"type": "object"}, "nullable": True}` — i.e. the test was previously codifying the broken shape, and any future "helpful cleanup" PR that re-introduces the strip-items behavior will fail this exact assertion immediately. Updating the codified-broken-shape test rather than adding a parallel test is the right minimum-surface fix.
+- **De-flake is a proper hermetic conversion, not just a `@pytest.mark.flaky`.** `test_amazing_vertex_completion.py:3569-3705` converts `test_gemini_tool_calling_not_working` from a real-Vertex network call (which had two compounding failure modes per the PR body — slow-Vertex pytest-timeout killing the xdist worker, and the malformed schema producing a deterministic 400) into a `MagicMock`-patched HTTPHandler test that asserts the request body sent to Vertex contains `items` on the array branch of `callbacks.anyOf`. The mock pattern mirrors commit `eddae66697` per the PR body — using existing in-repo idiom rather than introducing a new mocking surface. The assertion at `:3690-3704` walks `sent_body["tools"][0]["function_declarations"][0]["parameters"]["properties"]["config"]["properties"]["callbacks"]["anyOf"]`, filters to `branch.get("type", "").lower() == "array"`, and asserts both `"items" in branch` AND `branch["items"]` is truthy — the second check is what catches a future regression where the strip is partially restored to `items: {}` instead of the missing-`items` form.
+- **PR body documents the verification correctly.** "Confirmed both tests fail when the production fix is reverted (regression guard works)" — exactly the reverse-the-fix-and-watch-the-test-fail validation that proves the test is doing real work. The 42-passed count for the unit-test file confirms no neighboring assertions broke from the snapshot update.
+- **Removing `load_vertex_ai_credentials()` and `litellm._turn_on_debug()` from the test** at `:3572` is correct hermetic-test hygiene — the original test required a real Vertex credential and was emitting verbose debug logs into CI output as a side effect.
+
+## Nits / follow-ups
+
+- The error message at `:3700-3703` ("array branch in callbacks.anyOf must include non-empty items (Vertex rejects array types missing items). Got: {branch}") is exemplary — names *why* the assertion exists for the next contributor who breaks it.
+- No symmetric test for the `items: {"type": "string"}` branch of `anyOf` — i.e., the "non-empty items already" cell should also be exercised to pin that the fix doesn't accidentally strip non-empty `items` either. The unit test covers this implicitly via the snapshot, but an explicit cell would be a small addition.
