@@ -1,0 +1,28 @@
+# openai/codex #19965 — [codex] Sync remote plugin config toggles
+
+- PR: https://github.com/openai/codex/pull/19965
+- Author: xli-oai
+- Head SHA: `0edcdeff2e9a`
+- Diff: 498+/3- across 4 files (app-server `README.md`, `codex_message_processor/plugins.rs`, `message_processor.rs`, `tests/suite/v2/plugin_install.rs`)
+
+## Verdict: merge-after-nits
+
+## Rationale
+
+- **Right interception point: `config/value/write` and `config/batchWrite` handlers, not the config persistence layer.** The fix at `message_processor.rs:921-1058` wraps `config_api.write_value` / `batch_write` in `write_config_value_with_remote_plugin_sync` / `batch_write_config_with_remote_plugin_sync` that detect the `plugins.<remotePluginId>.enabled` key shape via `remote_plugin_enabled_config_edit(&key, &value)` predicate, peel those edits out, and route them to `sync_remote_plugin_enabled_config_write` (POST install / uninstall) instead of letting them land in `config.toml`. Local plugin toggles still go through the normal config path. Discrimination happens at the protocol seam, which is the correct place — the on-disk `config.toml` should never grow remote plugin IDs as keys.
+- **`enabled=true → install, enabled=false → uninstall` mapping at `plugins.rs:9-19` is the natural semantic** for "config toggle becomes API call". The marketplace-name lookup at `:21-58` re-fetches the marketplaces list and finds the marketplace whose `plugins[].id == plugin_id` — necessary because install needs the marketplace name but the config-write payload only has the plugin id.
+- **Mixed-edit rejection at `:1023-1027` is the correct guardrail.** A `batchWrite` containing both remote plugin toggles *and* local config edits returns `invalid_request("remote plugin enablement edits cannot be batched with local config edits")`. Without this, partial-failure semantics get ugly fast — if local edits succeed and remote install fails (network), the on-disk config is now inconsistent with the running plugin set. Forcing the caller to split into two requests means each request has clean atomic semantics.
+- **Two-phase batch when only remote toggles are present:** at `:1042-1060`, the implementation does an empty `batch_write` first (to validate `expected_version` and bump the config version), then runs each remote toggle, then a second empty `batch_write` if `reload_user_config` was requested. This is the right ordering: version-check happens *before* any side effects, so a stale version rejects the whole request without firing any installs.
+- **Test file `plugin_install.rs` at +293 lines covers the remote-enable-installs-and-materializes-cache and remote-disable-uninstalls-and-removes-cache invariants** plus README documents the compatibility shim at `app-server/README.md:223`. Documentation co-located with the code is the right hygiene for a protocol-level behavior change.
+
+## Nits / follow-ups
+
+- `remote_plugin_enabled_config_edit` predicate (not visible in this diff snippet but referenced at `:953`/`:1006`) is the load-bearing routing decision. Worth a unit test at the predicate level pinning: `("plugins.foo.enabled", true)` → `Some("foo", true)`, `("plugins.foo.bar", true)` → `None`, `("plugins.foo.enabled", "string")` → `None`, `("PLUGINS.FOO.ENABLED", true)` → `None` (case sensitivity). One missed shape here is one silent-divergence bug.
+- Remote marketplace-name lookup at `:38-49` does a full `fetch_remote_marketplaces` then linear scan over `marketplace.plugins` — O(M*P) per toggle. For a 50-edit `batchWrite` this re-fetches marketplaces 50 times. Cache the marketplaces list once per request handler, not once per toggle. Currently fine for small batches but a foot-gun.
+- `_conversation_store`-style global state isn't introduced here, but the marketplace lookup makes one HTTP call per remote toggle — a `batchWrite` with N remote toggles fans out to N+1 backend calls (1 marketplaces fetch + N installs/uninstalls). For UI flows that toggle multiple plugins this could be slow. Worth a follow-up to batch-install if the backend supports it.
+- The `BTreeMap<String, bool>` at `:983` correctly de-dupes per-id (last-write-wins on the same id within one batch) but silently — if a caller writes `plugins.foo.enabled=true` and `plugins.foo.enabled=false` in the same batch, only the last gets applied. Should this be an `invalid_request` instead, on the same "no ambiguity" principle as the mixed-edit rejection?
+- `config_value/write` for a remote plugin toggle doesn't use `merge_strategy` (it's discarded) — caller-supplied merge strategies on a remote toggle are silently ignored. Worth a comment at `:954` that this field is intentionally dropped.
+
+## What I learned
+
+"Compatibility shim at the protocol seam" is the right shape when a protocol field needs to mean two different things depending on the value. The naive fix would be to add a new `pluginInstall` / `pluginUninstall` RPC and tell clients to migrate; the actual fix lets old clients keep writing `plugins.foo.enabled=true` and routes that write to the new system transparently. The cost is a forever-load-bearing predicate (`remote_plugin_enabled_config_edit`) that has to keep matching the right shape. This is a worthwhile trade for backward compat on a config-key shape, but it's worth pinning with property tests rather than scenario tests — the compatibility surface is the predicate, and the predicate is what regresses silently when key shapes evolve. Mixed-batch rejection is the second lesson: when atomicity guarantees differ between two paths (local config edits are durable-on-disk-atomic, remote API calls are eventually-consistent), refuse to mix them in one request rather than try to invent a new atomicity model spanning both.
