@@ -1,0 +1,21 @@
+# sst/opencode #24740 — fix(opencode): batch vcs git show calls
+
+- PR: https://github.com/sst/opencode/pull/24740
+- Head SHA: `9d41bf662376ddd9d3d8fe1f516c51b6750094c6`
+- Files changed: 6 (`+202/-6`) — `packages/opencode/src/git/index.ts` (+78), `packages/app/src/pages/session.tsx`, `packages/app/src/pages/session/helpers.ts`/`helpers.test.ts`, `packages/opencode/src/project/vcs.ts`, `packages/opencode/test/git/git.test.ts`
+- Closes: #24739
+
+## Verdict: merge-after-nits
+
+## Rationale
+
+- **Right shape for the fix.** `git/index.ts:196-271` adds `Git.showMany()` using `git cat-file --batch` (one process per refresh instead of N), with a clean fallback at `:198-209` (`Effect.catch(() => Effect.void)` causing the batch path to silently degrade to the per-file `show()` chain at concurrency 8) when the batch output fails any structural check. `project/vcs.ts:52-58` calls it once per refresh with `list.filter((item) => item.status !== "added").map((item) => item.file)` and looks up via `beforeByFile.get(item.file) ?? ""` at `:69`/`:71` — the `"" ` fallback preserves the previous "treat missing as empty" semantic for both `patch()` content and the `count(before)` deletions math.
+- **Batch parser is defensively bounded.** `git/index.ts:228-262` checks `header.endsWith(" missing")` (cell 1 of the documented `cat-file --batch` output grammar), regex-validates the `^[0-9a-f]+ blob (\d+)$` header line (cell 2 — anything non-blob like a `tree` or `commit` ref bails out), validates `Number.isInteger(size) && size >= 0`, asserts the trailing newline byte equals `10` at the predicted `offset+size` position, and finally checks `offset !== stdout.length` post-loop to catch trailing garbage — any deviation triggers `return` (undefined), which the outer `(yield* batch()) ?? (yield* fallback())` at `:270` correctly degrades to per-file. This is the right "batch is a perf optimization, never a correctness primitive" shape.
+- **Binary-safe by sniffing for NUL.** `:255` `content.includes(0) ? "" : decoder.decode(content)` — when a tracked file is a binary blob (PNG/etc.) the batch path returns empty content matching what the `formatPatch(structuredPatch(...))` path would produce as a no-op patch; without this check, `TextDecoder().decode(<binary>)` would emit replacement chars and produce garbled diffs. Worth confirming this matches the existing per-file `show()` path's binary handling though — `show()` returns whatever `git show HEAD:<file>` writes raw, so for true binaries the two paths now diverge (per-file emits replacement-char text, batch emits `""`).
+- **UI-side debounce + git-metadata filter is symmetric.** `session.tsx:621-622` wraps `refreshVcs` in `createDebouncedCallback(refreshVcs, 100)` from `helpers.ts:154-171` (cancels-and-reschedules pattern, with `dispose()` correctly clearing the timer in `onCleanup`). The `isGitMetadataPath()` helper at `helpers.ts:174-177` correctly handles the four cells that matter — bare `.git`, `/.git` suffix, `.git/` prefix, `/.git/` substring — and the test at `helpers.test.ts:163-175` pins the load-bearing positive cases (Linux + Windows backslash variants including worktree paths) plus the critical negative `src/.github/workflows/test.yml` (substring `.git` is in `.github` and must not match) — exactly the right cell. Nit: the regex `replaceAll("\\", "/")` then four separate predicates could be one `/(?:^|\/)\.git(?:$|\/)/` match — equivalent and clearer intent, but the current form is grep-friendlier.
+
+## Nits / follow-ups
+
+- The `content.includes(0)` binary sniff at `git/index.ts:255` returning `""` may diverge from the per-file `show()` path's binary handling (`show()` at `:177-194` returns the raw process output) — a one-line test in `git.test.ts` showing both paths produce the same `Map` value for a binary file would pin parity.
+- `helpers.ts:174-177` `isGitMetadataPath` currently doesn't handle `.git` followed by `\` on a Windows-style path that wasn't pre-normalized to `/` — but `replaceAll("\\", "/")` runs first so this is fine. A comment naming the normalize-then-check ordering would help future readers.
+- The `100`ms debounce window at `session.tsx:621` is a magic number that should probably name a `VCS_REFRESH_DEBOUNCE_MS` constant alongside the rest of the timing tunables.
