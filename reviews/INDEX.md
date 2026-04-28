@@ -3535,3 +3535,20 @@ Verdict mix: 2 merge-as-is (sst/opencode #24806 single-file +3/−6 EOL invarian
 | [#26119](https://github.com/google-gemini/gemini-cli/pull/26119) | fix(commands): reset slash-command conflict map on rebuild | [2026-W17/google-gemini-gemini-cli-pr-26119.md](2026-W17/google-gemini-gemini-cli-pr-26119.md) |
 
 Verdict mix: 4 merge-as-is (codex #20002, litellm #26704, qwen #3692, gemini-cli #26119), 4 merge-after-nits (opencode #24811, opencode #24810, codex #19999, qwen #3714).
+
+### W17 drip-146 (2026-04-28)
+
+8 fresh PRs across 4 repos (2 sst/opencode, 2 openai/codex, 2 BerriAI/litellm, 2 google-gemini/gemini-cli). Theme is "boundary correctness vs administrative cleanup" — opencode #24816 fixes a one-character `startsWith("http:")` bug that silently dropped `https://` image URIs through the ACP path; opencode #24635 mixes a clean Dutch README contribution with a misleading "Crof AI provider" claim that ships only a test fixture and an icon (no runtime wiring); codex #20015 caps the `PermissionProfile` test-migration stack by routing through the canonical `turn_permission_fields` helper instead of hand-constructing tuples; codex #20001 hardens the Linux proxy bridge with `process_vm_readv/writev` syscall denies plus `prctl(PR_SET_DUMPABLE, 0)`, closing two known sandbox-escape primitives; litellm #26705 widens `gpt-image-1` substring matching to `gpt-image` family across provider routing, cost calc, and Azure logging in lockstep; litellm #26624 redirects doc contributors to the separate `litellm-docs` repo via PR template comment + new `## Documentation` CONTRIBUTING section; gemini-cli #26118 wraps zod number/boolean schemas with `z.preprocess` so env-var-resolved string values cast to typed values without silent `NaN`; gemini-cli #26124 is an automated `[CONFLICTS]` cherry-pick of the `transient → sticky_retry` policy-catalog change that nobody has manually resolved yet.
+
+| PR | Title | File |
+| --- | --- | --- |
+| [#24816](https://github.com/sst/opencode/pull/24816) | fix(acp): accept https:// URIs in image content blocks | [2026-W17/drip-146/sst-opencode-pr-24816.md](2026-W17/drip-146/sst-opencode-pr-24816.md) |
+| [#24635](https://github.com/sst/opencode/pull/24635) | feat: Add Dutch (NL) Readme and Crof AI provider support | [2026-W17/drip-146/sst-opencode-pr-24635.md](2026-W17/drip-146/sst-opencode-pr-24635.md) |
+| [#20015](https://github.com/openai/codex/pull/20015) | core tests: configure profiles directly | [2026-W17/drip-146/openai-codex-pr-20015.md](2026-W17/drip-146/openai-codex-pr-20015.md) |
+| [#20001](https://github.com/openai/codex/pull/20001) | fix(network-proxy): harden linux proxy bridge helpers | [2026-W17/drip-146/openai-codex-pr-20001.md](2026-W17/drip-146/openai-codex-pr-20001.md) |
+| [#26705](https://github.com/BerriAI/litellm/pull/26705) | [Feat] Add gpt-image-2 support | [2026-W17/drip-146/BerriAI-litellm-pr-26705.md](2026-W17/drip-146/BerriAI-litellm-pr-26705.md) |
+| [#26624](https://github.com/BerriAI/litellm/pull/26624) | Add note that docs live in separate litellm-docs repo | [2026-W17/drip-146/BerriAI-litellm-pr-26624.md](2026-W17/drip-146/BerriAI-litellm-pr-26624.md) |
+| [#26118](https://github.com/google-gemini/gemini-cli/pull/26118) | feat(cli): support boolean and number casting for env vars in settings.json | [2026-W17/drip-146/google-gemini-gemini-cli-pr-26118.md](2026-W17/drip-146/google-gemini-gemini-cli-pr-26118.md) |
+| [#26124](https://github.com/google-gemini/gemini-cli/pull/26124) | fix(patch): cherry-pick 54b7586 to release/v0.40.0-preview.4-pr-26066 [CONFLICTS] | [2026-W17/drip-146/google-gemini-gemini-cli-pr-26124.md](2026-W17/drip-146/google-gemini-gemini-cli-pr-26124.md) |
+
+Verdict mix: 3 merge-as-is (codex #20015, codex #20001, litellm #26624), 3 merge-after-nits (opencode #24816, litellm #26705, gemini-cli #26118), 1 request-changes (opencode #24635), 1 needs-discussion (gemini-cli #26124). Repo coverage: 4 distinct repos.
