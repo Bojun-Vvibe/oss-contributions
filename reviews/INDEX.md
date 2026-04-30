@@ -4997,3 +4997,82 @@ contract-tightening with no behavior change beyond making the previously-correct
 locally enforceable; the remaining three (gemini-cli #26261, qwen-code #3487, goose #8772)
 ship a substantive new feature/path with the same explicit-contract discipline applied
 prophylactically.
+
+## drip-210 — 2026-04-30
+
+| PR | Title | Review |
+|----|-------|--------|
+| [#25112](https://github.com/sst/opencode/pull/25112) | feat(cli): add TUI custom provider setup | [drip-210/sst-opencode-25112.md](drip-210/sst-opencode-25112.md) |
+| [#20447](https://github.com/openai/codex/pull/20447) | Fix MCP status/list lifecycle leak | [drip-210/openai-codex-20447.md](drip-210/openai-codex-20447.md) |
+| [#20446](https://github.com/openai/codex/pull/20446) | protocol: drop legacy sandbox from user turns | [drip-210/openai-codex-20446.md](drip-210/openai-codex-20446.md) |
+| [#26888](https://github.com/BerriAI/litellm/pull/26888) | Fix Responses API developer/system message merging | [drip-210/BerriAI-litellm-26888.md](drip-210/BerriAI-litellm-26888.md) |
+| [#26887](https://github.com/BerriAI/litellm/pull/26887) | Fix Vertex web search with function tool conflict | [drip-210/BerriAI-litellm-26887.md](drip-210/BerriAI-litellm-26887.md) |
+| [#3439](https://github.com/QwenLM/qwen-code/pull/3439) | feat(cli): render LaTeX math in markdown output | [drip-210/QwenLM-qwen-code-3439.md](drip-210/QwenLM-qwen-code-3439.md) |
+| [#26263](https://github.com/google-gemini/gemini-cli/pull/26263) | fix(core): ensure tool output cleanup on session deletion for legacy files | [drip-210/google-gemini-gemini-cli-26263.md](drip-210/google-gemini-gemini-cli-26263.md) |
+| [#8932](https://github.com/block/goose/pull/8932) | break up acp/server.rs | [drip-210/block-goose-8932.md](drip-210/block-goose-8932.md) |
+
+Verdict mix (drip-210): four merge-as-is (codex #20447 inline-await fix that
+re-anchors MCP status/list inventory work inside the framework's serialization
+gate, with a high-water-mark BlockingInventoryServer test that pins
+max_resource_calls == 1 across overlapping requests; codex #20446 the
+follow-up cleanup that deletes the now-dead sandbox_policy field from
+Op::UserTurn after #20441 made permission_profile required, with 35
+mechanical test-file rewrites following one exact two-edit pattern; litellm
+#26888 the leading-developer/system-run merge in
+map_developer_role_to_system_role that fixes the Responses-bridge double-
+system-message bug for Anthropic and other providers that silently keep only
+the first system block, with an explicit `is messages` no-op identity test
+to pin the no-allocation hot path; litellm #26887 the conflict-resolution
+move from _map_function into _add_tools_to_optional_params so search-tool
+dropping happens at the convergence point regardless of whether `tools` or
+`web_search_options` was processed first, with two-direction tests proving
+order-independence and a third test pinning the
+include_server_side_tool_invocations escape hatch for Gemini 3+),
+two merge-after-nits (opencode #25112 TUI custom-provider setup whose
+validateCustomProvider tagged-union validator gets the disabled-provider
+"reconnect" path right but whose `{env:NAME}` regex is space-sensitive in a
+way the WebUI flow tolerates, plus a __custom_provider__ sentinel that
+deserves a reserved-name comment near the regex; goose #8932 the file-split
+of acp/server.rs from 1720 lines into 11 per-domain submodules — providers,
+secrets, dictation, sessions, extensions, dispatch, custom_dispatch, tools,
+resources, sources, config — with zero behavior change at the wire level
+because #[custom_methods] doesn't care which file the impl blocks live in,
+but worth confirming --no-default-features still builds since the
+local-inference cfg-attr block moved out and a one-line "what was here"
+comment per new file would help the next reader), one needs-discussion
+(qwen-code #3439 the +1061-line in-tree TerminalMathRenderer that threads
+inline+block math through MarkdownDisplay/InlineMarkdownRenderer/
+TableRenderer, gets the non-obvious getPlainTextLength width-calc hook
+right so tables stop sizing for `$E=mc^2$` source instead of rendered
+`E = mc²`, pins the classic over-eager-regex bug with `'Energy $E = mc^2$
+costs $20 and $30.'` → `'Energy E = mc² costs $20 and $30.'`, but commits
+the project to maintaining a 1k-line custom mini-parser inline rather than
+shimming an existing unicode-math library and leaves the theme.text.math
+color question and block-math-inside-table-cell semantics unaddressed),
+one request-changes (none in this drip — the math-renderer scope question
+is genuinely a maintainer call rather than a defect, hence
+needs-discussion). Repo coverage: opencode×1, codex×2, litellm×2,
+qwen-code×1, gemini-cli×1, goose×1 (six of six target CLIs covered).
+Theme of the drip: **enforce the invariant at the convergence point, not
+the input path** — codex #20447 moves MCP work back into the future the
+framework's serialization gate is holding (instead of letting tokio::spawn
+escape it), litellm #26887 moves the search-tool/function-tool conflict
+guard from _map_function into _add_tools_to_optional_params (so it runs
+regardless of which input path landed tools first), litellm #26888 splits
+"leading system-equivalent run" from "tail with positional preservation"
+so the merge happens once at the leading boundary instead of N times per
+developer message, gemini-cli #26263 puts the legacy-pretty-printed-JSON
+fallback inside the same try-block as the JSONL fast path (instead of
+silently returning with fullSessionId === undefined and leaking the
+tool-outputs dir), and codex #20446 deletes the dead sandbox_policy field
+exactly one PR after permission_profile was made required (so the dead
+slot doesn't accumulate cargo-culted None-threading at every callsite).
+The remaining three (opencode #25112 custom-provider validator, goose
+#8932 file-split, qwen-code #3439 math renderer) are
+feature-additions/refactors where the convergence-point discipline shows
+up prophylactically: validateCustomProvider returns a tagged-union from
+one place instead of throwing from many; goose's per-domain split keeps
+the macro-driven dispatch the single convergence point and just
+redistributes the impl blocks; qwen-code #3439's
+splitInlineMathSegments is the single tokenization convergence point
+that both inline rendering and width-calc share.
