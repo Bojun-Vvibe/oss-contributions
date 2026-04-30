@@ -1,0 +1,30 @@
+# google-gemini/gemini-cli PR #26240 — Metrics Integrity & Standardized Reporting (BT-01)
+
+- PR: https://github.com/google-gemini/gemini-cli/pull/26240
+- Head SHA: `941470670c157a37fead7936f35afc5e27790337`
+- Files touched: 8 metrics scripts under `tools/gemini-cli-bot/metrics/scripts/` — `domain_expertise.ts` (+24/-35), `latency.ts` (+6/-36), `open_issues.ts` (+9/-3), `open_prs.ts` (+9/-3), `review_distribution.ts` (+2/-11), `throughput.ts` (+9/-55), `time_to_first_response.ts` (+4/-24), `user_touches.ts` (+3/-17). Net ~-87 LOC across the 8 scripts.
+
+## Specific citations
+
+- **Output format flip**: every metric script switches from `JSON.stringify(<MetricOutput>{ metric, value, timestamp, [details] })` to a single `metric,value` CSV line. E.g. `domain_expertise.ts:142`: `process.stdout.write(\`domain_expertise,${Math.round(ratio * 100) / 100}\n\`)` replaces the 12-line JSON object construction at the previous `:142-152`. Same shape across `latency.ts:99-106` (six new CSV lines replacing a `MetricOutput[]` array + `forEach`), `throughput.ts:90+` (nine lines replacing a `MetricOutput[]` array of equivalent shape), `review_distribution.ts:69` (one CSV line replacing a four-field JSON object), `time_to_first_response.ts` (-24 LOC), `user_touches.ts` (-17 LOC).
+- **Cache lift in `domain_expertise.ts`**: `authorCache` and `getAuthors` helper move from per-PR-iteration scope at the old `:76-95` up to `:62-80` *outside* the `for (const pr of data.pullRequests.nodes)` loop. The cache now persists across PRs — the previous shape rebuilt the cache per PR which defeated the cache's purpose. Real perf win for repos with many PRs touching overlapping paths.
+- **Author-association inclusion** at `domain_expertise.ts:97` and `review_distribution.ts:44`: both now include `'COLLABORATOR'` alongside `'MEMBER'` and `'OWNER'` when counting maintainer reviews. This is a real metric-semantics change — repos that grant `COLLABORATOR` to contractors will see maintainer-review counts go up.
+- **`open_issues.ts` / `open_prs.ts` switched from `gh issue list --json number --jq length` (capped at `--limit 1000`) to `gh api graphql -f query='... totalCount'`** at `:11-19`. The old shape silently undercounted any repo with >1000 open items. The new shape uses GraphQL `totalCount` which is unbounded.
+- **Duplicate `@license` JSDoc block** at `open_issues.ts:5` and `open_prs.ts:5` — `* @license\n *\n * @license` (the second `@license` on a separate line). Cosmetic but a clear copy-paste artifact.
+
+## Verdict: needs-discussion
+
+## Concerns
+
+1. **Bundled-too-much / unclear scope.** The PR title is "Metrics Integrity & Standardized Reporting (BT-01)" and the body is just `# Backlog Management & Metrics Integrity`. It actually does at least four orthogonal things:
+   - Output format change (JSON → CSV) across 8 scripts.
+   - Author-association expansion (add `COLLABORATOR`) across 2 scripts.
+   - GraphQL migration to remove the 1000-item cap on `open_issues`/`open_prs`.
+   - Cache-lift perf fix in `domain_expertise.ts`.
+   Each is independently reviewable; bundling them costs the ability to bisect a downstream metrics-pipeline regression. Recommend splitting at minimum the format-change and the metric-semantics changes (add COLLABORATOR, remove 1000 cap) so the latter can be reverted independently if numbers shift unexpectedly.
+2. **Format change is a hard breaking change for downstream consumers.** Anything that ingests these scripts' stdout — dashboards, BigQuery loaders, Looker datasources — currently expects newline-delimited JSON with a `metric`/`value`/`timestamp`/`details` schema. The new CSV `metric,value\n` shape **drops `timestamp`** entirely (downstream BQ tables typically partition on `timestamp` — they'll need to start using ingestion-time, which loses the metric's measurement time) and **drops `details`** entirely (`domain_expertise.ts` previously emitted `{totalMaintainerReviews, maintainerReviewsWithExpertise}`, `review_distribution.ts` emitted the full `reviewCounts` map — both now lost). If those `details` are consumed downstream for drill-downs, this is silent telemetry loss. The PR body should either confirm "downstream tooling already migrated to CSV-without-details/timestamp" or include the corresponding consumer-side updates.
+3. **`COLLABORATOR` inclusion is a metric-definition change.** Repos with many `COLLABORATOR`-tier contributors will see `domain_expertise` and `review_distribution_variance` shift. This needs to be documented in a methodology note alongside the metrics dashboard so the inevitable "why did our maintainer-review count spike on date X" question has a written answer.
+4. **GraphQL migration on `open_issues`/`open_prs`** uses `gh api graphql -f query='...'` with **string-interpolated `GITHUB_OWNER`/`GITHUB_REPO`**. If `types.ts` ever sources those from environment-derived input (e.g. `${GITHUB_REPOSITORY}`), an attacker who can influence those values can inject GraphQL fragments. Should switch to `gh api graphql -F owner=... -F name=... -f query='query($owner: String!, $name: String!) { ... }'`. Probably not exploitable today (these are likely build-time constants) but the shape is fragile.
+5. **Duplicate `@license` JSDoc** at `open_issues.ts:5-6` and `open_prs.ts:5-6` — `* @license\n *\n * @license` is a clear copy-paste artifact; remove the second.
+6. **No tests** for any of the script changes. Granted, these are scripts not library code, but a smoke test that `node dist/.../open_issues.js` produces a line matching `/^open_issues,\d+$/` would be cheap insurance and would document the new contract.
+7. **Throughput script** at `throughput.ts:90+` — the truncated diff shows nine new CSV lines replacing what was a `MetricOutput[]` array. Confirm none of the nine were dropped silently (e.g. the previous array had `throughput_issue_overall_days_per_issue` with the conditional zero-guard `issueOverall > 0 ? Math.round((1 / issueOverall) * 100) / 100 : 0`); needs eyeballing the truncated section.
