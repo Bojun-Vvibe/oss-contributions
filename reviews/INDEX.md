@@ -4633,3 +4633,123 @@ defaulting to `openai`; (c) two new test files lack end-to-end registry-→-stor
 proving the provider field flows through — needs author to address all three before merge).
 
 Verdict mix (drip-204): 4 merge-as-is (sst/opencode #25066 — one-line provider auto-detect widening from `deepseek` to `deepseek || kimi-k2`, gated by existing `apiNpm === "@ai-sdk/openai-compatible" && !existingModel` precedence, paired with K2.5+K2.6 unit test mirroring the existing DeepSeek pattern and registry-fixture additions to both `opencode` and `opencode-go` provider sections; openai/codex #20385 — canonical `notify + unblock` fix for `tiny_http::Server::recv()` cancellation race, 8-line patch with `Arc<Server>` correctly cloned before the worker-thread move and `unblock()` called after `notify_waiters()`, verified by 3 consecutive runs of the previously-flaky port-fallback E2E plus full `cargo test -p codex-login`; openai/codex #20389 — leaf-of-25-PR-Sapling-stack mechanical test refactor swapping `SandboxPolicy::DangerFullAccess → PermissionProfile::from_legacy_sandbox_policy(...)` round-trip for direct `PermissionProfile::Disabled`, net -1 line zero behavior change with Windows sandbox-compat references correctly left untouched; QwenLM/qwen-code #3743 — two-layer defense closing real Chinese-language input-eaten bug from issue #1804, comprehensive `looksLikeCommandName` test coverage including reported failures `/api/apiFunction/接口的实现` and `/Users/zhoushuo/Desktop/dw-operator-skill 帮我安装` plus positive cases for extension-qualified `/gcp.deploy` and MCP-style `/mcp:server__tool` — actually classified merge-after-nits below for the `+` rejection concern), 4 merge-after-nits (sst/opencode #25087 — pure docs translation with byte-identical install commands and consistent agent-identifier preservation, single nit being bidirectional language-menu cross-link absence in sibling READMEs which makes Indonesian discoverable only via direct link not the language switcher; BerriAI/litellm #26873 — ContextVar plumbing for MCP extra_headers correctly mirrors the existing `_request_auth_header` pattern with case-insensitive header matching and `set/reset` paired in `try/finally` for no leak, but absent a sensitive-header denylist (operator misconfig forwarding `Cookie` leaks proxy session state) and missing concurrent-async-loop isolation regression to lock the ContextVar invariant against future module-global "optimization"; BerriAI/litellm #26865 — routing-predicate widening from hard-coded v1 substring to family-prefix-or-namespaced match plus new dated-snapshot pricing entries duplicated across live and `_backup` JSON files per repo convention, with OpenAI-vs-Azure endpoint asymmetry on `/v1/images/edits` worth confirming intent and overlap with also-open #26866 needing maintainer-side picking-one-and-closing-the-other to avoid JSON merge conflicts; block/goose #8930 — `normalize_nullable` correctly handles both schemars 1.x emission shapes with defensive single-non-null-variant gates for both branches, end-to-end test using real `schema_for!(ShellParams)` locks the production path, but `*schema = replacement;` in the `anyOf` branch wipes sibling keys (future schemars `{description: ..., anyOf: [...]}` loses description) and function is non-recursive on the `anyOf` branch so hypothetical `Option<Option<i64>>` would not be re-normalized by this pass alone; QwenLM/qwen-code #3743's `+` rejection in `looksLikeCommandName` may regress any MCP server using `+` in tool names — would be worth a `tool_registry` data grep before merge), 0 request-changes, 0 needs-discussion. Repo coverage: 5 distinct repos. Three of the eight close real production-affecting bugs (opencode #25066 multi-turn tool-use failures with custom Kimi-K2.6 entries returning "thinking is enabled but reasoning_content is missing", codex #20385 login-server cancellation hanging until next inbound HTTP request defeating Ctrl-C semantics, qwen-code #3743 absolute file paths and Chinese-language strings prefixed with `/` being silently swallowed by the slash-command dispatcher); two are correctness fixes for smaller surfaces (litellm #26873 documented `extra_headers` config with no transport plumbing into per-request OpenAPI tool dispatch, litellm #26865 `gpt-image-2` silently mis-routed to legacy per-pixel cost calculator); one is a provider-boundary compat fix (goose #8930 schemars 1.x nullable shapes rejected by Vertex Gemini via Bifrost); one is a leaf-of-stack mechanical cleanup (codex #20389); one is a docs add (opencode #25087).
+
+## drip-206 — 2026-04-30
+
+8 fresh PRs across 5 tracked upstream repos (2 sst/opencode, 2 openai/codex, 2 BerriAI/litellm,
+1 QwenLM/qwen-code, 1 block/goose). Theme of the drip: **"telemetry, cost, and credential plumbing
+at the runtime/provider seam — plus one agent-correctness gap closed."** Three of the eight close
+real production-affecting bugs that silently corrupted observability or credentials: litellm
+#26872 over-billed cached prompt tokens at full input rate on the custom-pricing path
+(`_cost_per_token_custom_pricing_helper` ignored `cache_read_input_token_cost` even when the caller
+supplied it, fix splits `prompt_tokens` into cached vs non-cached and bills each correctly via a
+new `usage_object` kwarg threaded into the helper); litellm #26870 silently dropped
+provider-emitted `usage.cost` during stream reassembly (OpenRouter etc. emit cost in the final
+chunk, but `_calculate_usage_per_chunk` never extracted it and `stream_chunk_builder` never
+forwarded it to `_hidden_params["additional_headers"]["llm_provider-x-litellm-response-cost"]`,
+fix wires it through all four steps with end-to-end test); goose #8929 created infinite-lived
+default credentials on GCE/GKE/Cloud Run by caching the metadata-server `TokenResponse` directly
+in the `AdcCredentials::DefaultAccount` enum variant, so OAuth2 tokens were never refreshed until
+the daemon restarted (fix changes the variant payload from `TokenResponse` to `String` (base URL),
+adds `#[serde(skip)]`, and rewrites `get_default_access_token` to actually re-fetch via the
+metadata path on each invocation, letting the standard cache layer drive refresh-on-expiry).
+Two are agent-loop correctness improvements: opencode #25100 aligns the compaction request's
+prefix to match the live agent loop byte-for-byte (same system, same tools, same serialization)
+so the provider's prompt cache actually hits, claimed ~90% compaction cost reduction — threads
+optional `ResolvedContext { agent, system[], tools, user }` through `Interface.compact(...)` and
+makes `processor` optional on the prompt builder; qwen-code #3774 closes a real agent-imagination
+attack surface where `EditTool` would silently apply a model-imagined `old_string` to a file the
+model had never read, by adding `requirePriorRead()` enforcement gated by `!isNewFile &&
+!fileReadCacheDisabled`, with new `EDIT_REQUIRES_PRIOR_READ` and `FILE_CHANGED_SINCE_READ` error
+codes, three-state cache check (`fresh`/`unknown`/`stale`), and a parallel auto-memory recording
+fix in `read-file.ts` so legitimate auto-mem reads still register. One is a UX-breaking provider
+fix: opencode #25101 adds default `thinking.display: "summarized"` for Opus 4.7 across Anthropic,
+Vertex Anthropic, Gateway, and Bedrock so the flagship reasoning model's thinking chunks are
+actually visible (the previous behavior dropped them silently). One is a substantive new
+debugging surface: codex #20405 adds opt-in `config_snapshot_export_dir` that writes
+`<conversation_id>.config.toml` per session start with the **resolved** runtime config (model,
+reasoning, instructions, approval policy, permission profile, web search) overlaid on top of
+`effective_config()` and source-only indirections (profile names, instruction file paths,
+legacy sandbox tables) explicitly stripped — useful for "what did this thread actually run with"
+audits that today require manually re-deriving the layered TOML. The last is a leaf-of-Sapling-
+stack mechanical cleanup: codex #20398 removes the cwd-less `PermissionProfile::from_legacy_sandbox_policy(&SandboxPolicy)` constructor (the cwd-bearing sibling
+`from_legacy_sandbox_policy_for_cwd` is correctly preserved since WorkspaceWrite semantics are
+only well-defined relative to a project root) and migrates the two surviving test call sites
+onto direct `PermissionProfile::Disabled` / `PermissionProfile::External { network: ... }`
+variant constructors.
+
+| PR | Title | Review |
+| --- | --- | --- |
+| [#25100](https://github.com/sst/opencode/pull/25100) | feat(opencode): cache-aligned compaction to reuse prefix cache | [drip-206/sst-opencode-25100.md](drip-206/sst-opencode-25100.md) |
+| [#25101](https://github.com/sst/opencode/pull/25101) | fix(provider): show opus 4.7 thinking chunks | [drip-206/sst-opencode-25101.md](drip-206/sst-opencode-25101.md) |
+| [#20405](https://github.com/openai/codex/pull/20405) | feat: export effective session config snapshots | [drip-206/openai-codex-20405.md](drip-206/openai-codex-20405.md) |
+| [#20398](https://github.com/openai/codex/pull/20398) | protocol: drop cwd-less legacy profile constructor | [drip-206/openai-codex-20398.md](drip-206/openai-codex-20398.md) |
+| [#26872](https://github.com/BerriAI/litellm/pull/26872) | fix: apply cache_read_input_token_cost in custom pricing path | [drip-206/BerriAI-litellm-26872.md](drip-206/BerriAI-litellm-26872.md) |
+| [#26870](https://github.com/BerriAI/litellm/pull/26870) | fix(streaming): propagate provider cost through streaming chunk builder | [drip-206/BerriAI-litellm-26870.md](drip-206/BerriAI-litellm-26870.md) |
+| [#3774](https://github.com/QwenLM/qwen-code/pull/3774) | feat(core): enforce prior read before Edit / WriteFile mutates a file | [drip-206/QwenLM-qwen-code-3774.md](drip-206/QwenLM-qwen-code-3774.md) |
+| [#8929](https://github.com/block/goose/pull/8929) | fix(providers): refresh GCP metadata server token on expiration | [drip-206/block-goose-8929.md](drip-206/block-goose-8929.md) |
+
+Verdict mix (drip-206): 2 merge-as-is (codex #20398 — leaf-of-25-PR-Sapling-stack mechanical
+deletion of `pub fn from_legacy_sandbox_policy(&SandboxPolicy)` at `protocol/src/models.rs:478-484`
+plus the now-redundant `permission_profile_presets_match_legacy_defaults` test, two surviving
+test call sites migrated onto direct `PermissionProfile::Disabled` and `PermissionProfile::
+External { network: NetworkSandboxPolicy::Restricted }` constructors at `protocol/src/models.rs:
+1916-1918` and `core/src/session/tests.rs:1591-1601`, cwd-bearing `from_legacy_sandbox_policy_for_cwd`
+correctly preserved; litellm #26870 — additive 4-step plumbing for provider-emitted `usage.cost`
+through `_calculate_usage_per_chunk` (line 547 init, 593-597 dual-path getattr/dict extract with
+last-write-wins semantics that correctly preserve `cost=0.0`), `calculate_usage` (line 723-724
+surface to `returned_usage.cost`), and `stream_chunk_builder` (main.py:7465-7470 + :7649-7654
+bridge to `_hidden_params["additional_headers"]["llm_provider-x-litellm-response-cost"]`),
+end-to-end test using real `OpenRouterChatCompletionStreamingHandler.chunk_parser` asserting both
+`final_response.usage.cost == 0.00042` and the hidden-params lookup key); 6 merge-after-nits
+(opencode #25100 — `ResolvedContext { agent, system[], tools, user }` threaded through
+`Interface.compact(...)` at compaction.ts:204/:358 with conservative branching that preserves the
+old `userMessage`/empty-tools/hidden-filter behavior when `resolved` is undefined, `processor`
+made optional on prompt.ts:364 with no-op `metadata`/`completeToolCall` callbacks at :386-407
+when absent, `toolChoice: "none"` at compaction.ts:472, nits on cache-key fragility (no
+round-trip test asserting byte-identical prefix), `hidden` filter dropped wholesale changing
+summarizer input semantics, and `stripMedia`/`toolOutputMaxChars` safety net stripped; opencode
+#25101 — `isAnthropicOpus47(apiId)` helper at transform.ts:430-433 deduplicates three pre-existing
+substring checks at :434/:653/:687 and adds default `thinking: { type: "adaptive", display:
+"summarized" }` for `@ai-sdk/anthropic`/`vertex/anthropic`/`gateway` plus parallel
+`reasoningConfig` for `@ai-sdk/amazon-bedrock` at transform.ts:916-931, focused option-builder
+test coverage at transform.test.ts:380-432 plus xhigh/max variant updates at :2532-2545, nits on
+missing vertex test, substring-match boundary risk on hypothetical `4.70` snapshot, and
+unconditional clobber of any pre-existing `result.thinking`; codex #20405 — opt-in
+`config_snapshot_export_dir` writing `<conversation_id>.config.toml` at session start via new
+`core/src/session/config_snapshot.rs:594-625` with `to_config_snapshot_toml()` overlaying live
+values (model, reasoning, instructions, approval policy + reviewer, permission profile, web
+search) on `effective_config()` and explicitly zeroing source-only indirections (profile/profiles/
+export_dir/instruction_file/sandbox_mode/permissions), wired at `session/mod.rs:858`, nits on
+`?` propagating snapshot-write failures into session-start failures (should be `tracing::warn!`),
+no rotation/pruning, `original_config_do_not_use` reach-through, and missing on-disk integration
+test; litellm #26872 — `usage_object: Optional[Usage]` kwarg added to
+`_cost_per_token_custom_pricing_helper` at cost_calculator.py:178 with cached-vs-non-cached split
+at :184-194, threaded from cost_per_token call site at :343, regression test at
+test_cost_calculator.py:2001-2056 with exact issue-#26807 numbers, nits on missing
+`cache_creation_input_token_cost` write-side symmetry, output-cost cache breakdowns still
+ignored, and missing comment on `usage_block` propagation; qwen-code #3774 — `requirePriorRead()`
+private method on `EditToolInvocation` at edit.ts:546-595 gated by `!isNewFile &&
+!getFileReadCacheDisabled()` at :390-401, three-state cache check returning distinct messages for
+`unknown` vs `stale`, two new error codes `EDIT_REQUIRES_PRIOR_READ`/`FILE_CHANGED_SINCE_READ`,
+parallel auto-memory recording fix at read-file.ts:147-160 splitting `cacheEnabled` into
+`cacheEnabled` (governs recordRead) vs `useFastPath` (governs unchanged-placeholder lookup),
+edit-chain test at edit.test.ts:1010-1029 confirming `recordWrite` re-stamps fingerprint so
+consecutive edits don't require intervening reads, stale-detection test at :953-980 using
+`fs.utimesSync` 60s future date to defeat coarse-resolution filesystems, disabled-cache bypass
+test at :1031-1048, nits on WriteFile-parity verification, race window between stat-and-write,
+and cache-eviction visibility in error messages; goose #8929 — `AdcCredentials::DefaultAccount`
+payload changed from `TokenResponse` to `String` at gcpauth.rs:61 with `#[serde(skip)]`,
+construction at :262-266 simplified to store base URL verbatim, `get_default_access_token` at
+:535-560 rewritten to actually GET the metadata path with `Metadata-Flavor: Google` header on
+each invocation surfacing non-2xx as `AuthError::TokenExchange`, test at :1033-1041 updated to
+`assert_eq!(base_url, mock_server.uri())`, nits on missing two-token regression test for the
+actual refresh path, error-context loss going from "Invalid metadata response" to "Invalid
+response", and no retry on transient 5xx). Repo coverage: 5 distinct repos. Three of the eight
+close real production-affecting bugs (litellm #26872 over-billed cached tokens on custom pricing
+path, litellm #26870 silent cost drop on streaming reassembly, goose #8929 GCE/GKE infinite-lived
+default credentials); two are agent-loop correctness wins (opencode #25100 ~90% compaction-cost
+reduction via cache alignment, qwen-code #3774 closes the imagine-an-old_string attack surface);
+one is a UX-breaking provider fix (opencode #25101 Opus 4.7 thinking visible by default); one is
+a substantive new debugging surface (codex #20405 effective-config snapshot export); one is a
+leaf-of-stack mechanical cleanup (codex #20398).
