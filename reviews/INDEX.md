@@ -4753,3 +4753,97 @@ reduction via cache alignment, qwen-code #3774 closes the imagine-an-old_string 
 one is a UX-breaking provider fix (opencode #25101 Opus 4.7 thinking visible by default); one is
 a substantive new debugging surface (codex #20405 effective-config snapshot export); one is a
 leaf-of-stack mechanical cleanup (codex #20398).
+
+## drip-207 — 2026-04-30
+
+| PR | Title | Review |
+| --- | --- | --- |
+| [#25103](https://github.com/sst/opencode/pull/25103) | feat(tui): make dialog and sidebar overlay backgrounds themeable | [drip-207/sst-opencode-25103.md](drip-207/sst-opencode-25103.md) |
+| [#20422](https://github.com/openai/codex/pull/20422) | mcp: drop legacy sandbox_policy from thread protocol | [drip-207/openai-codex-20422.md](drip-207/openai-codex-20422.md) |
+| [#20406](https://github.com/openai/codex/pull/20406) | tui: hydrate thread permissions from profiles | [drip-207/openai-codex-20406.md](drip-207/openai-codex-20406.md) |
+| [#26884](https://github.com/BerriAI/litellm/pull/26884) | fix: merge responses developer messages into system prompt | [drip-207/BerriAI-litellm-26884.md](drip-207/BerriAI-litellm-26884.md) |
+| [#26857](https://github.com/BerriAI/litellm/pull/26857) | feat(mcp): support stateless and stateful clients via session-id routing | [drip-207/BerriAI-litellm-26857.md](drip-207/BerriAI-litellm-26857.md) |
+| [#26883](https://github.com/BerriAI/litellm/pull/26883) | fix(cost): apply cache pricing for custom token costs | [drip-207/BerriAI-litellm-26883.md](drip-207/BerriAI-litellm-26883.md) |
+| [#3775](https://github.com/QwenLM/qwen-code/pull/3775) | refactor(core): route side-query LLM calls through runSideQuery chokepoint | [drip-207/QwenLM-qwen-code-3775.md](drip-207/QwenLM-qwen-code-3775.md) |
+| [#26256](https://github.com/google-gemini/gemini-cli/pull/26256) | fix(shell): stop foreground commands after excessive output | [drip-207/google-gemini-cli-26256.md](drip-207/google-gemini-cli-26256.md) |
+
+Verdict mix (drip-207): all eight merge-after-nits — opencode #25103 follows the established
+optional-with-fallback theme pattern (third coordinated edit set: `Omit` at theme.tsx:81,
+resolver-filter exclusion at :227, explicit resolution blocks at :250-263 with 150/70 alpha
+fallbacks matching the pre-PR hardcoded `RGBA.fromInts(0,0,0,150)` at dialog.tsx:47 and
+`RGBA.fromInts(0,0,0,70)` at session/index.tsx:1224, plus a behavioral nudge in `generateSystem`
+at theme.tsx:594-595 silently switching auto-detected themes from black tint to `transparent`),
+two tests at theme-store.test.ts:53-67 covering both default and override branches with
+`toBeCloseTo` to dodge RGBA float-precision flake; codex #20422 retires the
+`from_legacy_sandbox_policy_for_cwd` reconstruction fallback from
+`permission_profile_from_thread_response` at app_server_session.rs:1413-1425, collapsing the
+five-arg helper to two args (permission_profile, config) and dropping `thread_params_mode` from
+all three call sites and three wrappers, falling back to `config.permissions.permission_profile()`
+when the wire field is `None` rather than reconstructing from a lossy `SandboxPolicy` projection;
+codex #20406 hydrates `ThreadStartResponse`/`ThreadResumeResponse`/`ThreadForkResponse` permission
+profiles from the explicit wire field instead of the legacy reconstruction, simplifying the same
+helper and dropping `ThreadParamsMode` from the parameter list of three wrappers at
+:1300/:1313/:1326 and three call sites in `start_thread`/`resume_thread`/`fork_thread` at
+:379/:404/:431; litellm #26884 fixes #26879 by introducing
+`_merge_responses_system_messages` at transformation.py:305-360 which splits the message list into
+`system_parts` (collected from any `system`/`developer` role) and `non_system_messages`
+(everything else in input order), joining the system parts with `"\n\n"` into a single
+`ChatCompletionSystemMessage`, plus a `_get_text_from_message_content` helper at :286-303
+handling plain-string, list-of-string, and list-of-dict content shapes including both `type:
+"text"` and `type: "input_text"` variants, with one regression test at line 811-846 asserting the
+exact merged shape `"You are helpful.\n\nUse concise responses.\n\nNever expose secrets."`;
+litellm #26857 fixes LIT-2196/LIT-2656 by running both `session_manager_stateless` (stateless=True
+for curl/Inspector) and `session_manager_stateful` (stateless=False for Claude Code/Cursor/VSCode
+progress notifications) at server.py:238-248, routing per-request via two helper closures
+`_get_session_id_from_scope` at :2524-2538 and `_is_initialize_request` at :2540-2554, with a
+peek-and-replay `wrapped_receive` at :2828-2840 that consumes the first ASGI message exactly once
+to detect `initialize` method on bodies without `mcp-session-id`, decision rule "has session_id OR
+is initialize → stateful, else → stateless" at :2820, three new tests covering both managers'
+`stateless` flag plus a routing test that POSTs both `initialize` and `tools/list` bodies and
+asserts dispatch landed on the right manager; litellm #26883 closes #26807 (the symmetric
+companion to #26872 on the custom-pricing path) by adding `cache_creation_input_token_cost` and
+`cache_read_input_token_cost` as `NotRequired[float]` to the `CostPerToken` TypedDict at
+types/utils.py:111-115 and `usage_object: Optional[Usage]` to
+`_cost_per_token_custom_pricing_helper` at cost_calculator.py:178, extracting cached/created
+token counts via dual-path (OpenAI `prompt_tokens_details.cached_tokens` then Anthropic flat
+`cache_read_input_tokens`/`cache_creation_input_tokens` getattr fallback at :194-203) and billing
+`uncached × input + read × cache_read + creation × cache_creation` with `max(0, ...)` defense at
+:206-208, three regression tests including the exact issue-#26807 numbers (6074 prompt tokens
+with 3456 cached, $2.50/M input, $0.25/M cache-read → $0.011684) plus separate tests for
+Anthropic-shaped flat fields; qwen-code #3775 (refs #3760) funnels ~12 one-shot side-query LLM
+call sites (session title, recap, /rename, /summary, follow-up suggestions, ACP rewrite, arena
+per-agent summaries, chat compression, web-fetch, insight, subagent gen) through a single
+`runSideQuery(config, options)` chokepoint that defaults to `fastModel` with thinking-off and
+strips `thought`-marked parts, backed by a new `BaseLlmClient.generateText` primitive that
+bypasses the user-memory wrapping the main turn's `geminiClient.generateContent` applies, six
+explicit per-site overrides for genuinely-different policy (ACP rewrite custom temperature,
+/summary and compression pinning to main for cache locality, web-fetch pinning to main for
+summarization quality, subagent gen and follow-up direct path), removes
+`InProcessBackend.getAgentContentGenerator` and `ArenaManager.getAgentSummaryGenerator` shifting
+arena per-agent summaries from per-agent generators to a single neutral arbiter on `fastModel`
+(behavioral shift documented in PR body), and closes a latent /summary bug where the saved
+`.qwen/PROJECT_SUMMARY.md` could pick up `reasoning_content` from thinking models because the
+text extractor didn't strip thought parts; gemini-cli #26256 caps foreground shell-tool output at
+`DEFAULT_FOREGROUND_OUTPUT_LIMIT_BYTES = 10 * 1024 * 1024` (configurable via
+`shellExecutionConfig.maxOutputBytes`) by adding a `maybeStopForOutputLimit(bytesReceived)`
+closure to both child-process (shellExecutionService.ts:632-660) and PTY
+(:1056-1086) handleOutput callbacks that increments `streamedBytes` on raw byte count
+(correctly bounding context-window cost regardless of UTF-8 multi-byte expansion), trips
+`outputLimitExceeded = true` when over threshold, and calls `killProcessGroup({pid, escalate:
+true, isExited})` with negative-PID SIGTERM to handle wrapper-spawned children, with
+`background()` at :1473-1479 flipping `outputLimitDisabled` on both PTY and child state to
+disable the limit when a command is promoted mid-stream, the model-facing message at shell.ts:691-700
+prescribing the literal recovery action ("run with is_background=true and inspect with
+read_background_output") rather than just describing the failure, four parallel tests covering
+both code paths × both directions (trip vs background-disable). Repo coverage: 5 distinct repos
+(opencode, codex, litellm, qwen-code, gemini-cli; goose has no fresh PRs in this window). Three
+of the eight close real production-affecting bugs (litellm #26884 multi-system-message
+provider-dependent silent corruption on Responses API, litellm #26857 dual-mode MCP routing
+unblocking progress notifications for Claude Code/Cursor/VSCode without re-breaking
+curl/Inspector, litellm #26883 cache-pricing-leak on the custom-pricing path symmetric to #26872
+on the model-DB path), one is a context-window-safety win (gemini-cli #26256 unbounded shell
+output now caught at 10 MiB with prescriptive recovery), one is a refactor with embedded
+bug-fixes (qwen-code #3775 chokepoint move closes /summary thought-leak and silent
+enable-thinking-on-label-workloads), two are stack-cleanup PRs in the codex permission-profile
+migration (#20422 retires legacy reconstruction, #20406 hydrates from explicit wire field), one
+is a UI-customization opt-in (opencode #25103 themeable overlays).
