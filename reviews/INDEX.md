@@ -4847,3 +4847,79 @@ bug-fixes (qwen-code #3775 chokepoint move closes /summary thought-leak and sile
 enable-thinking-on-label-workloads), two are stack-cleanup PRs in the codex permission-profile
 migration (#20422 retires legacy reconstruction, #20406 hydrates from explicit wire field), one
 is a UI-customization opt-in (opencode #25103 themeable overlays).
+
+## drip-208 — 2026-04-30
+
+| PR | Title | Review |
+| --- | --- | --- |
+| [#25114](https://github.com/sst/opencode/pull/25114) | fix(desktop): Prevent Model response Interruption when opening settings dialog | [drip-208/sst-opencode-25114.md](drip-208/sst-opencode-25114.md) |
+| [#25110](https://github.com/sst/opencode/pull/25110) | fix(opencode): ensure DeepSeek reasoning_content round-trips for all interleaved cases | [drip-208/sst-opencode-25110.md](drip-208/sst-opencode-25110.md) |
+| [#20430](https://github.com/openai/codex/pull/20430) | turn-context: stop writing legacy sandbox policy | [drip-208/openai-codex-20430.md](drip-208/openai-codex-20430.md) |
+| [#26885](https://github.com/BerriAI/litellm/pull/26885) | chore: add soniox provider with support for async stt-async-v4 model | [drip-208/BerriAI-litellm-26885.md](drip-208/BerriAI-litellm-26885.md) |
+| [#26866](https://github.com/BerriAI/litellm/pull/26866) | feat(pricing): add gpt-image-2 and azure_ai/gpt-image-2 model pricing | [drip-208/BerriAI-litellm-26866.md](drip-208/BerriAI-litellm-26866.md) |
+| [#3776](https://github.com/QwenLM/qwen-code/pull/3776) | feat(installer): add standalone archive installation | [drip-208/QwenLM-qwen-code-3776.md](drip-208/QwenLM-qwen-code-3776.md) |
+| [#26259](https://github.com/google-gemini/gemini-cli/pull/26259) | fix(cli): continue task after skill slash activation | [drip-208/google-gemini-cli-26259.md](drip-208/google-gemini-cli-26259.md) |
+| [#8931](https://github.com/block/goose/pull/8931) | localize hardcoded strings in provider settings UI | [drip-208/block-goose-8931.md](drip-208/block-goose-8931.md) |
+
+Verdict mix (drip-208): two merge-as-is (opencode #25114 — layered client+server fix for the
+mount-time spurious-write that was killing in-flight agent fibers via Config.invalidate →
+Instance.disposeAll, with the server-side diff-and-skip at config.ts:759-779 protecting against
+the next surface that mounts a Kobalte Select against a freshly-resolved createResource; codex
+#20430 — writer-flip step in the multi-PR PermissionProfile migration stack, turning
+TurnContextItem.sandbox_policy into Option<SandboxPolicy> with skip_serializing_if, deleting
+non_legacy_file_system_sandbox_policy() at turn_context.rs:303-322, and explicit-panic on
+both-fields-missing in the read fallback at protocol.rs:2885-2900), five merge-after-nits
+(opencode #25110 widens transform.ts:214-225 to extract reasoning_content for any
+@ai-sdk/openai-compatible model whose api.id contains "deepseek" regardless of interleaved-shape,
+with four new tests covering multi-turn tool-call preservation, empty-string preservation,
+boolean-true variant, and missing-interleaved variant; litellm #26885 lands the Soniox async STT
+provider as a parallel-handler dispatch in main.py:transcription analogous to OpenAI/Azure, with
+SonioxAudioTranscriptionHandler at handler.py:320-440 orchestrating the file-upload →
+create-transcription → poll → fetch → cleanup pipeline, defensive max(poll_interval,0.0) and
+max(max_attempts,1) clamps, default 1800-attempt × 1s ≈ 30min ceiling raising HTTP 504 on
+overrun, cleanup-on-error path, soniox_raw on _hidden_params, placeholder $0.0 pricing
+acknowledged in README, plus three new test modules covering handler/transformation/registration
+— nits: validate soniox_cleanup strings against {"file","transcription"} allowed set, document
+the optional_params.pop mutation contract, and lower the default max-attempts or document the
+proxy-timeout interaction; litellm #26866 adds gpt-image-2 + azure_ai/gpt-image-2 pricing entries
+matching gpt-image-1 field shape with both /v1/images/generations and /v1/images/edits in
+supported_endpoints — nits: spot-check the five per-token numbers against the live OpenAI/Azure
+pricing pages, confirm cache_creation_input_token_cost is genuinely absent (same gap that bit
+#26872/#26883), add cost-calculator regression test pinning a representative dollar amount;
+gemini-cli #26259 fixes the post-skill-activation prompt by extracting
+getDefaultPostSubmitPrompt(skillName) at SkillCommandLoader.ts:11-13 and rewriting the no-args
+default from "Use the skill X" to a branch-aware "...if there is an active task, continue it
+using this skill's instructions; if no task was provided, ask what task to apply it to" — fixes
+the workflow where mid-conversation /skillname interrupted an in-flight task by making the model
+ask "use it on what?", with the user-args-supplied path preserved unchanged and an exact-string
+test asserting the new prompt — nits: i18n posture for skill-activation prompts is unstated,
+prompt-injection surface via ${skillName} when skill registries become user-influenced should be
+noted, add args-supplied-path test for symmetry; goose #8931 routes six setError/setSetupError
+call sites in ModelProviderRow.tsx (lines 113, 184, 229, 244, 304, 321) plus the
+Edit/Add/Save/Saving/Saved/Connect/Retry button labels in ModelProviderPanels.tsx through
+i18next, widening useTranslation to ["settings","common"], using {{var}} interpolation for
+fieldRequired/fieldsMissing, correctly adding t to the loadFields useCallback deps to prevent
+locale-switch stale-closure bugs, EN+ES translations symmetric, with an honest 515-line
+size-budget exception entry in check-file-sizes.mjs justifying the file passing the 500-line
+ceiling rather than a fake split — nits: confirm whether non-EN/ES locales exist and need
+batching, optional count-aware plural for fieldsMissing), and one request-changes (qwen-code
+#3776 standalone-archive installer with mandatory SHA256 verification of the bundled Node
+runtime via verify_checksum() in install-qwen-with-source.sh that aborts when SHA256SUMS is
+missing, no-auto-start of qwen post-install per the design doc, scoped-out signing/notarization
+in v1, --method {detect,npm,standalone} flag, four target archives + Windows zip in the release
+workflow — but Windows installer needs explicit Get-FileHash or certutil verification (the
+static test only asserts removal of the legacy MSI path, not presence of the Windows verifier),
+the "delete previous install dir" path needs an audit + refusal test against $HOME-or-shorter
+pathological cases, and the --mirror flag needs HTTPS-only enforcement plus a loud log line so
+non-canonical-mirror installs are visible to the user). Repo coverage: 6 distinct repos all
+six target CLIs (opencode, codex, litellm, qwen-code, gemini-cli, goose). Theme of the drip:
+**writer-side cleanups & safe-default plumbing** — opencode #25114 stops a spurious write
+killing fibers, codex #20430 stops emitting the legacy sandbox field, opencode #25110 stops
+silently dropping reasoning_content on the missing-interleaved-shape path, gemini-cli #26259
+stops the model from asking "use it on what" when an active task already exists, qwen-code #3776
+stops shipping unverified Node binaries, goose #8931 stops shipping un-localized settings
+strings, litellm #26866 stops gpt-image-2 from billing as $0, litellm #26885 lands a new
+provider with cleanup-on-error and bounded-poll defaults from day one. The common shape is
+"the previous default was wrong-by-omission and the fix is to make the omission explicit" — six
+of the eight PRs are about removing a silent fallback that was silently shipping the wrong
+behavior.
