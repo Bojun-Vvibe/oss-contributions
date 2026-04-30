@@ -1,0 +1,16 @@
+---
+pr-url: https://github.com/google-gemini/gemini-cli/pull/26288
+sha: 8c14de38a768
+verdict: merge-after-nits
+---
+
+# fix(cli): respect .env override for GOOGLE_CLOUD_PROJECT
+
+Refactor of `setUpCloudShellEnvironment` at `packages/cli/src/config/settings.ts:553-590`: deletes the early-return short-circuit at `:554-562` that previously bailed out of the function entirely when `selectedAuthType === AuthType.USE_VERTEX_AI`, restoring `USER_GCP_PROJECT` from the saved env var directly. The new shape unifies both auth types through the same `.env`-file-read path: `value` starts as `'cloudshell-gca'` for non-Vertex auth or `process.env[USER_GCP_PROJECT]` for Vertex, then if an `.env` file at `envFilePath` exists *and* contains a `GOOGLE_CLOUD_PROJECT=...` line, the value is replaced (`:572-580`). The terminal write at `:583-587` either sets `process.env['GOOGLE_CLOUD_PROJECT'] = value` or, if `value` is `undefined` and the env still holds the cloudshell sentinel, deletes the env var.
+
+The bug being fixed is a Cloud Shell + Vertex AI + `.env` user who set `GOOGLE_CLOUD_PROJECT=my-vertex-project` in their workspace `.env` and expected it to win. Before this PR, the early-return at the top of the Vertex branch ran *before* the `.env` read at the bottom, so the user's `.env` value was silently discarded in favor of `USER_GCP_PROJECT`. The new test at `settings.test.ts:3297-3322` pins the contract: with `CLOUD_SHELL=true`, `GOOGLE_CLOUD_PROJECT=my-vertex-project` (shell), `.env` containing `GOOGLE_CLOUD_PROJECT=env-vertex-project`, and `selectedType: USE_VERTEX_AI`, the result is `env-vertex-project` — `.env` wins, as users intuit.
+
+Nits: (1) the deleted comment block at `:553-562` ("the user has explicitly selected Vertex AI auth, they intend to use their own GCP project, so we restore the original value and skip the Cloud Shell override to respect their .env settings") is the correct intent statement but it's gone — the new flow encodes the same intent but a future reader sees only conditional logic without the *why*; restore a 3-line comment at `:565` summarising the precedence rule (`.env` > saved `USER_GCP_PROJECT` > cloudshell-gca`). (2) the test only covers the positive case (`.env` overrides shell) — there's no test for the precedence-without-`.env` arm where `value = process.env[USER_GCP_PROJECT]` should win, even though that arm is the *implicit* contract this PR also changes. (3) the `value: string | undefined` widening at `:566` introduces a code path where `process.env['GOOGLE_CLOUD_PROJECT']` ends up explicitly *deleted* — that's a behavior change for downstream consumers reading the env var via `?? 'default'` patterns, who now see the default branch instead of `'cloudshell-gca'`; possibly desired, but worth a CHANGELOG line.
+
+## what I learned
+Precedence rules between three configuration sources (shell env, saved-state env, `.env` file) are the kind of thing where the *order of evaluation in code* must visibly match the *order of precedence in docs* — if a future reader has to mentally simulate the function to figure out which wins, the function is wrong even if it produces the right answer today. A 3-line comment encoding the precedence contract is cheaper than the bug it prevents.
