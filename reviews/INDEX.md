@@ -4923,3 +4923,77 @@ provider with cleanup-on-error and bounded-poll defaults from day one. The commo
 "the previous default was wrong-by-omission and the fix is to make the omission explicit" — six
 of the eight PRs are about removing a silent fallback that was silently shipping the wrong
 behavior.
+
+## drip-209 — 2026-04-30
+
+| PR | Title | Review |
+| --- | --- | --- |
+| [#25118](https://github.com/sst/opencode/pull/25118) | fix(opencode): make sidebar cost display monotonic | [drip-209/sst-opencode-25118.md](drip-209/sst-opencode-25118.md) |
+| [#25115](https://github.com/sst/opencode/pull/25115) | test: use testEffect for instance state | [drip-209/sst-opencode-25115.md](drip-209/sst-opencode-25115.md) |
+| [#20438](https://github.com/openai/codex/pull/20438) | session: localize legacy sandbox turn fallback | [drip-209/openai-codex-20438.md](drip-209/openai-codex-20438.md) |
+| [#20436](https://github.com/openai/codex/pull/20436) | rollout-trace: record permission profiles | [drip-209/openai-codex-20436.md](drip-209/openai-codex-20436.md) |
+| [#26858](https://github.com/BerriAI/litellm/pull/26858) | fix(mcp_semantic_tool_filter): resolve client-suffixed tool names (LibreChat-style) | [drip-209/BerriAI-litellm-26858.md](drip-209/BerriAI-litellm-26858.md) |
+| [#26261](https://github.com/google-gemini/gemini-cli/pull/26261) | Skip binary CLI relaunch (SEA support) | [drip-209/google-gemini-gemini-cli-26261.md](drip-209/google-gemini-gemini-cli-26261.md) |
+| [#3487](https://github.com/QwenLM/qwen-code/pull/3487) | refactor(bun): clean up bundled mode implementation | [drip-209/QwenLM-qwen-code-3487.md](drip-209/QwenLM-qwen-code-3487.md) |
+| [#8772](https://github.com/block/goose/pull/8772) | feat: ACP tool-chain metadata | [drip-209/block-goose-8772.md](drip-209/block-goose-8772.md) |
+
+Verdict mix (drip-209): two merge-as-is (opencode #25115 testEffect-conversion of the last
+holdout test file with zero coverage loss, codex #20438 deletes a one-call legacy session
+helper and inlines into its sole compatibility-fallback caller while preserving the lock
+critical-section), four merge-after-nits (opencode #25118 promotes sidebar cost from a
+reduce-over-capped-message-cache to a persisted monotonically-accumulated session column
+guarded by Decimal.plus().toNumber() and Number.isFinite — but ships no backfill for existing
+sessions and no compaction-charge regression test, codex #20436 renames
+ThreadStartedTraceMetadata.sandbox_policy → permission_profile so rollout-trace bundles stop
+being stamped in a lossy compatibility shape — but ships no serde alias or format-version bump
+for old replayers, gemini-cli #26261 adds IS_BINARY env-var to short-circuit the
+parent/daemon relaunch path that breaks under Node SEA + ships an unsigned-Mac-binaries
+workflow with SHA-pinned actions — but the second site silently also adds SANDBOX to the
+memory-args skip list without mentioning it in the title and there's no startup log when
+IS_BINARY is honored, qwen-code #3487 swaps a hand-rolled ~190-LOC YAML state-machine for
+Bun.YAML / lazy-required `yaml` package + dedups isInBundledMode/isRunningWithBun across
+bundle-features.ts and bundledMode.ts + adds a typed FeatureName registry — but ships no
+behavior-parity test for the YAML swap, no Bun-DCE size measurement validating the
+lazy-require story, and bundles four independent refactors into one 1400-LOC PR), one
+request-changes (litellm #26858 fixes _name_matches_canonical to handle LibreChat-style
+suffix-wrapped tool names like `fc_web_search-firecrawl_scrape_a1b2c3d4` in addition to the
+existing prefix-wrapped opencode-style — the matcher rewrite is correctly gated on canonical
+containing MCP_TOOL_PREFIX_SEPARATOR to avoid spurious collisions with user-defined local
+functions, and the selector's "shortest qualifying name wins" tiebreaker is sound — but the
+PR ships 100 files / +8649 / −630 of which only 4 are the actual fix; the rest is
+branch-drift from rebasing onto a fast-moving main with parallel migrations, .npmrc files,
+unrelated workflow YAML, schema.prisma columns, and embedding/streaming/cost-calc internals
+— unreviewable in current shape; also missing a multi-tool ambiguity test pinning the
+tiebreaker), and one needs-discussion (goose #8772 emits explicit ACP tool-chain metadata
+via tool_chain_meta(chain_id, summary) at server.rs:139-150 plus a substantial set of
+direction-symmetric ACP↔RMCP conversion helpers — acp_meta_to_rmcp / rmcp_meta_to_acp /
+acp_annotations_to_rmcp / rmcp_annotations_to_acp / acp_text_to_message_content — and rewrites
+acpNotificationHandler.ts replay paths from per-handler ad-hoc construction to shared
+buildToolRequestBlock / buildToolCallPatch / updateToolCallBlocks builders so live and replay
+finally produce identical UI state, with 379 new lines of tests; correctly defaults unknown
+ACP roles to Role::User in the conversion match arm — but the chain-id assignment policy is
+not visible in the diff context and not documented in the PR description, no live↔replay
+round-trip test asserts the correctness claim, the extract_timeout_from_meta Meta→AcpMeta
+type-domain rename needs a "this is intentional" callout, and the unknown-role collapse needs
+a tracing::warn! to surface protocol drift — also the largest diff in the drip at 9 files /
++2121 / −427 with most volume in a 2k-line ACP-server change, bounded by reviewer-tolerance
+for that surface area in one PR). Repo coverage: all six target CLIs (opencode×2, codex×2,
+litellm, gemini-cli, qwen-code, goose). Theme of the drip: **explicit-contract refactors that
+expose previously-implicit invariants** — opencode #25118 makes "spend is monotonic" a
+persisted-column invariant instead of a reduce-over-cache derivation, opencode #25115 makes
+"directory context flows through provideInstance" a pipe-stage invariant instead of a
+closure-scoped Effect.runPromise, codex #20438 makes "the legacy SandboxPolicy bridge is a
+single locatable function" by deleting the redundant Session helper, codex #20436 makes
+"trace metadata records the source-of-truth field, not its lossy projection" by renaming the
+field, gemini-cli #26261 makes "SEA mode skips relaunch" an explicit IS_BINARY env-var check
+instead of relying on relaunch-fails-then-fallback luck, litellm #26858 makes "client tool
+name wrapping is symmetric in either direction" the matcher's contract instead of just
+prefix-only, qwen-code #3487 makes "bundled-vs-runtime mode is one source of truth" by
+deleting the duplicate detection helpers and centralizing in bundledMode.ts, goose #8772
+makes "live and replay produce identical UI state" the producer-side metadata invariant
+instead of a per-consumer best-effort reconstruction. Five of the eight (opencode #25118,
+opencode #25115, codex #20438, codex #20436, litellm #26858) are pure-refactor or
+contract-tightening with no behavior change beyond making the previously-correct shape
+locally enforceable; the remaining three (gemini-cli #26261, qwen-code #3487, goose #8772)
+ship a substantive new feature/path with the same explicit-contract discipline applied
+prophylactically.
