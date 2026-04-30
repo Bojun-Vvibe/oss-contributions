@@ -1,0 +1,23 @@
+# Review: BerriAI/litellm#26906 — fix: validate aws region name
+
+- PR: https://github.com/BerriAI/litellm/pull/26906
+- Head SHA: `d47948ab236d12a1a2f8d35cafa7cf0a6cda2673`
+- Author: yassin-berriai
+- Files: 2 (~+150/-2)
+- Merged: 2026-04-30
+
+## Stated purpose
+The Bedrock client interpolates `aws_region_name` directly into endpoint URL templates (`https://bedrock-runtime.{region}.amazonaws.com/...`). A caller-supplied region containing URL-meta-characters (`@`, `/`, `?`, `#`, `:`, `\\`, newline) could redirect requests to an attacker-controlled host while still appearing to be a legitimate Bedrock call to logging/audit downstream. This PR adds a strict regex gate on region names and rejects malformed inputs at all entry points before they reach URL construction.
+
+## What actually changed
+1. **`llms/bedrock/base_aws_llm.py:41-44`** — adds `_VALID_AWS_REGION_PATTERN = re.compile(r"\A[a-z0-9-]+\Z")`. The `\A` / `\Z` anchors (rather than `^`/`$`) are the load-bearing detail — `^` and `$` in Python regex match line boundaries with `re.MULTILINE`, but more importantly `$` *also* matches before a trailing newline even without `MULTILINE`, so `"us-east-1\n"` would slip past `^[a-z0-9-]+$` but is rejected by `\A...\Z`. The test parametrize list explicitly includes `"us-east-1\n"` — this is exactly the right defensive thinking.
+2. **`base_aws_llm.py:286-294`** — `_get_aws_region_from_model_arn` adds an early `if not _VALID_AWS_REGION_PATTERN.match(region): return None` check after parsing the region out of the ARN. Returning `None` (rather than raising) is correct here because the ARN-parsing path is best-effort and falls through to other region sources.
+3. **`base_aws_llm.py:481-554`** — `_get_aws_region_name` calls `self._validate_aws_region_name(aws_region_name)` *both* on entry (validates caller-supplied `aws_region_name` from `optional_params`) *and* on exit (validates whatever was finally chosen, including env-var or default-fallback paths). The double-validation is correct: an attacker who can influence `AWS_REGION_NAME` env var would otherwise bypass the input gate. The new `_validate_aws_region_name` static method raises `ValueError("Invalid AWS region format: {!r}. ...")` with a clear message — note the use of `!r` to quote the bad input safely in error logs without enabling shell-injection or log-injection in downstream consumers.
+4. **`base_aws_llm.py:559-580`** — `get_aws_region_name_for_non_llm_api_calls` (Guardrails / Vector Store path) gets the same double-validation treatment.
+5. **`tests/test_litellm/llms/bedrock/test_base_aws_llm.py`** — new parametrized test `test_get_aws_region_name_rejects_malformed_region` with 12 attack vectors: `@example.com/`, `@example.com`, `/path`, `.example.com`, `:8080`, `#fragment`, `?query=1`, `\path`, uppercase, spaces, empty string, and trailing newline. Each is wrapped with `with pytest.raises(ValueError, match="Invalid AWS region format")` — good test discipline because the exception type *and* a stable substring of the message are both pinned.
+
+## Quality / risk observation
+This is a textbook URL-injection fix and gets the three load-bearing details right: (1) `\A`/`\Z` anchors not `^`/`$` (the trailing-newline case is the one that would have been missed by 90% of contributors), (2) double-validation on both entry and post-fallback paths so env-var and default-resolution paths are also gated, (3) `!r` in the error message so the bad input is logged safely. The 12-vector parametrized test is the right shape — the tests aren't there to demonstrate the regex works (`re.compile` is well-tested) but to *pin the threat model*: each rejected vector is a concrete attack the maintainer is committing to keeping rejected. One observation about completeness: the validation happens at the public method boundary, but private callers within the class that bypass `_get_aws_region_name` and read directly from `optional_params["aws_region_name"]` (if any exist) would still be vulnerable. A grep for `aws_region_name` reads inside the bedrock module would close that loop. Second observation: the regex is `[a-z0-9-]+` — this would accept e.g. `--`, `-`, `123`, `a-`, all of which are syntactically valid by the regex but not real AWS regions. That's fine — the contract is "reject inputs that could break URL parsing," not "validate against the real AWS region catalog" (which would be an unbounded maintenance burden as AWS adds regions). Documenting that scoping decision in a comment near the regex would help future contributors avoid the temptation to "tighten" it into a hardcoded region list and then forget to update it.
+
+## Verdict
+`merge-as-is`
