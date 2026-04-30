@@ -1,0 +1,42 @@
+# google-gemini/gemini-cli PR #26239 — Backlog Management & Metrics Integrity
+
+- PR: https://github.com/google-gemini/gemini-cli/pull/26239
+- Head SHA: `12c84c67d15b51efc4da3e2174c773b2f1525b48`
+- Files touched: 9 (+88 / -201, net -113 lines). Two-part change: (a) replaces the stale-issue closer's "close immediately" path with a "label-then-close-after-7-days" two-stage flow, and (b) standardizes 7 metrics scripts in `tools/gemini-cli-bot/metrics/scripts/` to emit single-line CSV (`metric,value\n`) instead of per-row JSON.
+
+## Specific citations
+
+- Stale-issue cutoff narrowing at `.github/workflows/gemini-scheduled-stale-issue-closer.yml:50-58`: `threeMonthsAgo` (creation cutoff) becomes `sixtyDaysAgo` (`-2 months → -60 days` is roughly equivalent but slightly tighter, and the variable name change makes the unit explicit), and `tenDaysAgo` (update cutoff) becomes `sevenDaysAgo`. The search-query template at `:59` and the three downstream `isStale` predicates at `:111`, `:114`, `:117` all swap to the new `sevenDaysAgo` variable consistently.
+- Two-stage closer logic at `:128-163`: introduces `const hasStaleLabel = rawLabels.includes(batchLabel);` at `:128` and forks the closer behavior:
+  - **First-pass branch (no `Stale` label yet, `:130-148`)**: adds the `Stale` label, posts a *nudge* comment (`"It looks like this issue hasn't been active for a while. If there is no further activity, we will close this in 7 days. Thank you!"`), but does *not* close the issue. The nudge gives the reporter a 7-day window to respond before the close.
+  - **Second-pass branch (`Stale` label present from a previous run, `:149-162`)**: posts a different *closing* comment (`"Closing this issue due to continued inactivity..."`) and runs the actual `state: 'closed'` + `state_reason: 'not_planned'` update. Pre-PR, the close was unconditional on the first match.
+- Metrics scripts CSV standardization across 5+ files in the same diff:
+  - `tools/gemini-cli-bot/metrics/scripts/domain_expertise.ts:141`: replaces a 10-line `JSON.stringify(<MetricOutput>{ metric, value, timestamp, details: {...} })` block with a single `process.stdout.write(\`domain_expertise,${Math.round(ratio * 100) / 100}\n\`)`. The `details: { totalMaintainerReviews, maintainerReviewsWithExpertise }` and `timestamp` fields are dropped from the on-disk output.
+  - `latency.ts:99-107`: replaces 6 `JSON.stringify(<MetricOutput>{...})` rows in a `metrics: MetricOutput[]` array with 6 direct `process.stdout.write(\`<metric>,<value>\n\`)` calls.
+  - `review_distribution.ts:69`: same pattern, drops `timestamp` and `details: reviewCounts` from the on-disk output.
+  - `open_issues.ts:8-19` and `open_prs.ts:8-19`: switch from `gh issue list --state open --limit 1000 --json number --jq length` (a per-page paginated count, capped at 1000) to a GraphQL `repository(...) { issues(states: OPEN) { totalCount } }` query that returns the actual total without the 1000-cap. This is a real correctness fix on top of the format change — the pre-PR script under-reported any repo with >1000 open items.
+- Bot-author reviewer-association change at `domain_expertise.ts:100` and `review_distribution.ts:44`: `['MEMBER', 'OWNER'].includes(review.authorAssociation)` → `['MEMBER', 'OWNER', 'COLLABORATOR'].includes(review.authorAssociation)`. Widens the "maintainer" definition to include outside collaborators with write access, which changes what the metric measures.
+
+## Verdict: needs-discussion
+
+## Rationale
+
+This PR bundles three logically distinct changes under one title and the bundle creates real review pain:
+
+1. **The stale-issue two-stage closer** is good UX policy. Pre-PR, an issue that hadn't been touched in 10 days got a `Stale` label, a closing comment, and was immediately closed in the same automation pass — the reporter had zero opportunity to respond. Post-PR, the first pass labels-and-nudges, and the *second* automation run (presumably the next day if the cron is daily) closes only if the issue is still inactive. This is the right pattern, the implementation is clean (one new `hasStaleLabel` boolean predicate forks the existing branch), and the comment copy is reasonable. The cutoff narrowing (3 months → 60 days for creation, 10 days → 7 days for updates) is more aggressive but defensible for a high-velocity repo. **Standalone, this would be a clean merge-after-nits.**
+
+2. **The metrics CSV standardization** is a wire-format change. Pre-PR, every metrics script emitted JSON with `metric`/`value`/`timestamp`/`details` fields; post-PR they emit `metric,value` CSV. The `timestamp` field is dropped (so the consumer can't tell *when* a metric value was sampled from the file alone — the consumer presumably stamps it on ingest), and the `details` field is dropped entirely (so e.g. `domain_expertise.details.totalMaintainerReviews` and `review_distribution.details` per-reviewer breakdowns are no longer recoverable from the metrics output). This is a big drop in observability fidelity. **Whoever consumes these metrics downstream needs to be updated in the same PR or in a coordinated downstream PR — but neither is visible in this diff slice.** This is the same concern flagged on drip-194 #26240 (the BT-01 metrics PR by the same author): the on-disk format changes without a deprecation window, no `--format` flag, no parallel-output transition. If the only consumer is in the same `tools/gemini-cli-bot/` tree, fine, but the diff doesn't show a consumer update. This is the headline blocker.
+
+3. **The `COLLABORATOR` widening** at the two `authorAssociation` filter sites is a definition change for what "maintainer review" means. This will retroactively shift the reported metrics — runs against the same historical data will now report different values than they did before — which makes the metric harder to trend over time without a methodology note. Worth either calling out in a CHANGELOG/RELEASE note or splitting into its own PR with a paragraph naming the rationale.
+
+The split-the-PR ask is real: the stale-closer change is a workflow fix, the metrics format change is a wire change, and the COLLABORATOR widening is a definition change. None of them have meaningful review-context overlap with the others, and reviewing them in one bundle means the reviewer either rubber-stamps the bundle or has to spend three times the attention to evaluate each axis independently. The right move is to land the stale-closer change first as its own PR (clean merge), then land the metrics CSV change as a stacked PR with the downstream consumer updates in the same diff (or split across two coordinated PRs in the same release window), then the `COLLABORATOR` widening as a third PR with a one-paragraph rationale in the description.
+
+Specific blockers if landing as-is:
+
+- The metrics CSV format change drops the `timestamp` field. If the downstream consumer depends on the file having a self-describing timestamp (e.g. for late-import reconciliation), the consumer breaks silently. Need confirmation either way.
+- The `details` field drop in `domain_expertise.ts` and `review_distribution.ts` removes observability data that the metrics dashboard presumably uses. If there's a Grafana panel or similar that drills into per-reviewer counts, it will break on the next data refresh.
+- The `COLLABORATOR` widening is uncommented and undescribed in the PR body. A one-line `// COLLABORATOR included to capture outside contributors with write access — see <issue link>` would close the gap.
+
+## What I learned
+
+When a PR title says "Backlog Management & Metrics Integrity" and the diff touches 9 files across two unrelated systems (a GitHub Actions workflow and a metrics-emission script suite), the right reviewer instinct is *not* to take the title at face value but to count the distinct logical concerns inside the diff — here three (stale-closer policy, metrics wire format, maintainer definition). Each concern would warrant its own PR review with its own merge call. Bundling them lets one weak link block all three, and it also obscures the cross-cutting risk: in this case the metrics format change is a real downstream-breakage hazard that gets buried under the stale-closer's "this is clearly a UX win" framing. The right reviewer move on a multi-concern PR is to either (a) request a split, or (b) stamp each concern with its own verdict and force the maintainer to triage. I picked (a) here because the metrics change has cross-PR coordination requirements (a downstream consumer update) that the bundle obscures.
