@@ -4548,4 +4548,88 @@ Verdict mix: 4 merge-as-is (sst/opencode #25046 — tenth-entry mechanical testE
 | [#3743](https://github.com/QwenLM/qwen-code/pull/3743) | fix(cli): prevent file paths from being treated as slash commands | [2026-W18/drip-204/QwenLM-qwen-code-pr-3743.md](2026-W18/drip-204/QwenLM-qwen-code-pr-3743.md) |
 | [#8930](https://github.com/block/goose/pull/8930) | fix: normalize nullable schemas for Vertex Gemini compatibility | [2026-W18/drip-204/block-goose-pr-8930.md](2026-W18/drip-204/block-goose-pr-8930.md) |
 
-Verdict mix: 4 merge-as-is (sst/opencode #25066 — one-line provider auto-detect widening from `deepseek` to `deepseek || kimi-k2`, gated by existing `apiNpm === "@ai-sdk/openai-compatible" && !existingModel` precedence, paired with K2.5+K2.6 unit test mirroring the existing DeepSeek pattern and registry-fixture additions to both `opencode` and `opencode-go` provider sections; openai/codex #20385 — canonical `notify + unblock` fix for `tiny_http::Server::recv()` cancellation race, 8-line patch with `Arc<Server>` correctly cloned before the worker-thread move and `unblock()` called after `notify_waiters()`, verified by 3 consecutive runs of the previously-flaky port-fallback E2E plus full `cargo test -p codex-login`; openai/codex #20389 — leaf-of-25-PR-Sapling-stack mechanical test refactor swapping `SandboxPolicy::DangerFullAccess → PermissionProfile::from_legacy_sandbox_policy(...)` round-trip for direct `PermissionProfile::Disabled`, net -1 line zero behavior change with Windows sandbox-compat references correctly left untouched; QwenLM/qwen-code #3743 — two-layer defense closing real Chinese-language input-eaten bug from issue #1804, comprehensive `looksLikeCommandName` test coverage including reported failures `/api/apiFunction/接口的实现` and `/Users/zhoushuo/Desktop/dw-operator-skill 帮我安装` plus positive cases for extension-qualified `/gcp.deploy` and MCP-style `/mcp:server__tool` — actually classified merge-after-nits below for the `+` rejection concern), 4 merge-after-nits (sst/opencode #25087 — pure docs translation with byte-identical install commands and consistent agent-identifier preservation, single nit being bidirectional language-menu cross-link absence in sibling READMEs which makes Indonesian discoverable only via direct link not the language switcher; BerriAI/litellm #26873 — ContextVar plumbing for MCP extra_headers correctly mirrors the existing `_request_auth_header` pattern with case-insensitive header matching and `set/reset` paired in `try/finally` for no leak, but absent a sensitive-header denylist (operator misconfig forwarding `Cookie` leaks proxy session state) and missing concurrent-async-loop isolation regression to lock the ContextVar invariant against future module-global "optimization"; BerriAI/litellm #26865 — routing-predicate widening from hard-coded v1 substring to family-prefix-or-namespaced match plus new dated-snapshot pricing entries duplicated across live and `_backup` JSON files per repo convention, with OpenAI-vs-Azure endpoint asymmetry on `/v1/images/edits` worth confirming intent and overlap with also-open #26866 needing maintainer-side picking-one-and-closing-the-other to avoid JSON merge conflicts; block/goose #8930 — `normalize_nullable` correctly handles both schemars 1.x emission shapes with defensive single-non-null-variant gates for both branches, end-to-end test using real `schema_for!(ShellParams)` locks the production path, but `*schema = replacement;` in the `anyOf` branch wipes sibling keys (future schemars `{description: ..., anyOf: [...]}` loses description) and function is non-recursive on the `anyOf` branch so hypothetical `Option<Option<i64>>` would not be re-normalized by this pass alone; QwenLM/qwen-code #3743's `+` rejection in `looksLikeCommandName` may regress any MCP server using `+` in tool names — would be worth a `tool_registry` data grep before merge), 0 request-changes, 0 needs-discussion. Repo coverage: 5 distinct repos. Three of the eight close real production-affecting bugs (opencode #25066 multi-turn tool-use failures with custom Kimi-K2.6 entries returning "thinking is enabled but reasoning_content is missing", codex #20385 login-server cancellation hanging until next inbound HTTP request defeating Ctrl-C semantics, qwen-code #3743 absolute file paths and Chinese-language strings prefixed with `/` being silently swallowed by the slash-command dispatcher); two are correctness fixes for smaller surfaces (litellm #26873 documented `extra_headers` config with no transport plumbing into per-request OpenAPI tool dispatch, litellm #26865 `gpt-image-2` silently mis-routed to legacy per-pixel cost calculator); one is a provider-boundary compat fix (goose #8930 schemars 1.x nullable shapes rejected by Vertex Gemini via Bifrost); one is a leaf-of-stack mechanical cleanup (codex #20389); one is a docs add (opencode #25087).
+### W18 drip-205 (2026-04-30)
+
+8 fresh PRs across 3 tracked upstream repos (3 openai/codex, 3 BerriAI/litellm, 2 aaif-goose/goose
+— note: `block/goose` has been transferred to `aaif-goose/goose` and gh now redirects). Theme of
+the drip: "permission-profile migration leftovers + provider-boundary plumbing" — three leaves of
+the long openai/codex Sapling stack (#20355–#20404) finally retire the cwd-less
+`PermissionProfile::from_legacy_sandbox_policy(SandboxPolicy)` constructor and migrate the last
+test/manual-harness call sites onto direct `PermissionProfile::{Disabled,External,read_only()}`
+constructors and the v2 turn API's `PermissionProfileSelectionParams::Profile { id, modifications }`
+selector by name (`:read-only`, `:danger-no-sandbox`); on the litellm side, three independent infra
+fixes — Helm-chart `migrationJob.jobAnnotations` + per-hook ArgoCD/Helm override knobs replacing
+hard-coded `PreSync` / `pre-install,pre-upgrade` literals (#26881), a token-based fallback path
+inside `default_image_cost_calculator` for image-gen models that publish only per-token rates
+(target: gpt-image-2 at non-standard resolutions where the `(quality, size)` table cannot match)
+with new `_image_cost_from_token_usage` helper and `image_response` keyword threaded through three
+`route_image_generation_cost_calculator` call sites (#26880), and a partial pgvector-as-OpenAI-
+compatible RAG ingestion registry add that parameterizes hard-coded `custom_llm_provider="openai"`
+calls and registers `pg_vector → OpenAIRAGIngestion` (#26869, **request-changes** for unexplained
+297-line test deletion + missing `self.custom_llm_provider` init wiring); and on the goose side a
+2.5k-line architecture-and-improvement-plans docs PR covering ACP session-id canonicalization,
+path-manipulation refactor, and zustand state-management plans (#8928, **needs-discussion** for
+scope/PR-body emptiness/proposal-vs-accepted ambiguity), plus a focused ACP server change adding
+`AvailableCommandsUpdate` notifications on session create/load by walking
+`crate::slash_commands::list_commands()` + `Recipe::from_content` and emitting "Running recipe:
+/<command>" feedback chunks when the prompt's first whitespace token matches a registered slash
+command (#8925).
+
+| PR | Title | Review |
+| --- | --- | --- |
+| [#20404](https://github.com/openai/codex/pull/20404) | rollout tests: seed turn contexts from permission profiles | [2026-W18/drip-205/openai-codex-pr-20404.md](2026-W18/drip-205/openai-codex-pr-20404.md) |
+| [#20398](https://github.com/openai/codex/pull/20398) | protocol: drop cwd-less legacy profile constructor | [2026-W18/drip-205/openai-codex-pr-20398.md](2026-W18/drip-205/openai-codex-pr-20398.md) |
+| [#20397](https://github.com/openai/codex/pull/20397) | app-server-test-client: select permission profiles by name | [2026-W18/drip-205/openai-codex-pr-20397.md](2026-W18/drip-205/openai-codex-pr-20397.md) |
+| [#26881](https://github.com/BerriAI/litellm/pull/26881) | feat(helm): helm chart: migration job annotation control | [2026-W18/drip-205/BerriAI-litellm-pr-26881.md](2026-W18/drip-205/BerriAI-litellm-pr-26881.md) |
+| [#26880](https://github.com/BerriAI/litellm/pull/26880) | image cost: token-based fallback when (quality, size) lookup misses | [2026-W18/drip-205/BerriAI-litellm-pr-26880.md](2026-W18/drip-205/BerriAI-litellm-pr-26880.md) |
+| [#26869](https://github.com/BerriAI/litellm/pull/26869) | feat: implement Litellm-pgvector OpenAI-specific RAG ingestion + registry | [2026-W18/drip-205/BerriAI-litellm-pr-26869.md](2026-W18/drip-205/BerriAI-litellm-pr-26869.md) |
+| [#8928](https://github.com/aaif-goose/goose/pull/8928) | Lifei/UI improvements plan (goose2 ACP/path/state design docs) | [2026-W18/drip-205/aaif-goose-pr-8928.md](2026-W18/drip-205/aaif-goose-pr-8928.md) |
+| [#8925](https://github.com/aaif-goose/goose/pull/8925) | Added recipe discovery / execution to ACP server | [2026-W18/drip-205/aaif-goose-pr-8925.md](2026-W18/drip-205/aaif-goose-pr-8925.md) |
+
+Verdict mix: 2 merge-as-is (codex #20404 — minimal recorder-test fixture seeding from
+`PermissionProfile::read_only()` with derived legacy projection, drops the last test-only
+`SandboxPolicy::new_read_only_policy()` consumer in the rollout crate; codex #20398 — removes the
+`pub fn from_legacy_sandbox_policy(&SandboxPolicy)` constructor at `protocol/src/models.rs:475-482`
+plus the now-redundant `permission_profile_presets_match_legacy_defaults` test, migrates the two
+remaining test call sites onto direct `PermissionProfile::Disabled` and
+`PermissionProfile::External { network: NetworkSandboxPolicy::Restricted }` enum constructors,
+correctly preserves the cwd-bearing `from_legacy_sandbox_policy_for_cwd` survivor since
+WorkspaceWrite semantics are only well-defined relative to a project root); 4 merge-after-nits
+(codex #20397 — `SandboxPolicy → PermissionProfileSelectionParams::Profile { id, modifications: None }`
+migration in the manual app-server test client via new `select_permission_profile(&str)` helper at
+lib.rs:623-628 and `permission_profile_id: Option<&'static str>` field replacement, with all three
+nontrivial flows — `trigger_cmd_approval`, `trigger_patch_approval`,
+`live_elicitation_timeout_pause` — switching to the named `:read-only` and `:danger-no-sandbox`
+profiles, nits on YAGNI'd modifications surface and missing comment pointing at canonical profile-
+id source-of-truth; litellm #26881 — Helm `migrationJob.jobAnnotations` map plus four `hooks.{argocd,helm}.{hook,hookDeletePolicy}`
+override knobs with `| default "..." | quote` preserving existing chart behavior, comprehensive
+`tests/migrations-job_tests.yaml:257-288` fixture asserting all five new annotation paths, nits on
+values.yaml comment placement (`annotations:` pod-template vs new `jobAnnotations:` Job-metadata
+distinction is easy to confuse) and optional `argocd.argoproj.io/sync-wave` symmetry; litellm
+#26880 — `_image_cost_from_token_usage(cost_info, image_response)` helper at
+`cost_calculator.py:1903-1939` walking `prompt_tokens_details`/`completion_tokens_details` with
+`text_cached = min(text_in, cached_in)` / `image_cached = cached_in - text_cached` cached-token
+attribution, control flow restructured to try matched `cost_info` then bare model key as Priority
+3, three call sites in `route_image_generation_cost_calculator` correctly forward
+`image_response=completion_response`, 311-line test file added; nits on potential negative
+`image_cached` if `cached_in > text_in + image_in` needing `max(0, ...)` clamp, public-ish
+signature change wanting changelog mention, and minor style around the `fallback_entries` loop;
+goose #8925 — `AvailableCommandsUpdate` emission on session create/load via
+`build_available_commands_from_slash_commands` walking `slash_commands::list_commands()` +
+`Recipe::from_content`, plus `command_input_hint` precedence (args → first-without-default → first)
+and prompt-time "Running recipe: /<command>" feedback chunk gated by registry membership, nits on
+missing tests, empty-description-string filter, eager whitespace-token matching, and per-session
+disk-reparse of every recipe file as latency footgun); 1 needs-discussion (goose #8928 — 2.5k-line
+docs PR with empty body covering three independent themes (ACP session-id canon, path manipulation,
+zustand state) that should be three separate PRs, ambiguous proposal-vs-accepted status mixed in
+the same `ui/goose2/ui_improvements/` tree, and the session-id review's identified architectural
+risk around `acpCreateSession()` creating throwaway `localSessionId` lacks a tracking issue or
+follow-up PR); 1 request-changes (litellm #26869 — pgvector-as-OpenAI-compatible RAG registry add
+with three blocking concerns: (a) unexplained 297-line test deletion replaced by 54-line
+relocation that drops `validate_environment` happy/error and URL-format coverage; (b) the
+parameterization at `openai_ingestion.py:91,109,120` reads `self.custom_llm_provider` but the
+diff doesn't show `__init__`/registry-factory wiring that would set it to `pg_vector` instead of
+defaulting to `openai`; (c) two new test files lack end-to-end registry-→-store-call assertion
+proving the provider field flows through — needs author to address all three before merge).
+
+Verdict mix (drip-204): 4 merge-as-is (sst/opencode #25066 — one-line provider auto-detect widening from `deepseek` to `deepseek || kimi-k2`, gated by existing `apiNpm === "@ai-sdk/openai-compatible" && !existingModel` precedence, paired with K2.5+K2.6 unit test mirroring the existing DeepSeek pattern and registry-fixture additions to both `opencode` and `opencode-go` provider sections; openai/codex #20385 — canonical `notify + unblock` fix for `tiny_http::Server::recv()` cancellation race, 8-line patch with `Arc<Server>` correctly cloned before the worker-thread move and `unblock()` called after `notify_waiters()`, verified by 3 consecutive runs of the previously-flaky port-fallback E2E plus full `cargo test -p codex-login`; openai/codex #20389 — leaf-of-25-PR-Sapling-stack mechanical test refactor swapping `SandboxPolicy::DangerFullAccess → PermissionProfile::from_legacy_sandbox_policy(...)` round-trip for direct `PermissionProfile::Disabled`, net -1 line zero behavior change with Windows sandbox-compat references correctly left untouched; QwenLM/qwen-code #3743 — two-layer defense closing real Chinese-language input-eaten bug from issue #1804, comprehensive `looksLikeCommandName` test coverage including reported failures `/api/apiFunction/接口的实现` and `/Users/zhoushuo/Desktop/dw-operator-skill 帮我安装` plus positive cases for extension-qualified `/gcp.deploy` and MCP-style `/mcp:server__tool` — actually classified merge-after-nits below for the `+` rejection concern), 4 merge-after-nits (sst/opencode #25087 — pure docs translation with byte-identical install commands and consistent agent-identifier preservation, single nit being bidirectional language-menu cross-link absence in sibling READMEs which makes Indonesian discoverable only via direct link not the language switcher; BerriAI/litellm #26873 — ContextVar plumbing for MCP extra_headers correctly mirrors the existing `_request_auth_header` pattern with case-insensitive header matching and `set/reset` paired in `try/finally` for no leak, but absent a sensitive-header denylist (operator misconfig forwarding `Cookie` leaks proxy session state) and missing concurrent-async-loop isolation regression to lock the ContextVar invariant against future module-global "optimization"; BerriAI/litellm #26865 — routing-predicate widening from hard-coded v1 substring to family-prefix-or-namespaced match plus new dated-snapshot pricing entries duplicated across live and `_backup` JSON files per repo convention, with OpenAI-vs-Azure endpoint asymmetry on `/v1/images/edits` worth confirming intent and overlap with also-open #26866 needing maintainer-side picking-one-and-closing-the-other to avoid JSON merge conflicts; block/goose #8930 — `normalize_nullable` correctly handles both schemars 1.x emission shapes with defensive single-non-null-variant gates for both branches, end-to-end test using real `schema_for!(ShellParams)` locks the production path, but `*schema = replacement;` in the `anyOf` branch wipes sibling keys (future schemars `{description: ..., anyOf: [...]}` loses description) and function is non-recursive on the `anyOf` branch so hypothetical `Option<Option<i64>>` would not be re-normalized by this pass alone; QwenLM/qwen-code #3743's `+` rejection in `looksLikeCommandName` may regress any MCP server using `+` in tool names — would be worth a `tool_registry` data grep before merge), 0 request-changes, 0 needs-discussion. Repo coverage: 5 distinct repos. Three of the eight close real production-affecting bugs (opencode #25066 multi-turn tool-use failures with custom Kimi-K2.6 entries returning "thinking is enabled but reasoning_content is missing", codex #20385 login-server cancellation hanging until next inbound HTTP request defeating Ctrl-C semantics, qwen-code #3743 absolute file paths and Chinese-language strings prefixed with `/` being silently swallowed by the slash-command dispatcher); two are correctness fixes for smaller surfaces (litellm #26873 documented `extra_headers` config with no transport plumbing into per-request OpenAPI tool dispatch, litellm #26865 `gpt-image-2` silently mis-routed to legacy per-pixel cost calculator); one is a provider-boundary compat fix (goose #8930 schemars 1.x nullable shapes rejected by Vertex Gemini via Bifrost); one is a leaf-of-stack mechanical cleanup (codex #20389); one is a docs add (opencode #25087).
