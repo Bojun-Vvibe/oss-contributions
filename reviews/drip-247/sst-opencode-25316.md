@@ -1,0 +1,19 @@
+# sst/opencode #25316 — fix: sanitize malformed agent frontmatter
+
+- Link: https://github.com/sst/opencode/pull/25316
+- Head SHA: `353c7b519e253c6f9f8c8042d5550af0e533dc08`
+- Author: nikitakarpei
+
+## Summary
+Closes #25315: an agent file like `description: Reviews changes: returns a verdict.` (unquoted colon in value) made `gray-matter` silently return empty `data` and treat the whole file as content, which dropped `mode: subagent` and `hidden: true` so a hidden subagent rendered as a visible top-level agent in the Web UI. Two coupled fixes: (a) the regex+replace in `fallbackSanitization()` at `config/markdown.ts:20-66` is rewritten so the whole frontmatter block (including delimiters) is reconstructed instead of substring-replaced, (b) `parse()` at `:73-78` now retries with sanitized content when `gray-matter` returns empty `data` despite sanitization having actually changed the file (the SDK's silent-failure shape).
+
+## Line-level observations
+- `config/markdown.ts:20` — regex widened from `^---\r?\n([\s\S]*?)\r?\n---/` to `^---(\r?\n)([\s\S]*?)(\r?\n)?^---[ \t]*(\r?\n|$)/m` with `/m` flag. Captures separate groups for the opening line-ending, the body, the optional trailing line-ending, and the closing-delimiter trailing whitespace+newline. The `^---[ \t]*` anchor on the closing fence catches files where someone left a trailing space (the test fixture at `colon-in-value.md:13` has exactly that — `--- ` with trailing space) which the prior strict `\r?\n---/` rejected.
+- `config/markdown.ts:64-66` — replace target flipped from `content.replace(frontmatter, ...)` (substring-of-content) to `content.replace(match[0], ...)` (the full delimiter-bracketed match), with the new content `\`---${match[1]}${processed}${match[3] ?? ""}---${match[4]}\`` reconstructing both fences plus their captured line-endings. This is the load-bearing correctness fix: the prior `replace(frontmatter, processed)` would silently mis-target on documents where the body text re-contained the frontmatter substring (rare but real for `AGENTS.md`-style meta-docs).
+- `config/markdown.ts:74-77` — `parse()` adds the silent-failure-detection arm: if `Object.keys(md.data).length === 0` AND `sanitized !== template` (i.e. sanitization actually rewrote something), retry with `matter(sanitized)`. The dual condition is correct — a genuinely empty frontmatter (no fields, both fences present) should NOT trigger retry because `sanitized === template` would be true.
+- Sanitization runs unconditionally on every parse even on the happy path, where it's just regex+slice work but still O(n) per file. For a workspace with hundreds of agent files the cost is amortized at startup; not worth optimizing pre-need but worth a comment at the call site.
+- Tests at `markdown.test.ts:236-296` cover all fixture fields (`description` with embedded colon, `mode`, `hidden`, nested `permission.bash` map with shell-string keys including `"rm -rf *"`), the body-content preservation, AND the round-trip through `ConfigAgent.load()` so the `hidden: true` propagation is locked end-to-end. The `expect(agent.prompt).not.toContain("---")` at `:288` is the load-bearing assertion that the sanitization didn't leak a stray fence into the body.
+- No test for the silent-failure retry path itself with a *non-fixable* malformation (e.g. only an opening `---` with no closer); such a case should fall through `gray-matter`'s exception path. Worth a one-line test asserting the existing `try/catch` arm still runs.
+
+## Verdict
+`merge-after-nits` — add a unit test for the "still-malformed-after-sanitization" case to lock the catch-arm fallback, and consider a code comment at `parse()` documenting why sanitize+reparse handles the silent-empty-data case rather than the exception path. The regex/replace correctness fix is right.

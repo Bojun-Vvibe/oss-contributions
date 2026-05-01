@@ -1,0 +1,19 @@
+# openai/codex #20640 — Resume queued prompts after blocked UserPromptSubmit hook
+
+- Link: https://github.com/openai/codex/pull/20640
+- Head SHA: `7dc63cc962010ee1fe8e5945934b02c0efd082f0`
+- Author: abhinav-oai
+
+## Summary
+Closes a stall in the TUI input queue: when a `UserPromptSubmit` hook returns `Blocked` or `Stopped`, the agent never started a turn for that prompt, but `ChatWidget::on_hook_completed` still left `user_turn_pending_start = true` and never invoked `maybe_send_next_queued_input()`. Net effect: any queued follow-up prompts (Tab-queued via the bottom-pane composer) sat in the queue forever until the user manually retried. Fix detects the blocked-or-stopped `UserPromptSubmit` shape at the start of the handler, then clears the pending-start flag and pumps the queue at the end so the existing draining path runs.
+
+## Line-level observations
+- `tui/src/chatwidget.rs:4032-4038` — the predicate is computed *before* the existing `completed_existing_run` work so the captured boolean reflects the pre-handler state, then consumed at `:4064-4067` after `flush_completed_hook_output()` and `finish_active_hook_cell_if_idle()` so UI cleanup happens before the next-prompt submission. Ordering is correct: a queue-pump that fires before the active hook cell finishes would race with the redraw.
+- `tui/src/chatwidget.rs:4035-4037` — `matches!(completed.status, HookRunStatus::Blocked | HookRunStatus::Stopped)` covers both cases. `Stopped` is the "hook explicitly halted the agent" path; `Blocked` is the "hook denied this prompt". Both leave the user-turn unstarted, so both should drain. No `Failed` arm — that's correct because a hook execution failure is a different recovery path (the failed-hook UI surfaces separately and the user is expected to retry manually).
+- `tui/src/chatwidget.rs:4032` — `self.user_turn_pending_start && ...` short-circuit means the pump only fires when there was actually a pending start to clear. If a user submits a prompt while `pending_start = false` (some other path already cleared it) the new code is a no-op — correct.
+- Test at `tests/app_server.rs:172-249` (`blocked_user_prompt_submit_hook_continues_queued_inputs`) is well-shaped: queues two prompts via `Tab`, drives the first through the `Blocked` hook completion, asserts the second prompt is submitted automatically. The `assert_matches!(next_submit_op(...), Op::UserTurn { items, .. } if items == vec![...])` shape locks both the *count* (next op is the second prompt) and the *content* (text matches `"allowed prompt"` not the blocked one) at the type level.
+- The test sends `TurnStarted`/`TurnCompleted` to set up the world, then queues the two prompts via `Tab`, then injects the hook-completed event for the first. This is the right shape for an integration test of the queue-drain interaction. One tiny gap: the test doesn't assert that the *first* prompt's `UserTurn` op is consumed before the second arrives (the `next_submit_op` at `:217-225` only matches the first one), which is correct because the first IS still submitted before the hook blocks it — but a comment at `:213` clarifying "the blocked hook fires AFTER the first prompt was submitted" would help future readers.
+- PR body honestly notes `cargo test -p codex-tui` couldn't run due to missing system build deps for vendored bwrap and a 403 on the `librusty_v8` artifact in the author's environment. Maintainers should run the test once locally to confirm it passes — the structural shape looks correct but not running it leaves a small risk.
+
+## Verdict
+`merge-after-nits` — request maintainer-side `cargo test -p codex-tui` confirmation since the author couldn't complete the test run locally, plus one comment in the test clarifying the first-prompt-submit happens before the hook-block fires. Logic is right.
