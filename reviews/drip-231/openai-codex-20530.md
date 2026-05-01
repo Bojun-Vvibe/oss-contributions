@@ -1,0 +1,27 @@
+# openai/codex#20530 — Support multi-env filesystem tools
+
+- **Author:** starr-openai
+- **Head SHA:** `b12b7896ac272aa04ff4dcf6ebe27e71ca0f5cb5`
+- **Base:** `process-tools-stage2-envctx-envctx-gated-v1-medium` (stacked on #20314)
+- **Size:** +1143 / -157 across 42 files
+
+## Summary
+
+Extends the function-shaped `apply_patch`, `list_dir`, and `view_image` tool handlers to accept an `environment_id` JSON field when the turn has multiple selected environments, and routes execution through the selected environment's cwd + remote filesystem sandbox context. Freeform `apply_patch` keeps single-env behavior because its payload has no field for environment selection. The model-facing prompt surface only changes when `environments.len() > 1`, preserving the existing `<cwd>` shape for the common single-env case.
+
+## Specific code references
+
+- `core/src/context/environment_context.rs:13-43`: new `EnvironmentContextEnvironment { id, cwd, primary }` struct with twin constructors `from_turn_environments` and `from_selected_environments` — both walk `.iter().enumerate()` and stamp `primary: index == 0`. The "primary == first in list" contract is the load-bearing convention; documenting it on the struct definition would harden the API but the matched-pair constructor design is correct.
+- `environment_context.rs:228-296`: the model-facing surface change is precisely gated. `if self.environments.len() <= 1` falls through to the existing single `<cwd>` line; only when `> 1` does the new `<environments>` block emit, with `<environment id="{}" primary="{}">` per entry. The test at `environment_context_tests.rs:194-243` (`serialize_environment_context_with_multiple_selected_environments`) pins the exact XML shape — this is the contract every prompt-template downstream consumer reads.
+- `environment_context.rs:128-139`: the `merge_with` operator-aware function is correctly updated for the multi-env case — `before_had_environments = before.environments.is_some_and(|e| e.len() > 1)`, then `if before_had_environments || after.environments.len() > 1 { after.environments.clone() } else { Vec::new() }`. This preserves the contract that single→single environment turns don't accidentally get the multi-env XML stamped on them by a stale `before`.
+- `apply_patch.rs:43`: surgical change `&turn_context.cwd` → `&action.cwd` — the cwd used for the safety check is now the action's resolved cwd (which the environment selector populated), not the turn's primary cwd. This is the correct fix; the safety check should be against where the patch is *actually applied*, not where the turn started.
+- `app-server/tests/suite/v2/turn_start.rs:9-60`: the load-bearing integration test `turn_start_model_surface_gates_multi_environment_process_tools` asserts the surface gate by exact-string body match. The single-env arm pins `body_contains(single_request, "<cwd>")` *and* `!body_contains(single_request, "<environments>")` *and* `!body_contains(single_request, "environment_id")` — three negative assertions explicitly preventing the new shape from leaking into single-env turns. The multi-env arm pins the exact `<environment id=\"local\" primary=\"true\">` and `<environment id=\"remote\" primary=\"false\">` strings, plus presence of `environment_id` — confirming both halves of the contract from end-to-end through `ThreadStartParams` → `TurnStartParams` → mock responses server.
+- `core/src/context/environment_context_tests.rs:21-178`: every existing constructor call site is updated with the new `Vec::new()` argument in the same position — call-sites at `:21,49,79,100,109,123,131,147,156,171`. Mechanical but the consistent placement (third argument) reduces the chance of a future caller mis-positioning the field.
+- `arc_monitor_tests.rs:79`: the arc-monitor request integration test correctly includes the new `Vec::new()` argument, confirming the policy-rendering path also flows through the new shape.
+- 42-file fan-out across `core/src/tools/handlers/{apply_patch,list_dir,shell,unified_exec,view_image}.rs`, `tools/src/{apply_patch_tool,local_tool,utility_tool,view_image,tool_config,tool_registry_plan}.rs`, and `protocol/src/{models,protocol}.rs` is the breadth required to thread `environment_id` through from JSON schema → tool router → handler → unified-exec process manager.
+
+## Verdict
+
+**merge-after-nits**
+
+The architectural design is right — gating the model-facing prompt change on `len() > 1` preserves the single-env behavior contract for the 99% case, and the integration test pins both the positive and negative arms of the surface gate by exact-string body match. The 42-file fan-out is the correct breadth for plumbing `environment_id` through every consumer. Nits: (a) the freeform `apply_patch` stays on the primary environment because its payload has no field for environment selection — this is documented in the PR body but should be a load-bearing comment at the freeform handler in `tools/handlers/apply_patch.rs` so the next maintainer doesn't silently extend it; (b) the `primary: index == 0` convention in both `from_turn_environments` and `from_selected_environments` should be a doc comment on `EnvironmentContextEnvironment` so future call sites that construct one directly don't violate it; (c) the PR body explicitly says "Not run locally per Codex checkout guidance; formatted touched Rust files only" — the integration test in `app-server/tests/suite/v2/turn_start.rs` is substantial but should be confirmed green in CI before merge given the cross-crate change surface.
