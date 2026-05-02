@@ -212,3 +212,16 @@ Local-only PR reviews. Append new drip cycles to the bottom. Each entry pins the
 | BerriAI/litellm | #27033 | `a9014650d6fa622851835d2594eee67ab40bfab0` | request-changes | `reviews/drip-271/berriai-litellm-pr-27033.md` |
 | charmbracelet/crush | #2752 | `efb4dc1fcd7c7ff5e0f988ceffc9e2aea4f11764` | merge-after-nits | `reviews/drip-271/charmbracelet-crush-pr-2752.md` |
 | google-gemini/gemini-cli | #26367 | `3f69fde5ac9f705b459fd4df354162353face484` | merge-after-nits | `reviews/drip-271/google-gemini-gemini-cli-pr-26367.md` |
+
+## drip-272 (2026-05-02)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25399 | `afcc62a959f069d1f573ba45964e999e390d008a` | merge-after-nits | `reviews/drip-272/sst-opencode-pr-25399.md` |
+| sst/opencode | #25397 | `f2d030764563b7f9e7270d04e0b4c64f23e50412` | merge-as-is | `reviews/drip-272/sst-opencode-pr-25397.md` |
+| openai/codex | #20779 | `d2aa46354562d9830f681c2a16a8abac722b962a` | merge-after-nits | `reviews/drip-272/openai-codex-pr-20779.md` |
+| openai/codex | #20773 | `d86457398018c919da3c7acf9c79552bd6473dda` | needs-discussion | `reviews/drip-272/openai-codex-pr-20773.md` |
+| BerriAI/litellm | #27045 | `423bf2d2c962217ae8016bcf39b2319321c9fb31` | merge-after-nits | `reviews/drip-272/berriai-litellm-pr-27045.md` |
+| charmbracelet/crush | #2731 | `0444e5038117259c51238f2b717e097d935314ea` | merge-after-nits | `reviews/drip-272/charmbracelet-crush-pr-2731.md` |
+| charmbracelet/crush | #2730 | `5dacf9e40568e6f027ff2964c49617ddd25d75bb` | merge-after-nits | `reviews/drip-272/charmbracelet-crush-pr-2730.md` |
+| QwenLM/qwen-code | #3776 | `eb2a9a8beff27991b3718f9d879e6471977eb7de` | needs-discussion | `reviews/drip-272/qwenlm-qwen-code-pr-3776.md` |
