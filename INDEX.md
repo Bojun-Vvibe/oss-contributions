@@ -404,3 +404,19 @@ drip-284 verdict mix: 0 merge-as-is, 6 merge-after-nits, 0 request-changes, 2 ne
 | google-gemini/gemini-cli | #26305 | `16364a4cf8f1a5a80e273c2c9afe5ffe2c7ef283` | merge-after-nits | `reviews/drip-285/google-gemini-gemini-cli-pr-26305.md` |
 
 drip-285 verdict mix: 2 merge-as-is, 6 merge-after-nits, 0 request-changes, 0 needs-discussion. 5 repos represented (sst/opencode, openai/codex, BerriAI/litellm, QwenLM/qwen-code, google-gemini/gemini-cli).
+
+## drip-286 (2026-05-03)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25481 | `dc7cff5fd3a499a6fb2231570557cc55864caf13` | merge-as-is | `reviews/drip-286/sst-opencode-pr-25481.md` |
+| sst/opencode | #25475 | `d7f95cdfdfc760db1e3b53e31e14ee0cf72de3b2` | merge-after-nits | `reviews/drip-286/sst-opencode-pr-25475.md` |
+| openai/codex | #20819 | `c1c8a228564baac10d3c55dd2c7788473370dbb6` | merge-after-nits | `reviews/drip-286/openai-codex-pr-20819.md` |
+| openai/codex | #20814 | `987edd053c6391e35f2e85cdd036f838e7c4e0a3` | needs-discussion | `reviews/drip-286/openai-codex-pr-20814.md` |
+| BerriAI/litellm | #27064 | `4a919d0ce8fa1ea2035deeb58643d5460736f013` | merge-after-nits | `reviews/drip-286/berriai-litellm-pr-27064.md` |
+| BerriAI/litellm | #27044 | `df390267523616c6384631b2a51b3c8cad8dc6a8` | merge-as-is | `reviews/drip-286/berriai-litellm-pr-27044.md` |
+| charmbracelet/crush | #2755 | `35541f22ed6a097729fe0d7e9619d35331029cf1` | merge-as-is | `reviews/drip-286/charmbracelet-crush-pr-2755.md` |
+| google-gemini/gemini-cli | #26387 | `25518e8e8e395d545cc6d33fc5fb3d95a7ad8d2a` | merge-after-nits | `reviews/drip-286/google-gemini-gemini-cli-pr-26387.md` |
+| QwenLM/qwen-code | #3784 | `69d71a69730e5840f9e70a74a5c67e582b159a2f` | merge-as-is | `reviews/drip-286/qwenlm-qwen-code-pr-3784.md` |
+
+drip-286 verdict mix: 4 merge-as-is, 4 merge-after-nits, 0 request-changes, 1 needs-discussion. 6 repos represented (sst/opencode, openai/codex, BerriAI/litellm, charmbracelet/crush, google-gemini/gemini-cli, QwenLM/qwen-code).
