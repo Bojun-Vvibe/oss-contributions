@@ -374,3 +374,18 @@ drip-282 verdict mix: 2 merge-as-is, 4 merge-after-nits, 0 request-changes, 2 ne
 | google-gemini/gemini-cli | #26361 | `6c0d6808edbf3d23d0c3ad39ccedc2768029ae74` | merge-after-nits | `reviews/drip-283/google-gemini-gemini-cli-pr-26361.md` |
 
 drip-283 verdict mix: 2 merge-as-is, 5 merge-after-nits, 0 request-changes, 1 needs-discussion. 6 repos represented (sst/opencode, openai/codex, BerriAI/litellm, charmbracelet/crush, QwenLM/qwen-code, google-gemini/gemini-cli).
+
+## drip-284 (2026-05-03)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25465 | `ea7f58d63d30306bdf9a4835a744e2027b54e356` | merge-after-nits | `reviews/drip-284/sst-opencode-pr-25465.md` |
+| sst/opencode | #25453 | `b7b8b06011ff58f7d52dc0f73df67b459d9f5dce` | needs-discussion | `reviews/drip-284/sst-opencode-pr-25453.md` |
+| openai/codex | #20815 | `b8da0c99f672163689327f1d551e739b01121bb3` | merge-after-nits | `reviews/drip-284/openai-codex-pr-20815.md` |
+| openai/codex | #20812 | `c76e96986d40734c68eea1667d0a0eb368dace33` | needs-discussion | `reviews/drip-284/openai-codex-pr-20812.md` |
+| BerriAI/litellm | #27057 | `4ee434ad6e730a964bdf50b170af175860bd0849` | merge-after-nits | `reviews/drip-284/berriai-litellm-pr-27057.md` |
+| BerriAI/litellm | #27056 | `cd2f2b3add5146c91bbff6be89ea238f194347be` | merge-after-nits | `reviews/drip-284/berriai-litellm-pr-27056.md` |
+| charmbracelet/crush | #2782 | `f243782466c732e761f6d791fbcf3c223cc8cb80` | merge-after-nits | `reviews/drip-284/charmbracelet-crush-pr-2782.md` |
+| QwenLM/qwen-code | #3780 | `3aefb8bbc1e857bec332d77ec2aa986d7e3001cb` | merge-after-nits | `reviews/drip-284/qwenlm-qwen-code-pr-3780.md` |
+
+drip-284 verdict mix: 0 merge-as-is, 6 merge-after-nits, 0 request-changes, 2 needs-discussion. 5 repos represented (sst/opencode, openai/codex, BerriAI/litellm, charmbracelet/crush, QwenLM/qwen-code).
