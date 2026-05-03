@@ -1,0 +1,27 @@
+# charmbracelet/crush #2738 — fix(ui): restore API key validation + add MiniMax validation
+
+- PR: https://github.com/charmbracelet/crush/pull/2738
+- Author: meowgorithm (Christian Rocha)
+- Head SHA: `bad0d43f2470be7067f6b534d3c120715a4e8c4f`
+- Updated: ~2026-04-30
+
+## Summary
+Fixes a silent regression (likely from `7d14abb` and `cce8edf`) where the API key validation step always succeeded for openai-compat providers whose `/models` endpoint is *public* (i.e. not auth-gated). PR replaces the blanket `/models` probe with a per-provider `ProviderConfig.TestConnection` that picks one of four classifiers (auth-gated GET, openai-compat models allowlist, malformed-body chat probe, or `ErrValidationUnsupported`). Restores validation for AiHubMix, Avian, Cortecs, HuggingFace, io.net, Quiniu Cloud, Synthetic, Venice; adds validation for MiniMax; admits `chutes` and `neuralwatt` as unverifiable. Adds a substantial design doc at `internal/config/VALIDATION.md` and pins the policy in `AGENTS.md`.
+
+## Observations
+- `internal/config/VALIDATION.md` (new, +304 lines): this is the core artifact of the PR. It explains *why* `GET /models == 200` proves nothing (public catalog endpoints), enumerates the four classifiers with their `200/401/403/429/5xx` outcome tables, and lists every provider's probe policy in tables that are easy to grep against the code. **This is exactly the right shape** — the kind of policy that silently regresses if it isn't documented inline. Worth keeping prominent.
+- `AGENTS.md` updated with the rule: *Any PR that adds or changes a provider probe, classifier, or the openai-compat allowlist must update `internal/config/VALIDATION.md` and the audit table in `config_validate_test.go` in the same commit.* Pinning the doc-update obligation in `AGENTS.md` is a strong guardrail — without it, the doc would rot within two release cycles.
+- The three-state contract (`nil` = verified, `ErrValidationUnsupported` = saved-but-unverified rendered as a *first-class* UI state, any other error = invalid) is the correct model. The doc explicitly calls out "saved, not verified" as preferable to the original false-positive — this is important framing because reviewers' first instinct is often "but we *should* be able to validate everything, surely?" The doc preempts that.
+- `classifyOpenAIChatMalformed`: sending `{"__crush_probe__": true}` to `/chat/completions` with the user's bearer token is a very clever way to get `400`/`422` (auth passed, body rejected) on valid keys vs `401`/`403` on invalid ones, *without* consuming any tokens or running inference. The collision-risk for that probe key (a provider that happens to interpret `__crush_probe__` as a meaningful field) is essentially zero, but worth a one-line comment in the classifier code citing the docs.
+- Allowlist-based opt-in for openai-compat `/models` (`deepseek`, `groq`, `xai`, `zhipu`, `zhipu-coding`, `cerebras`, `nebius`, `copilot`, `zai`) is the right stance: providers must be *empirically confirmed* to return 401 on a bad key before they get the cheap probe. Default for unknown openai-compat providers is `ErrValidationUnsupported`. That's the safe default this PR's regression came from violating; this PR re-establishes it.
+- `classifyZAIModels` ("anything except 401 is valid") is a notable special case for zai — the doc explains *valid keys return assorted non-200 statuses*. That's odd-shaped but documented; downside is it can mask other issues (e.g. service outage returning 500 looks "valid"). Worth a follow-up to narrow if zai's behavior stabilizes.
+- Transient statuses (`5xx`, `429`, `402`) collapsing into `ErrValidationUnsupported` is the right call — the alternative (showing "invalid key" for a flaky gateway) is the worst possible UX.
+- Bedrock prefix check (`ABSK`) and Vercel prefix check (`vck_`) are documented as weak signals; the doc says so explicitly. That honesty is good.
+- The author flags this *more complex than we had previously, and it may be more complex a solution than we want currently* — that's a maintainer self-review note worth respecting. The complexity is justified by the regression (false-positive validation is genuinely worse than no validation), but the nine providers in the malformed-chat-probe set and the per-provider allowlist do create ongoing maintenance load. The `AGENTS.md` rule is what makes that maintenance load tractable.
+- **Missing from the diff window I was able to read**: `config_validate_test.go` audit-table entries and the actual Go source of the four classifiers. Reviewer should specifically verify (a) every provider mentioned in `VALIDATION.md` has a corresponding row in the test audit table, and (b) the `classifyOpenAIChatMalformed` body-probe shape matches what the doc claims (uses `__crush_probe__: true`, no token consumption).
+- "We will, of course, also want to test this thoroughly" (PR author) — agreed. This is the kind of change that benefits from a one-week soak window before tagging a release, with telemetry on validation outcomes per provider to catch any provider that flipped its behavior between probe-design time and now.
+
+## Verdict
+`needs-discussion`
+
+The technical work is excellent and the documentation is exemplary. The "needs discussion" tag is for the maintainer's own self-flag (*if we merge this let's do so thoughtfully*) — the right next step is a maintainer go/no-go on accepting the per-provider allowlist as long-term policy and a soak plan for the nine new probe paths, not more code changes from the author.
