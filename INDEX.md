@@ -525,3 +525,18 @@ drip-292 verdict mix: 0 merge-as-is, 6 merge-after-nits, 1 request-changes, 1 ne
 | QwenLM/qwen-code | #3800 | `b5b05ae2194ba195f88e08ceebc9e33536f69cf0` | merge-after-nits | `reviews/drip-293/qwenlm-qwen-code-pr-3800.md` |
 
 drip-293 verdict mix: 1 merge-as-is, 6 merge-after-nits, 1 request-changes, 0 needs-discussion. 5 repos represented (sst/opencode, openai/codex, BerriAI/litellm, charmbracelet/crush, QwenLM/qwen-code).
+
+## drip-294 (2026-05-03)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25511 | `af294e5f56419b0be95fa05b13a42393c7c365af` | merge-after-nits | `reviews/drip-294/sst-opencode-pr-25511.md` |
+| sst/opencode | #25492 | `2e1517dfccf8adf64c0b544c97f76469b3e01449` | merge-after-nits | `reviews/drip-294/sst-opencode-pr-25492.md` |
+| openai/codex | #20825 | `5d4d7e51e8fa1e173fb827b5f0db35f481a04681` | merge-as-is | `reviews/drip-294/openai-codex-pr-20825.md` |
+| openai/codex | #20819 | `c1c8a228564baac10d3c55dd2c7788473370dbb6` | merge-after-nits | `reviews/drip-294/openai-codex-pr-20819.md` |
+| BerriAI/litellm | #27071 | `25671105e22ee0afec79ddeb80d2db5f1ee5e3c3` | merge-after-nits | `reviews/drip-294/berriai-litellm-pr-27071.md` |
+| BerriAI/litellm | #27057 | `4ee434ad6e730a964bdf50b170af175860bd0849` | request-changes | `reviews/drip-294/berriai-litellm-pr-27057.md` |
+| charmbracelet/crush | #2785 | `fa1acff88d05871ee16240322f5d818acf08c0ef` | merge-after-nits | `reviews/drip-294/charmbracelet-crush-pr-2785.md` |
+| QwenLM/qwen-code | #3798 | `42ae93ca693f5a630a999668b80590f8fe36ddb8` | merge-after-nits | `reviews/drip-294/qwenlm-qwen-code-pr-3798.md` |
+
+drip-294 verdict mix: 1 merge-as-is, 6 merge-after-nits, 1 request-changes, 0 needs-discussion. 5 repos represented (sst/opencode, openai/codex, BerriAI/litellm, charmbracelet/crush, QwenLM/qwen-code).
