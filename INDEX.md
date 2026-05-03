@@ -707,3 +707,18 @@ drip-304 verdict mix: 2 merge-as-is, 5 merge-after-nits, 0 request-changes, 1 ne
 | QwenLM/qwen-code | #3701 | `e2d7857580a33c3f22cec52f0f22fa5b5eb82c12` | merge-after-nits | `reviews/drip-305/qwenlm-qwen-code-pr-3701.md` |
 
 drip-305 verdict mix: 2 merge-as-is, 5 merge-after-nits, 0 request-changes, 1 needs-discussion. 6 carriers represented (sst/opencode, openai/codex, charmbracelet/crush, google-gemini/gemini-cli, block/goose, QwenLM/qwen-code).
+
+## drip-306 (2026-05-03)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25575 | `cd419177f81f9963a812d5158b0a9bcc4df7fdf5` | merge-after-nits | `reviews/drip-306/sst-opencode-pr-25575.md` |
+| sst/opencode | #25579 | `4acb623a372bf593a1d21c535d7f80d0acce4a07` | needs-discussion | `reviews/drip-306/sst-opencode-pr-25579.md` |
+| BerriAI/litellm | #27084 | `859fff159be5d69010814a5d6b9790aa12a8145f` | merge-after-nits | `reviews/drip-306/berriai-litellm-pr-27084.md` |
+| BerriAI/litellm | #27082 | `74b4eab364348aa8cb22e4e15060ba78e083bd42` | merge-after-nits | `reviews/drip-306/berriai-litellm-pr-27082.md` |
+| QwenLM/qwen-code | #3809 | `fd93f102f5389e09149a813fa9c8171faf8b8ef1` | merge-after-nits | `reviews/drip-306/qwenlm-qwen-code-pr-3809.md` |
+| QwenLM/qwen-code | #3807 | `4fb481b9762ae26ece2e2cd77f3916ebb68a4a8f` | needs-discussion | `reviews/drip-306/qwenlm-qwen-code-pr-3807.md` |
+| block/goose | #8947 | `97b84239c541441a6247bd96783ace4bca142dbe` | merge-after-nits | `reviews/drip-306/block-goose-pr-8947.md` |
+| block/goose | #8945 | `d6c0e2dd8df2d7bf4906ad0343ebc468d288d3ce` | request-changes | `reviews/drip-306/block-goose-pr-8945.md` |
+
+drip-306 verdict mix: 0 merge-as-is, 5 merge-after-nits, 1 request-changes, 2 needs-discussion. 4 carriers represented (sst/opencode, BerriAI/litellm, QwenLM/qwen-code, block/goose).
