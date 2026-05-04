@@ -1393,3 +1393,18 @@ drip-350 verdict mix: 0 merge-as-is, 5 merge-after-nits, 2 request-changes, 1 ne
 | charmbracelet/crush | #2790 | `358d5271f5986815d31855c2798cc00cd5adb582` | merge-after-nits | `reviews/drip-351/charmbracelet-crush-pr-2790.md` |
 
 drip-351 verdict mix: 1 merge-as-is, 7 merge-after-nits, 0 request-changes, 0 needs-discussion. All 7 carriers represented (sst/opencode, openai/codex, BerriAI/litellm, google-gemini/gemini-cli, QwenLM/qwen-code, block/goose, charmbracelet/crush ×2).
+
+## drip-352 (2026-05-05)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25768 | `098258817ae41e8a0cde56c6ee172ef4c80c91ee` | needs-discussion | `reviews/drip-352/sst-opencode-pr-25768.md` |
+| sst/opencode | #25762 | `4c7cf5639030b394337f21ded6afecea7c84ce3d` | merge-after-nits | `reviews/drip-352/sst-opencode-pr-25762.md` |
+| openai/codex | #21085 | `1fca28782e057bf2b06c0349787506098e407df8` | merge-after-nits | `reviews/drip-352/openai-codex-pr-21085.md` |
+| BerriAI/litellm | #27135 | `d160461dc6485d2c93aa0b13da412115dcbf35d9` | needs-discussion | `reviews/drip-352/berriai-litellm-pr-27135.md` |
+| google-gemini/gemini-cli | #26469 | `dc82d97b09ead3a71631896c428807a413ddb0ef` | merge-after-nits | `reviews/drip-352/google-gemini-gemini-cli-pr-26469.md` |
+| QwenLM/qwen-code | #3836 | `3d8b978bafee255f15798c690ed083d2ac73c07d` | merge-after-nits | `reviews/drip-352/qwenlm-qwen-code-pr-3836.md` |
+| block/goose | #9004 | `fed3f4486e02a5d1afb157656d90d02ea8cece6f` | request-changes | `reviews/drip-352/block-goose-pr-9004.md` |
+| charmbracelet/crush | #2791 | `07e00ad4610a7d745befb1780c58aa16b89c7f67` | merge-as-is | `reviews/drip-352/charmbracelet-crush-pr-2791.md` |
+
+drip-352 verdict mix: 1 merge-as-is, 4 merge-after-nits, 1 request-changes, 2 needs-discussion. All 7 carriers represented (sst/opencode ×2, openai/codex, BerriAI/litellm, google-gemini/gemini-cli, QwenLM/qwen-code, block/goose, charmbracelet/crush). Notable: opencode #25768 is a 4k-line cross-cutting workspace-sync change with an unreviewable PR title; litellm #27135 removes ~9.9k lines of vendored Admin UI bundle but raises wheel/sdist packaging concerns; goose #9004 changes the canonical export format from JSON to Markdown without a back-compat reader.
