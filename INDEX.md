@@ -1363,3 +1363,18 @@ drip-348 verdict mix: 2 merge-as-is, 4 merge-after-nits, 1 request-changes, 1 ne
 | block/goose | #8998 | `5de8cfa93e22caeb2ab77a93131e6a19ca9e9d95` | merge-after-nits | `reviews/drip-349/block-goose-pr-8998.md` |
 
 drip-349 verdict mix: 2 merge-as-is, 6 merge-after-nits, 0 request-changes, 0 needs-discussion. 6 carriers represented (sst/opencode, openai/codex ×2, BerriAI/litellm, google-gemini/gemini-cli ×2, QwenLM/qwen-code, block/goose); charmbracelet/crush had no fresh PRs in this tick's window (same as drip-347, drip-348).
+
+## drip-350 (2026-05-05)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25756 | `0a7f8c2826d1b95b9780e5bacf55b7923f42040b` | merge-after-nits | `reviews/drip-350/sst-opencode-pr-25756.md` |
+| sst/opencode | #25747 | `f159b5142850f64e3ce1d12f32ba47b0a425a038` | request-changes | `reviews/drip-350/sst-opencode-pr-25747.md` |
+| openai/codex | #21059 | `f7f73ce43d817eede1f777e8881e12a77fc1c3a4` | merge-after-nits | `reviews/drip-350/openai-codex-pr-21059.md` |
+| openai/codex | #21057 | `99b12d60f6c0b2ec7a08fc695c45beb6111a290d` | merge-after-nits | `reviews/drip-350/openai-codex-pr-21057.md` |
+| google-gemini/gemini-cli | #26463 | `b58f921d69fffc8025cdecc4f4c9aba7ea6adc66` | merge-after-nits | `reviews/drip-350/google-gemini-gemini-cli-pr-26463.md` |
+| google-gemini/gemini-cli | #26462 | `2ffa21741aabdcd188243e4fbadf301ba6a08bce` | merge-after-nits | `reviews/drip-350/google-gemini-gemini-cli-pr-26462.md` |
+| block/goose | #9000 | `79f11672aca39f563d1b64dfcb51fe63ca223ab3` | needs-discussion | `reviews/drip-350/block-goose-pr-9000.md` |
+| QwenLM/qwen-code | #3635 | `b1eb211a126afb611abd43e57eb8da98657fb425` | request-changes | `reviews/drip-350/qwenlm-qwen-code-pr-3635.md` |
+
+drip-350 verdict mix: 0 merge-as-is, 5 merge-after-nits, 2 request-changes, 1 needs-discussion. 5 carriers represented (sst/opencode ×2, openai/codex ×2, google-gemini/gemini-cli ×2, block/goose, QwenLM/qwen-code); BerriAI/litellm and charmbracelet/crush had no fresh (not-yet-reviewed) PRs in this tick's window, so per the carrier-rotation rule we doubled up on opencode/codex/gemini-cli instead.
