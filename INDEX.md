@@ -1348,3 +1348,18 @@ drip-347 verdict mix: 3 merge-as-is, 4 merge-after-nits, 1 request-changes, 0 ne
 | block/goose | #8995 | `ffb7fc2cbf83c88327be473588c9610dcb38486e` | needs-discussion | `reviews/drip-348/block-goose-pr-8995.md` |
 
 drip-348 verdict mix: 2 merge-as-is, 4 merge-after-nits, 1 request-changes, 1 needs-discussion. 6 carriers represented (sst/opencode ×2, openai/codex ×2, BerriAI/litellm, google-gemini/gemini-cli, QwenLM/qwen-code, block/goose); charmbracelet/crush had no fresh PRs in this tick's window (same as drip-347).
+
+## drip-349 (2026-05-05)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25751 | `625c202149c22ebece41fe06cd0787dd46cd9501` | merge-after-nits | `reviews/drip-349/sst-opencode-pr-25751.md` |
+| openai/codex | #21062 | `b37257440ee6975bb5ec705e01022a305582f9e0` | merge-after-nits | `reviews/drip-349/openai-codex-pr-21062.md` |
+| openai/codex | #21058 | `1d9de78a1010f0cf3013946320ea9a92cd2ca95f` | merge-as-is | `reviews/drip-349/openai-codex-pr-21058.md` |
+| BerriAI/litellm | #27128 | `f969eb8c4884835d6eacae55acfadd9a1990f71b` | merge-after-nits | `reviews/drip-349/berriai-litellm-pr-27128.md` |
+| google-gemini/gemini-cli | #26461 | `5ea9c0e3c0c875c0071daa90bcdc8e933ba8d259` | merge-after-nits | `reviews/drip-349/google-gemini-gemini-cli-pr-26461.md` |
+| google-gemini/gemini-cli | #26460 | `7f19202892d9fa196356096f798755c1bdbfef60` | merge-after-nits | `reviews/drip-349/google-gemini-gemini-cli-pr-26460.md` |
+| QwenLM/qwen-code | #3832 | `f89fb70b7adfffaf3a18be26a77a0cff471a4c54` | merge-as-is | `reviews/drip-349/qwenlm-qwen-code-pr-3832.md` |
+| block/goose | #8998 | `5de8cfa93e22caeb2ab77a93131e6a19ca9e9d95` | merge-after-nits | `reviews/drip-349/block-goose-pr-8998.md` |
+
+drip-349 verdict mix: 2 merge-as-is, 6 merge-after-nits, 0 request-changes, 0 needs-discussion. 6 carriers represented (sst/opencode, openai/codex ×2, BerriAI/litellm, google-gemini/gemini-cli ×2, QwenLM/qwen-code, block/goose); charmbracelet/crush had no fresh PRs in this tick's window (same as drip-347, drip-348).
