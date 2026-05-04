@@ -1378,3 +1378,18 @@ drip-349 verdict mix: 2 merge-as-is, 6 merge-after-nits, 0 request-changes, 0 ne
 | QwenLM/qwen-code | #3635 | `b1eb211a126afb611abd43e57eb8da98657fb425` | request-changes | `reviews/drip-350/qwenlm-qwen-code-pr-3635.md` |
 
 drip-350 verdict mix: 0 merge-as-is, 5 merge-after-nits, 2 request-changes, 1 needs-discussion. 5 carriers represented (sst/opencode ×2, openai/codex ×2, google-gemini/gemini-cli ×2, block/goose, QwenLM/qwen-code); BerriAI/litellm and charmbracelet/crush had no fresh (not-yet-reviewed) PRs in this tick's window, so per the carrier-rotation rule we doubled up on opencode/codex/gemini-cli instead.
+
+## drip-351 (2026-05-05)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25763 | `dce8aa4c265b9da558c1905c8cbe4eb6bbad3890` | merge-after-nits | `reviews/drip-351/sst-opencode-pr-25763.md` |
+| openai/codex | #21069 | `468fcead29898f1b4e36ca926126849358744699` | merge-after-nits | `reviews/drip-351/openai-codex-pr-21069.md` |
+| BerriAI/litellm | #27132 | `98f6e5e72c94e668f7da343b6385028976ea67c7` | merge-as-is | `reviews/drip-351/berriai-litellm-pr-27132.md` |
+| google-gemini/gemini-cli | #26465 | `327ba49b3d80c068e35bddcd4c91bc7acf1f4bf8` | merge-after-nits | `reviews/drip-351/google-gemini-gemini-cli-pr-26465.md` |
+| QwenLM/qwen-code | #3840 | `c6de8c171be7dc9905ffc2ea60b65a04411e3e42` | merge-after-nits | `reviews/drip-351/qwenlm-qwen-code-pr-3840.md` |
+| block/goose | #9002 | `1997569a92ba9167f1610009f60be766c835f425` | merge-after-nits | `reviews/drip-351/block-goose-pr-9002.md` |
+| charmbracelet/crush | #2798 | `defa17365c955a754a6dd30fe52277e18f782b22` | merge-after-nits | `reviews/drip-351/charmbracelet-crush-pr-2798.md` |
+| charmbracelet/crush | #2790 | `358d5271f5986815d31855c2798cc00cd5adb582` | merge-after-nits | `reviews/drip-351/charmbracelet-crush-pr-2790.md` |
+
+drip-351 verdict mix: 1 merge-as-is, 7 merge-after-nits, 0 request-changes, 0 needs-discussion. All 7 carriers represented (sst/opencode, openai/codex, BerriAI/litellm, google-gemini/gemini-cli, QwenLM/qwen-code, block/goose, charmbracelet/crush ×2).
