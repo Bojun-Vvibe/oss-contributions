@@ -1619,3 +1619,18 @@ drip-365 verdict mix: 1 merge-as-is, 6 merge-after-nits, 1 request-changes, 0 ne
 | charmbracelet/crush | #2543 | `99948d5ebbfd7b90c747f9d55c5cf7736fd34f87` | merge-after-nits | `reviews/drip-366/charmbracelet-crush-pr-2543.md` |
 
 drip-366 verdict mix: 4 merge-as-is, 3 merge-after-nits, 1 request-changes, 0 needs-discussion (8 reviews across all 7 carriers — sst/opencode, openai/codex, BerriAI/litellm ×2, google-gemini/gemini-cli, QwenLM/qwen-code, block/goose, charmbracelet/crush — full carrier rotation).
+
+## drip-367 (2026-05-05)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25841 | `bfd17ebd20189110da80dd24917287ea60dfbc80` | merge-after-nits | `reviews/drip-367/sst-opencode-pr-25841.md` |
+| openai/codex | #21175 | `8f93be5b9e21e89802d601fb67596023c858d076` | merge-as-is | `reviews/drip-367/openai-codex-pr-21175.md` |
+| BerriAI/litellm | #27137 | `1e1c55ce5bd330952606df322012af1ba62f18d1` | merge-after-nits | `reviews/drip-367/berriai-litellm-pr-27137.md` |
+| google-gemini/gemini-cli | #26498 | `9e83545ac3645da5b5627d9bfc6940a1acf70326` | merge-after-nits | `reviews/drip-367/google-gemini-gemini-cli-pr-26498.md` |
+| QwenLM/qwen-code | #3848 | `55df20b27d1123ca9f38eb6a731d400e9535e970` | merge-as-is | `reviews/drip-367/qwenlm-qwen-code-pr-3848.md` |
+| block/goose | #9011 | `ad0c9f63a90e569882db944c8e9dd0d4b619f45d` | merge-as-is | `reviews/drip-367/block-goose-pr-9011.md` |
+| charmbracelet/crush | #2555 | `147265dae12b6ce624ba2e96518dda999d4d596b` | needs-discussion | `reviews/drip-367/charmbracelet-crush-pr-2555.md` |
+| charmbracelet/crush | #2538 | `c6dde60d2f00e8ca39d2fa85ed4c0606d62aa45e` | merge-after-nits | `reviews/drip-367/charmbracelet-crush-pr-2538.md` |
+
+drip-367 verdict mix: 3 merge-as-is, 4 merge-after-nits, 0 request-changes, 1 needs-discussion (8 reviews across all 7 carriers — sst/opencode, openai/codex, BerriAI/litellm, google-gemini/gemini-cli, QwenLM/qwen-code, block/goose, charmbracelet/crush ×2 — full carrier rotation).
