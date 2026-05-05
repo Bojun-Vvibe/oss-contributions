@@ -1,0 +1,22 @@
+# block/goose #9013 — add empty sidebar state
+
+- **Head SHA:** `c2f4ede3c7eef21771714c98cddeabf317e4692d`
+- **Author:** @morgmart
+- **Verdict:** `merge-after-nits`
+- **Files:** +85 / −13 across `ui/goose2/src/features/sidebar/ui/Sidebar.tsx`, `ui/goose2/src/features/sidebar/ui/SidebarProjectsSection.tsx`, `ui/goose2/src/features/sidebar/ui/__tests__/Sidebar.test.tsx`, `ui/goose2/src/shared/i18n/locales/en/sidebar.json`, `ui/goose2/src/shared/i18n/locales/es/sidebar.json`
+
+## Rationale
+
+Threads a new `hasVisibleChats: boolean` prop from `Sidebar.tsx:437` (computed as `activeSessions.length > 0`) into `SidebarProjectsSection`, and at `SidebarProjectsSection.tsx:66` derives `showEmptyState = projects.length === 0 && !hasVisibleChats`. When that's true, the recents list is replaced with a small card (`SidebarProjectsSection.tsx:72-101`) offering "New project" and "New chat" buttons, and the section's "+" affordance at line 96-97 is hidden so the empty-state CTAs are the only call to action. Includes en/es i18n and a vitest case at `__tests__/Sidebar.test.tsx:46-78` that asserts both buttons fire their callbacks.
+
+**The empty-state condition is correct:** `projects.length === 0 && !hasVisibleChats` correctly distinguishes "truly first-run" from "user has chats but hasn't created a project yet" (in which case the recents list should remain) and from "user has projects but no chats inside them yet" (which is a valid state where the existing project tree should still render). The empty-state UI replaces only the standalone-recents block, not the projects tree above it (`SidebarProjectsSection.tsx:127-142` still renders the project list unconditionally above the conditional), so a user who deletes their last chat but keeps their projects will see projects + empty-state-card — that's the right behavior.
+
+**Nits, ordered by importance:**
+
+1. **The empty-state CTA card uses two icons (`IconEdit`, `IconFolderPlus`) imported at `SidebarProjectsSection.tsx:2` from `@tabler/icons-react`** but the existing project/chat affordances elsewhere in this same file (per the unchanged `+` Button at lines 96-110 in the post-PR file) use a different icon convention (likely a `Plus` icon from the same set). Visual consistency with the section header's "+" would be better than introducing two new icon glyphs purely for the empty state. Either swap to the same icon family the rest of Sidebar uses, or swap the section header's "+" to also use `IconFolderPlus` so the affordances are consistent.
+2. **i18n is incomplete.** Only `en` and `es` got `empty.noProjectsOrChats`. The repo's `locales/` directory presumably has more — check that `de`, `fr`, `ja`, `zh-CN`, etc. each get a translation (or at least an English fallback that's flagged for translation), otherwise non-{en,es} users will see the i18n key string `"empty.noProjectsOrChats"` rendered raw. Same goes for `actions.newProject` and `actions.newChat` — those keys are *referenced* in the new code at lines 87 and 97 but aren't shown as added in the diff, so either they already existed (good) or they're missing from the locale files entirely (silent regression).
+3. **Test asserts the English string verbatim** at `__tests__/Sidebar.test.tsx:65-67`: `screen.getByText("Create a Project and Start a New Chat")`. That'll break the moment the copy is iterated on. Prefer querying by the i18n *key* via the test-id pattern, or by role/structure (`getByRole("region", { name: /empty/i })`) so copy churn doesn't churn tests.
+4. **Empty state hides the section header's "+" button** (`SidebarProjectsSection.tsx:96` — `{!collapsed && !showEmptyState && (...)}`). That's intentional but worth noting that a user looking specifically at the "+" affordance to create a project will now find it absent in exactly the state where they're most likely to want to use it. The card's own "New project" button covers the use case, but the discoverability tradeoff is worth flagging.
+5. **`activeSessions.length > 0` is computed in the parent** (`Sidebar.tsx:437`) but the variable name `hasVisibleChats` and the prop semantics aren't symmetric — `activeSessions` may include archived/hidden sessions depending on filtering elsewhere. Worth a one-liner comment confirming the count is the same one users actually see in the sidebar.
+
+Net: a small, well-tested UX improvement that addresses a real first-run gap. Address the icon consistency and i18n coverage questions before merge; the rest are minor.
