@@ -1649,3 +1649,18 @@ drip-367 verdict mix: 3 merge-as-is, 4 merge-after-nits, 0 request-changes, 1 ne
 | block/goose | #9010 | `3e1c7bc96ea49d0ead6b96aa0d72a261a4e445f1` | merge-after-nits | `reviews/drip-368/block-goose-pr-9010.md` |
 
 drip-368 verdict mix: 4 merge-as-is, 3 merge-after-nits, 0 request-changes, 1 needs-discussion (8 reviews across 6 of 7 carriers — sst/opencode ×2, openai/codex, BerriAI/litellm, google-gemini/gemini-cli ×2, QwenLM/qwen-code, block/goose; charmbracelet/crush skipped this drip because every open PR (#2801/#2800/#2791/#2790/#2788/#2786/#2785/#2783/#2782/#2778/#2773/#2772/#2760/#2759/#2757/#2752/#2751/#2750/#2749/#2745) was already in INDEX.md from prior drips with no fresh open candidates available).
+
+## drip-369 (2026-05-05)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25869 | `82caff4c9a2bbd241d1f43451b4b0496370ab3ca` | merge-as-is | `reviews/drip-369/sst-opencode-pr-25869.md` |
+| sst/opencode | #25867 | `1e1dca64f2ccd954fd943eff65f2f34e280fe18c` | merge-as-is | `reviews/drip-369/sst-opencode-pr-25867.md` |
+| openai/codex | #21182 | `e018a65e22a9e33cb0601e408f0cc88fd6fff5bb` | merge-after-nits | `reviews/drip-369/openai-codex-pr-21182.md` |
+| BerriAI/litellm | #27152 | `6be2cd60aa787c13118e1a682d2a75009c05b5e7` | merge-after-nits | `reviews/drip-369/berriai-litellm-pr-27152.md` |
+| google-gemini/gemini-cli | #26206 | `868eb2535e9a013b08bc2cf8e8ea8dd0ee05cff0` | merge-as-is | `reviews/drip-369/google-gemini-gemini-cli-pr-26206.md` |
+| QwenLM/qwen-code | #3852 | `8a5fa3b1920ea25f5703e981641ee562c6c29d49` | merge-after-nits | `reviews/drip-369/qwenlm-qwen-code-pr-3852.md` |
+| block/goose | #8904 | `2eb4a5d9966f72ea23c67a24f780110c4c5a01f4` | merge-as-is | `reviews/drip-369/block-goose-pr-8904.md` |
+| charmbracelet/crush | #2575 | `b5754e2c49ab000797286627ffd7711ea72cac84` | needs-discussion | `reviews/drip-369/charmbracelet-crush-pr-2575.md` |
+
+drip-369 verdict mix: 4 merge-as-is, 3 merge-after-nits, 0 request-changes, 1 needs-discussion (8 reviews across all 7 carriers — sst/opencode ×2, openai/codex, BerriAI/litellm, google-gemini/gemini-cli, QwenLM/qwen-code, block/goose, charmbracelet/crush — full carrier rotation).
