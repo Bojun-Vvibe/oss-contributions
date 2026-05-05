@@ -1,0 +1,29 @@
+# block/goose #8999 — fix: 8531 - elicitation fixes
+
+- URL: https://github.com/block/goose/pull/8999
+- Head SHA: `fe16fc120255fcec47c15311fc28780d4891b2fa`
+- Author: alexhancock
+- Size: +114 / -20 across 3 files (CLI elicitation, server session_events, desktop ElicitationRequest)
+
+## Comments
+
+1. `crates/goose-cli/src/session/elicitation.rs:14-31` — The previous behavior was `properties.is_none() ⇒ silently auto-accept` (return `Ok(Some(HashMap::new()))`). The new behavior treats both *missing* `properties` and *empty* `properties` ({}) as "schema-less approval prompt" and surfaces an explicit `cliclack::confirm` Y/N. **This is the right call** — silent auto-accept on a tool that asks the user "are you sure you want to delete /etc?" with an empty schema is a real footgun. Treating empty-schema as approval-prompt instead of silent-yes is exactly the MCP spec's intent.
+2. `crates/goose-cli/src/session/elicitation.rs:18-19` — `Some(props) if !props.is_empty() => props` is the right guard (covers the original "no properties key" case AND the "empty properties object" case in one arm). Clean.
+3. `crates/goose-cli/src/session/elicitation.rs:21-25` — The prompt-text fallback `if message.is_empty() { "Approve this action?" } else { "Approve?" }` is a little terse when `message` is non-empty. Consider `"Approve?"` → `format!("Approve: {}?", message)` or just printing the message above (which the function already does at line 12) and using `"Approve?"` consistently. Minor UX nit.
+4. `crates/goose-cli/src/session/elicitation.rs:26-30` — Mapping `Ok(false)` → `Ok(None)` (decline) and `Err(Interrupted)` → `Ok(None)` (Ctrl+C) is correct: both should be treated as "user declined" by the caller, not as an error. The `cliclack::confirm(...).initial_value(true)` defaults to "yes" on bare Enter, which matches the previous auto-accept behavior for users who muscle-memory through prompts. Reasonable default.
+5. `crates/goose-server/src/routes/session_events.rs:316-345` — The elicitation-response short-circuit is the most subtle part of the diff. It detects "this user_message is actually a response to an in-flight elicitation" by walking the message content for `ActionRequired { data: ElicitationResponse { .. } }` and, if found, routes via `agent.reply(...)` directly without registering a new active request or opening a new SSE stream. **Correct architecture** — the original tool call is still streaming on the prior request_id, and registering a new active request here would (a) trigger the "Session already has an active request" 400 (line 354, removed), or (b) create a second SSE stream that races with the first. Good.
+6. `crates/goose-server/src/routes/session_events.rs:317-318` — The `let user_message = request.user_message; let override_conversation = request.override_conversation;` was hoisted above the `is_elicitation_response` check, which is necessary because the check needs `user_message`. The matching deletion at lines 325-326 (in the `-` block) avoids a use-after-move. Clean refactor.
+7. `crates/goose-server/src/routes/session_events.rs:331-339` — `SessionConfig` is built with `max_turns: None, retry_config: None` for the elicitation-response path. Confirm this is intentional — for an elicitation reply, the agent should consume the reply and continue the *original* turn, not start a new turn budget. `max_turns: None` (effectively "use the default") may or may not match what the original turn was running with. Worth a one-line comment: "elicitation responses are part of the original turn; max_turns/retry are inherited from the in-flight call."
+8. `crates/goose-server/src/routes/session_events.rs:343` — Returning `Ok(Json(SessionReplyResponse { request_id }))` reuses the *original* request_id. Good — the client's correlation ID stays stable across the elicitation round-trip.
+9. `ui/desktop/src/components/ElicitationRequest.tsx:87-88` — `const schema = (requested_schema ?? {}) as JsonSchema; const hasSchemaFields = Boolean(schema.properties && Object.keys(schema.properties).length > 0);` is the desktop mirror of the CLI fix (point 1). Symmetric handling — good. The `?? {}` fallback handles the case where the server sends a literally null schema.
+10. `ui/desktop/src/components/ElicitationRequest.tsx:93-96` — `handleAccept` posts an empty object `{}` as the form data. This matches what the CLI's `Ok(Some(HashMap::new()))` sends. The two clients now agree on the wire format for "approval-only response." Good.
+11. `ui/desktop/src/components/ElicitationRequest.tsx:163-178` — Conditional render: `JsonSchemaForm` if `hasSchemaFields`, otherwise a plain `<Button>Accept</Button>`. **Missing**: a "Decline" button. The CLI gives the user `Y/n`; the desktop UI only gives them "Accept." A user who wants to decline a schema-less elicitation has to close the request implicitly (timeout?) or click some other UI element. Add a paired "Decline" button that calls `onSubmit(elicitationId, null)` or whatever the decline wire format is.
+12. Missing: a regression test for the original bug #8531. The PR description references it but the diff doesn't show a test file. For a fix to a "silently auto-accepts dangerous tool calls" bug, the regression test is essential — otherwise the next refactor could re-break it.
+
+## Verdict
+
+`merge-after-nits`
+
+## Reasoning
+
+Solid bug fix addressing a real safety issue (silent auto-accept on schema-less elicitations) with consistent treatment across both CLI and desktop UI, plus a clever short-circuit in the server to handle elicitation responses without breaking the in-flight tool call's SSE stream. Two real asks before merge: (1) add a "Decline" button to the desktop UI for parity with the CLI's Y/n; (2) add a regression test that proves a schema-less elicitation now requires explicit user input rather than silently returning. The `SessionConfig` defaults (point 7) need a clarifying comment but probably aren't wrong.

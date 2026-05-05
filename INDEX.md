@@ -1408,3 +1408,18 @@ drip-351 verdict mix: 1 merge-as-is, 7 merge-after-nits, 0 request-changes, 0 ne
 | charmbracelet/crush | #2791 | `07e00ad4610a7d745befb1780c58aa16b89c7f67` | merge-as-is | `reviews/drip-352/charmbracelet-crush-pr-2791.md` |
 
 drip-352 verdict mix: 1 merge-as-is, 4 merge-after-nits, 1 request-changes, 2 needs-discussion. All 7 carriers represented (sst/opencode ×2, openai/codex, BerriAI/litellm, google-gemini/gemini-cli, QwenLM/qwen-code, block/goose, charmbracelet/crush). Notable: opencode #25768 is a 4k-line cross-cutting workspace-sync change with an unreviewable PR title; litellm #27135 removes ~9.9k lines of vendored Admin UI bundle but raises wheel/sdist packaging concerns; goose #9004 changes the canonical export format from JSON to Markdown without a back-compat reader.
+
+## drip-353 (2026-05-05)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25775 | `1a68eadc39772e6e51ecf3243c0c668003d98c7d` | merge-after-nits | `reviews/drip-353/sst-opencode-pr-25775.md` |
+| sst/opencode | #25773 | `07fa4132eb9fbd7de738bacb41743dea921aed07` | request-changes | `reviews/drip-353/sst-opencode-pr-25773.md` |
+| sst/opencode | #25778 | `3c3145737d57667dbdc8f03ec58b501cf73d1e6a` | request-changes | `reviews/drip-353/sst-opencode-pr-25778.md` |
+| openai/codex | #21111 | `5e1dbff17e658af30079558e232349033ec6b1c8` | merge-after-nits | `reviews/drip-353/openai-codex-pr-21111.md` |
+| openai/codex | #21107 | `c743089d83925ca7810cbc766c3b457a7188c99b` | merge-after-nits | `reviews/drip-353/openai-codex-pr-21107.md` |
+| BerriAI/litellm | #27143 | `b773a178cb5744e4737804cb00d33af268a8c1e4` | merge-after-nits | `reviews/drip-353/berriai-litellm-pr-27143.md` |
+| google-gemini/gemini-cli | #26476 | `443d046069b97e6c2edb8496cf65e813d4351048` | merge-as-is | `reviews/drip-353/google-gemini-gemini-cli-pr-26476.md` |
+| block/goose | #8999 | `fe16fc120255fcec47c15311fc28780d4891b2fa` | merge-after-nits | `reviews/drip-353/block-goose-pr-8999.md` |
+
+drip-353 verdict mix: 1 merge-as-is, 5 merge-after-nits, 2 request-changes, 0 needs-discussion. 5 of 7 carriers represented (sst/opencode ×3, openai/codex ×2, BerriAI/litellm, google-gemini/gemini-cli, block/goose); QwenLM/qwen-code and charmbracelet/crush had zero fresh PRs in the 30-deep open-PR window so we doubled up on opencode and codex (see drip-353/README.md). Notable: litellm #27143 is a credentials-leak fix (Authorization header into spend logs) that should ship with a CVE/advisory; opencode #25778 mixes a real cache-staleness fix with ~50 lines of import-sort churn; opencode #25773 introduces an `args.split_whitespace()` regression while fixing the macOS PATH-from-Finder bug; codex #21107 quietly flips the `trace_exporter` config default; goose #8999 is a real safety fix for silent auto-accept on schema-less MCP elicitations but the desktop UI is missing a paired Decline button.
