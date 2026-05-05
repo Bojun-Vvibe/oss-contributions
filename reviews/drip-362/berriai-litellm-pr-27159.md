@@ -1,0 +1,28 @@
+# BerriAI/litellm #27159 — test: add 24hr Redis-backed VCR cache to additional test suites
+
+- **Head SHA:** `8cd2f92157c79ea25417d045a3720a387b688d2b`
+- **Author:** @mateo-berri
+- **Verdict:** `merge-after-nits`
+- **Files:** +1656 / −331 across 18 files (new `tests/_vcr_conftest_common.py` at +445, expansions to 9 per-suite `conftest.py` files, dedup in `tests/llm_translation/conftest.py` from −145 / +21 and `tests/llm_responses_api_testing/conftest.py` from −135 / +13, plus new `tests/test_litellm/test_vcr_safe_body_matcher.py` and `tests/llm_translation/test_vcr_conftest_common_banner.py`)
+
+## Rationale
+
+This is a structural rollout PR: the previously-bespoke `tests/llm_translation/conftest.py` Redis-VCR plumbing (which already worked) is hoisted into a shared `tests/_vcr_conftest_common.py` and then imported by 8 additional test suites' conftests (`audio_tests`, `batches_tests`, `guardrails_tests`, `image_gen_tests`, `litellm_utils_tests`, `local_testing`, `logging_callback_tests`, `pass_through_unit_tests`, `router_unit_tests`, `unified_google_tests`). The previously-duplicated logic in `llm_translation/conftest.py` (−145) and `llm_responses_api_testing/conftest.py` (−135) is collapsed to thin shims (+21 / +13) — net duplication is going *down* even though the line count is going up. That's the right shape for this kind of rollout.
+
+**The interesting design choices, all in `tests/_vcr_conftest_common.py`, look correct:**
+
+- `_safe_body_matcher` (line 99-126) deliberately avoids `json.loads` to dodge vcrpy's stock body matcher crashing on JSON Lines payloads (the comment at lines 100-107 calls out the Bedrock batch S3 PUT case explicitly). This is a real bug class and the fix is conservative — the only equivalence given up vs. the default is "JSON key order doesn't matter", which is fine because almost every LLM SDK serializes deterministically.
+- `_compute_key_fingerprint` + `_key_fingerprint_matcher` (lines 147-162, 211-222) is a clever solution to the "we want to scrub auth headers from cassettes but still differentiate cached requests by which API key was used" problem. The fingerprint is `sha256(joined headers)[:16]`, hashed *before* `_strip_headers` removes the originals (line 207), then re-checked at match time against an `x-litellm-key-fp` header injected on the wire. The idempotency comment at lines 184-197 is exactly the kind of subtle vcrpy-internals gotcha that needs to be a comment, and the implementation correctly guards re-entry with `if not any(_iter_header_values(headers, KEY_FINGERPRINT_HEADER))` at line 201.
+- `vcr_disabled()` at line 246 makes the whole apparatus opt-in via `CASSETTE_REDIS_URL` presence; without Redis the tests just hit the live network as before. That's the right migration story — no test in the 8 newly-onboarded suites can break in CI environments that haven't been onboarded to the cache yet.
+
+**Nits / things to address before merge:**
+
+1. **The `KEY_FINGERPRINT_HEADER = "x-litellm-key-fp"` value (line 38) is now baked into stored cassettes**. If you ever want to rename it, every cached cassette becomes a miss. Worth either (a) putting it in a constants module shared with whatever consumes the cassettes, or (b) adding a cassette-version key to the fingerprint so a future header-name bump doesn't silently invalidate a 24hr cache for a whole CI run.
+2. **`API_KEY_HEADERS` (line 43-51) and `FILTERED_REQUEST_HEADERS` (line 53-69) overlap by design** — the comment at lines 41-42 explains why (AWS SigV4 headers carry secrets but rotate, so don't fingerprint them). Worth promoting that comment to a docstring on the two tuples and asserting the intended subset relationship in a test (`assert set(API_KEY_HEADERS).issubset(set(FILTERED_REQUEST_HEADERS))`) — if someone adds to one and forgets the other later, the cache silently corrupts.
+3. **`_print_atexit_banner` (line 256) is a fallback for conftests that don't wire `pytest_terminal_summary`** but the docstring doesn't say *which* of the 10 newly-onboarded conftests rely on the fallback vs. the proper hook. If most don't wire the hook (it's not visible in the per-suite conftest diffs I read), then the atexit banner is the de-facto reporting path for nearly every suite — worth documenting and worth adding xdist-worker handling beyond the `if os.environ.get("PYTEST_XDIST_WORKER"): return` early-out (you'll want a controller-side aggregation, otherwise the controller never prints anything when the suite is sharded).
+4. **`record_mode: "new_episodes"` (line 230)** combined with a 24hr TTL in Redis is a foot-gun: any test that accidentally runs against live LLMs will silently bake the live response into the cache for 24hr. Worth a banner on first miss (or a `RECORD_MODE` env override pinned to `none` in CI) so a flake doesn't poison `main`'s cache for everyone for a day.
+5. **`apply_vcr_auto_marker_to_items` (line 310)** documentation exists but the diff in the per-suite conftests isn't shown above line 320 — confirm in review that every new conftest actually calls it, or some suites will be silently uncached.
+
+The new tests `test_vcr_safe_body_matcher.py` (+170) and `test_vcr_conftest_common_banner.py` (+183) cover the trickiest pieces (the JSON-Lines body matcher and the atexit banner content). I'd want to see one more: a round-trip test that records a cassette with key A, then "replays" with key B, and asserts the fingerprint matcher correctly rejects it — that's the security claim the design depends on.
+
+Net: this is the right consolidation, the design is sound, and the rollout pattern (opt-in via env var) is safe. Address the documentation/footgun nits and the extra round-trip test, then ship.
