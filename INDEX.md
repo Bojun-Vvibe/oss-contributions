@@ -1634,3 +1634,18 @@ drip-366 verdict mix: 4 merge-as-is, 3 merge-after-nits, 1 request-changes, 0 ne
 | charmbracelet/crush | #2538 | `c6dde60d2f00e8ca39d2fa85ed4c0606d62aa45e` | merge-after-nits | `reviews/drip-367/charmbracelet-crush-pr-2538.md` |
 
 drip-367 verdict mix: 3 merge-as-is, 4 merge-after-nits, 0 request-changes, 1 needs-discussion (8 reviews across all 7 carriers — sst/opencode, openai/codex, BerriAI/litellm, google-gemini/gemini-cli, QwenLM/qwen-code, block/goose, charmbracelet/crush ×2 — full carrier rotation).
+
+## drip-368 (2026-05-05)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25861 | `5c1c3b74b1159c62c10c52c6d3be59b6f7e11163` | merge-as-is | `reviews/drip-368/sst-opencode-pr-25861.md` |
+| sst/opencode | #25860 | `4780710c54c7ba3b7b9c13e7861daa2e5022a247` | merge-as-is | `reviews/drip-368/sst-opencode-pr-25860.md` |
+| openai/codex | #21184 | `9f298583f2bbc09b6b9456386808c7c7c3306439` | merge-as-is | `reviews/drip-368/openai-codex-pr-21184.md` |
+| BerriAI/litellm | #27189 | `9a9323022f5096c467cabbe0343b8e0129688075` | merge-after-nits | `reviews/drip-368/berriai-litellm-pr-27189.md` |
+| google-gemini/gemini-cli | #26500 | `cf86f345767b37c94b14d995f9d6d64a2a74816c` | needs-discussion | `reviews/drip-368/google-gemini-gemini-cli-pr-26500.md` |
+| google-gemini/gemini-cli | #26499 | `0252fe37a566a24c30dba9e5450d0e93bccad826` | merge-as-is | `reviews/drip-368/google-gemini-gemini-cli-pr-26499.md` |
+| QwenLM/qwen-code | #3853 | `a205e6ccdc0a7736b18ef92022360afce061f2fa` | merge-after-nits | `reviews/drip-368/qwenlm-qwen-code-pr-3853.md` |
+| block/goose | #9010 | `3e1c7bc96ea49d0ead6b96aa0d72a261a4e445f1` | merge-after-nits | `reviews/drip-368/block-goose-pr-9010.md` |
+
+drip-368 verdict mix: 4 merge-as-is, 3 merge-after-nits, 0 request-changes, 1 needs-discussion (8 reviews across 6 of 7 carriers — sst/opencode ×2, openai/codex, BerriAI/litellm, google-gemini/gemini-cli ×2, QwenLM/qwen-code, block/goose; charmbracelet/crush skipped this drip because every open PR (#2801/#2800/#2791/#2790/#2788/#2786/#2785/#2783/#2782/#2778/#2773/#2772/#2760/#2759/#2757/#2752/#2751/#2750/#2749/#2745) was already in INDEX.md from prior drips with no fresh open candidates available).
