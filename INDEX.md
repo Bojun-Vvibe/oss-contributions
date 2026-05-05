@@ -1423,3 +1423,18 @@ drip-352 verdict mix: 1 merge-as-is, 4 merge-after-nits, 1 request-changes, 2 ne
 | block/goose | #8999 | `fe16fc120255fcec47c15311fc28780d4891b2fa` | merge-after-nits | `reviews/drip-353/block-goose-pr-8999.md` |
 
 drip-353 verdict mix: 1 merge-as-is, 5 merge-after-nits, 2 request-changes, 0 needs-discussion. 5 of 7 carriers represented (sst/opencode ×3, openai/codex ×2, BerriAI/litellm, google-gemini/gemini-cli, block/goose); QwenLM/qwen-code and charmbracelet/crush had zero fresh PRs in the 30-deep open-PR window so we doubled up on opencode and codex (see drip-353/README.md). Notable: litellm #27143 is a credentials-leak fix (Authorization header into spend logs) that should ship with a CVE/advisory; opencode #25778 mixes a real cache-staleness fix with ~50 lines of import-sort churn; opencode #25773 introduces an `args.split_whitespace()` regression while fixing the macOS PATH-from-Finder bug; codex #21107 quietly flips the `trace_exporter` config default; goose #8999 is a real safety fix for silent auto-accept on schema-less MCP elicitations but the desktop UI is missing a paired Decline button.
+
+## drip-354 (2026-05-05)
+
+| Repo | PR | Head SHA | Verdict | File |
+|---|---|---|---|---|
+| sst/opencode | #25788 | `39e9ca8c5a5260210729eb1b3ded723e5fb27801` | merge-after-nits | `reviews/drip-354/sst-opencode-pr-25788.md` |
+| sst/opencode | #25780 | `c813072a3a6bd1d31129a4a3d622a35f49cc51c0` | merge-as-is | `reviews/drip-354/sst-opencode-pr-25780.md` |
+| openai/codex | #21113 | `492df69aa1ebac2ad992b26ba82d7038eebfcff9` | merge-after-nits | `reviews/drip-354/openai-codex-pr-21113.md` |
+| openai/codex | #21105 | `09aa423fd649d38c696d14674863a5a42422000b` | merge-as-is | `reviews/drip-354/openai-codex-pr-21105.md` |
+| BerriAI/litellm | #27146 | `9fc9e433f22d8505614c9c60ac249f55c7244ab2` | merge-after-nits | `reviews/drip-354/berriai-litellm-pr-27146.md` |
+| BerriAI/litellm | #27140 | `b2d1802541630368653b918142d16d0874ca17d9` | merge-after-nits | `reviews/drip-354/berriai-litellm-pr-27140.md` |
+| google-gemini/gemini-cli | #26467 | `f6dbf52ac1e5b705cac51134baf8871c2b41a74f` | merge-after-nits | `reviews/drip-354/google-gemini-gemini-cli-pr-26467.md` |
+| google-gemini/gemini-cli | #26473 | `0597443a4e51b52d20f936fb3d50356025f36290` | request-changes | `reviews/drip-354/google-gemini-gemini-cli-pr-26473.md` |
+
+drip-354 verdict mix: 2 merge-as-is, 5 merge-after-nits, 1 request-changes, 0 needs-discussion. 4 of 7 carriers represented (sst/opencode ×2, openai/codex ×2, BerriAI/litellm ×2, google-gemini/gemini-cli ×2); QwenLM/qwen-code, block/goose, and charmbracelet/crush had no fresh PRs in the open-PR window (every candidate in the most-recent 20 was already in INDEX.md), so we doubled up on the four active carriers per the carrier-rotation rule. Notable: gemini-cli #26473 hardcodes a Google OAuth `clientSecret` literal (`GOCSPX-…`) inline in `acpRpcDispatcher.ts:308` instead of importing the existing shared constant — secret-scanners will flag it and it duplicates a credential surface; litellm #27146 swaps Starlette's `request.is_disconnected()` polling for direct ASGI `request.receive()` plus an `asyncio.Event` to disambiguate disconnect from generic `CancelledError`, but the receive-queue collision risk on streaming-body endpoints needs verifying; codex #21113 ships an Xcode-26.4-specific MCP elicitation auto-deny hack with the gate predicate copy-pasted into two files; codex #21105 is a pure test-coverage win that locks in fail-closed-on-DNS-timeout for the network proxy; opencode #25788 cleanly factors the tool-call repair logic out of `experimental_repairToolCall` and adds the `known_tool_invalid_input` vs `unknown_tool` distinction with a useful hint string for models.
