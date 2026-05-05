@@ -1,0 +1,14 @@
+# drip-374 SUMMARY (2026-05-06)
+
+Verdict mix: **2 merge-as-is, 4 merge-after-nits, 1 request-changes, 0 needs-discussion** (8 reviews across 6 of 7 carriers — sst/opencode ×2, openai/codex ×2, BerriAI/litellm, google-gemini/gemini-cli, charmbracelet/crush, block/goose; QwenLM/qwen-code skipped this drip — every fresh open-PR candidate (#3855/3854/3853/3850/3849/3848/3847/3844/3842/3840/3836/3835/3832/3828/3827/3826/3819/3814/3799) was already covered in prior drips, so we doubled up on opencode and codex).
+
+## One-liners
+
+- **sst/opencode #25907** — `merge-as-is`. Pure type-system cleanup deleting the unused `DynamicDescription` type alias (+0/−3); no runtime behavior change, no callers reference it.
+- **sst/opencode #25902** — `merge-as-is`. TUI fix removing 5 stray lines in the plugin selection list that caused the cursor to jump on mouse hover; surgical, well-scoped.
+- **openai/codex #21225** — `merge-after-nits`. Adds `persist_extended_history` config key to the rollout writer's ignore list so `extended_thinking`/`reasoning_summary` blocks don't get persisted-then-replayed (+84/−22). Solid refactor consolidating the ignore-key constant; nit on test-table duplication.
+- **openai/codex #21224** — `merge-after-nits`. New `WorkspaceAnnouncementClient` polling client (+183/−0) for the workspace announcement endpoint. Clean separation from the existing event stream; concern is the hardcoded 30s poll interval with no jitter (thundering-herd risk at scale).
+- **BerriAI/litellm #27216** — `merge-as-is`. Extends the priority-based 429 response to include the matched model name + current TPM/RPM in the error body (+100/−0); strictly additive, well-tested, helps clients implement smarter backoff.
+- **google-gemini/gemini-cli #26514** — `request-changes`. Session export/import to a single JSON file (+298/−1). Core idea is sound and the schema-versioning is right, but: (a) export writes to user-supplied path with no traversal/overwrite guard, (b) import does no schema validation before loading, and (c) the file format embeds absolute filesystem paths from the original session that won't resolve on the importing machine — needs path-stripping or relativization before merge.
+- **charmbracelet/crush #2805** — `merge-after-nits`. Drains queued user messages after `/compact` summarization completes so input typed during compaction isn't lost (+18/−1). Correct fix; nit is the drain happens unconditionally even on summarization failure (queued msgs sent into a possibly-broken session state).
+- **block/goose #9025** — `merge-after-nits`. Migrates the docs site from the deprecated `actions/upload-pages-artifact` + `actions/deploy-pages` flow to the consolidated `actions/upload-artifact@v4` + manual gh-pages branch push (+41/−126). Net simplification; nit is the new workflow drops the previous concurrency-group lock so two simultaneous merges to main could race the gh-pages push.
