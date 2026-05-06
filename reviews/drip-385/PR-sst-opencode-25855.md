@@ -1,0 +1,25 @@
+# anomalyco/opencode#25855 — fix(tui): preserve summarized paste order with wide text
+
+- **Head SHA**: `523a3422b0a7ef986893162b25612dd05e5969ac`
+- **Stats**: +207 / -18, 3 files (closes #25854)
+
+## Summary
+
+OpenTUI extmark ranges are display-width offsets (one CJK char = 2 columns, one ASCII char = 1 column), but the prompt-submit path was using them directly as JavaScript string indices (`inputText.slice(0, extmark.start)`) when expanding `[Pasted ~N lines]` summaries back into their original pasted text. For prompts that contain wide characters before a paste marker, the slice indices were shifted by the column-vs-codeunit delta, causing the expansion to land at the wrong byte offset and either swallow nearby text or splice the pasted block into the wrong position. The fix introduces an `Intl.Segmenter`-based display-offset → string-index mapper and consults `part.source.text.value` (the original virtual marker text) as the source of truth for locating the splice range.
+
+## Specific citations
+
+- `packages/opencode/src/cli/cmd/tui/component/prompt/paste.ts:13-23` (new file): `displayOffsetToStringIndex(text, offset)` walks `Intl.Segmenter(undefined, { granularity: "grapheme" })` segments accumulating `Bun.stringWidth(segment)`. The early return on `nextDisplayOffset === offset` returns `segment.index + segment.segment.length` (end of the matching segment) which is the correct boundary semantics for a slice end-index. The `>` branch returns `segment.index` (start of the *next* segment) which correctly handles the case where the requested offset lands mid-segment (rare for wide chars, common for emoji ZWJ sequences).
+- `:9-12`: `segmentWidth` special-cases `"\n"` to return `1` rather than `Bun.stringWidth("\n")` which returns 0 — this is correct because OpenTUI treats the newline as one column for cursor purposes. Without this, multi-line paste markers would compute a 0-width newline and shift all downstream offsets.
+- `:35-46`: `virtualTextRange` is the load-bearing fallback. It first tries the trivial `displayOffsetToStringIndex` mapping, then verifies via `text.slice(start, end) === virtualText` that the computed range actually contains the original virtual text. If not (extmark drifted because of subsequent edits), it falls back to `text.indexOf(virtualText)` enumeration sorted by *display-offset distance* from `extmark.start` — `Math.abs(stringIndexToDisplayOffset(text, a.start) - extmark.start)`. The tiebreak `|| b.start - a.start` (later occurrence wins on identical display distance) is a defensible bias for the "user typed the same marker again earlier" case.
+- `:50-67`: `expandPromptTextParts` sorts extmarks by `b.start - a.start` (descending) before reducing — correct, because expanding right-to-left preserves the offsets of as-yet-unprocessed extmarks. Same invariant as the original code at `prompt/index.tsx:902` pre-refactor.
+- `prompt/index.tsx:1020,1061`: changes `extmarkEnd = extmarkStart + virtualText.length` → `extmarkStart + Bun.stringWidth(virtualText)`. This is the symmetric fix on the *creation* side — extmark ends were being recorded in JS string units while starts were in display units, which is the underlying bug. Correct change but worth a verification: does `Bun.stringWidth("[Pasted ~3 lines]")` return 17 for the all-ASCII case? Should — but the `[PDF 1]` / `[Image 1]` markers in `pasteMedia` (`:1061`) deserve an inline assertion that pure-ASCII inputs round-trip identically.
+- `prompt-paste.test.ts:9-15`: `displayOffsetToStringIndex("第一行\n中文x", 11)` → `"第一行\n中文".length` = 7 chars (3 CJK + 1 newline + 2 CJK = 6 graphemes, but JS string length is 7 because `\n` is 1 codeunit and CJK BMP chars are 1 codeunit each). Display width: 3×2 + 1 + 2×2 = 11. So offset 11 maps to index 7 = JS-string position right before `x`. Correct.
+
+## Verdict
+
+**merge-after-nits**
+
+## Rationale
+
+Correct fix for a real width-vs-index confusion that bites every CJK/emoji user. The `Intl.Segmenter` + `Bun.stringWidth` combination is the right tool for grapheme-aware width math, and the `virtualTextRange` fallback (verify-then-search-by-display-distance) is a thoughtful defense against extmark drift from intervening edits. The three test cases (single wide-prefix paste, multiple paste blocks with mixed CJK separators, fallback when extmarks were created with stale string-length offsets) cover the meaningful axes. Three nits: (1) `segmenter` is module-scoped and shared across calls — `Intl.Segmenter` instances are not documented as thread-safe but JS is single-threaded so this is fine in practice; still, a comment noting "intentional module-level cache, single-threaded JS" would future-proof against a worker-thread refactor; (2) `virtualTextRange`'s `text.indexOf(virtualText)` enumeration is O(n²) in worst case (long input × many occurrences) — acceptable for prompt-sized inputs but worth a `// O(n*k)` comment; (3) the test file imports from `"../../../../src/..."` which is fragile — an alias like `@tui/prompt/paste` would be more maintainable but matches existing test convention. None block merge.
